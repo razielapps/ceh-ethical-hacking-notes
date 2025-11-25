@@ -1,0 +1,30 @@
+The CIA Triad
+
+If you had to summarize the entire goal of information security in just three words, what would they be? The answer is the CIA Triad. Now, this has nothing to do with the government agency. CIA here stands for three core principles: Confidentiality, Integrity, and Availability. This triad is the foundation, the golden rule, the cornerstone upon which all security measures are built. Every security control, policy, and tool you will ever encounter is ultimately designed to protect one or more of these three principles. Think of it as a three-legged stool. If one leg is weak or broken, the entire stool collapses.
+
+First, let's talk about Confidentiality. Confidentiality is about preventing the disclosure of information to unauthorized people. It is about keeping secrets, secret. It ensures that only those who are supposed to see the data can actually see it. A great example is your email password. You expect that only you can read your emails. That is confidentiality. When confidentiality is broken, it means someone has accessed data they shouldn't have. How do we ensure confidentiality? The most common method is encryption. Encryption scrambles your data into an unreadable format, and only someone with the correct key can unscramble and read it. It's like sending a letter in a locked safe; only the person with the combination can open it. Other methods include strict access controls, which are rules that define who is allowed to access which files, and good physical security, like locking server rooms.
+
+The second principle is Integrity. Integrity is about maintaining the accuracy, trustworthiness, and consistency of data over its entire lifecycle. It means ensuring that data has not been altered in an unauthorized way. Think about your online banking. You need to be sure that when you transfer $100 to a friend, a hacker cannot change that transaction to $1000. You need to trust that your bank statement is correct and has not been tampered with. A breach of integrity is when data is maliciously or accidentally changed. How do we ensure integrity? We use techniques like hashing. A hash is a digital fingerprint of a file. If you change even a single comma in the file, the hash will change completely. By comparing the hash of the original file with the hash of the current file, you can verify its integrity. Another method is digital signatures, which not only verify integrity but also authenticate the source of the data.
+
+The third principle is Availability. Availability means that information and the systems that process it must be accessible to authorized users whenever they need it. The best security in the world is useless if legitimate users cannot access the service. If your bank's website is down because of an attack, you cannot pay your bills or check your balance. That is a breach of availability. Attackers often target availability with Denial-of-Service attacks, where they flood a server with so much traffic that it crashes and becomes unavailable. How do we ensure availability? We use things like redundant systems, which are backup servers that can take over if the main one fails. We have good disaster recovery plans, robust network infrastructure, and protection against Denial-of-Service attacks.
+
+It is crucial to understand that these three principles often exist in a delicate balance. Sometimes, strengthening one can weaken another. For example, you can have extremely high confidentiality by putting a server in a vault, disconnecting it from the network, and encrypting it ten times over. But that would destroy its availability because no one could use it. A real-world example is when you forget your password to an online service. The service provider could reset it for you, but that would break confidentiality. Instead, they often force you to go through a verification process to maintain security. As a security professional, your job is to find the right balance for your organization's specific needs. The CIA Triad is the lens through which you view every security decision.
+
+Glossary for The CIA Triad
+
+The CIA Triad: The core model of information security, based on three principles: Confidentiality, Integrity, and Availability.
+
+Confidentiality: The principle of preventing sensitive information from being accessed by unauthorized individuals. It is about privacy and secrecy.
+
+Integrity: The principle of ensuring that data is accurate, trustworthy, and has not been altered by unauthorized parties.
+
+Availability: The principle of ensuring that information and systems are reliably accessible to authorized users when they need them.
+
+Encryption: The primary method for ensuring confidentiality. It is the process of converting data into a coded form to prevent unauthorized access.
+
+Hashing: A process that takes data and creates a unique, fixed-size string of characters called a hash. It is like a digital fingerprint used to verify data integrity.
+
+Access Controls: Security features that control who or what can view or use resources in a computing environment. They are the rules that enforce confidentiality.
+
+Denial-of-Service (DoS) Attack: An attack that aims to shut down a machine or network, making it inaccessible to its intended users. This is a direct attack on availability.
+

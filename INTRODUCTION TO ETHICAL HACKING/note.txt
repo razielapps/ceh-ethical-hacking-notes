@@ -1,0 +1,29 @@
+Introduction to Ethical Hacking
+
+What comes to your mind when you hear the word hacker? For most people, it is a person in a dark hoodie typing furiously on a laptop in a dimly lit room, stealing money and data. This is the image popular culture has given us. But what if I told you that there is a whole other side to hacking? A legal, ethical, and critically important side. This is what we call Ethical Hacking.
+
+Think of it this way. You have a vault in your house where you keep all your valuables. You are confident it is secure. But wouldn't you feel even more secure if you could hire a professional locksmith to try and break into that vault using every trick in the book? If they succeed, you know where your weakness is and you can fix it. If they fail, your confidence in the vault's security is validated. This locksmith is the ethical hacker. They are the good guys, the security experts who are hired to probe, test, and attempt to break into computer systems, networks, and applications with one crucial difference: they have permission.
+
+The entire goal of ethical hacking is not to cause harm or to steal, but to discover vulnerabilities from an attacker's viewpoint so that those weaknesses can be fixed before a malicious hacker finds and exploits them. It is a proactive defense, not a reactive one. Instead of waiting to get hit and then responding, you are actively testing your defenses to make them stronger.
+
+In the world of cybersecurity, systems are not just broken or working. They are a complex web of software, hardware, and human procedures. A tiny misconfiguration, a forgotten update, or a simple human error can open a door for an attacker. Ethical hackers simulate real-world attacks to find these open doors and windows so the organization can lock them.
+
+To be an ethical hacker, you need to think like a criminal but act like a hero. You need to know the tools, the techniques, and the mindset of the malicious hacker. But your intent and your authorization are what separate you from them. You are given a legal contract, often called a "get out of jail free card" or a formal engagement letter, that gives you explicit permission to conduct these tests. This legal boundary is the line in the sand that defines ethical hacking.
+
+So, why is this so important? Because today, everything is connected. Our money, our identities, our medical records, and even our power grids are online. The cost of a security breach is not just financial; it can be a matter of national security or public safety. Ethical hackers are the digital guardians who help prevent these disasters. They are the ones who tirelessly work to stay one step ahead of the bad guys, making the digital world a safer place for everyone.
+
+Glossary for Introduction to Ethical Hacking
+
+Hacker: A person who uses their technical knowledge to overcome a problem. While often used negatively, the term itself is neutral. It is the intent that defines the type of hacker.
+
+Ethical Hacker: A security professional who is hired and given permission to attempt to break into computer systems and networks to find and fix security vulnerabilities. They are the good guys.
+
+Malicious Hacker: Often called a black-hat hacker. This is a person who breaks into computer systems without permission, with the intent to cause harm, steal data, or disrupt services. They are the bad guys.
+
+Vulnerability: A weakness or a flaw in a system, its security procedures, its design, or its implementation that can be exploited by a threat actor. Think of it as a crack in the wall of your vault.
+
+Exploit: The method or technique an attacker uses to take advantage of a vulnerability. It is the specific tool or action that pushes on that crack to break the wall open.
+
+Authorization: Formal, written permission from the system owner to test the security of their systems. This is the legal document that makes ethical hacking legal. Without it, you are just a hacker.
+
+Proactive Defense: A security approach that focuses on anticipating and preventing attacks before they happen, rather than just responding to them after the fact. Ethical hacking is the core of proactive defense.

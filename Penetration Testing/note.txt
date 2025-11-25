@@ -1,0 +1,36 @@
+Penetration Testing
+
+You now understand the theory behind attacks and the principles of security. So how do we proactively find out if our defenses are working? We do this through a practice called Penetration Testing, often shortened to Pen Testing. A penetration test is a simulated cyber attack against your computer system, network, or web application to check for exploitable vulnerabilities. It is the authorized, legal, and safe practice of launching controlled attacks on your own systems to see how they hold up. Think of it as a fire drill for your digital infrastructure. You don't wait for a real fire to see if your alarms work; you test them regularly.
+
+It is crucial to understand the difference between a Penetration Test and a Vulnerability Assessment. These terms are often used interchangeably, but they are different in their depth and goals. A vulnerability assessment is like a home inspector walking through your house with a checklist. They identify all the problems: a leaky faucet, a cracked window, a loose floorboard. They give you a long report listing every vulnerability they found. A penetration test, however, is like hiring a professional burglar. They don't just point out the cracked window; they actually try to climb through it, see how far they can get into your house, and then show you exactly what they can steal. A vulnerability assessment finds potential weaknesses; a penetration test exploits them to demonstrate their real-world impact.
+
+Penetration tests are not a free-for-all. They are conducted under strict rules defined in a document called the Scope of Work or Rules of Engagement. This document is a contract between the tester and the client that specifies exactly what is allowed and what is not. It answers questions like: Which systems can be attacked? Which IP addresses are in scope? Are we allowed to test during business hours or only after hours? What techniques are off-limits? For example, a client might say that social engineering attacks on employees are not allowed for this test. This scope ensures that the test is safe, legal, and focused on the client's goals.
+
+There are different types of penetration tests, primarily defined by how much knowledge the tester has from the start.
+
+First, there is the Black-Box Test. In this scenario, the ethical hacker is given zero information about the internal systems. They are placed in the exact same position as an external hacker with no insider knowledge. They must use reconnaissance and scanning to map out the network from scratch. This approach tests the organization's external defenses very realistically, but it can be time-consuming.
+
+Second, there is the White-Box Test. Here, the tester is given complete knowledge of the environment. They are provided with network diagrams, source code, system configurations, and even login credentials. This is like giving the burglar the blueprints to your house. Why would you do this? Because it allows for a very deep and thorough test. The tester can bypass the initial reconnaissance and spend all their time looking for complex vulnerabilities in the architecture and code. It is a comprehensive health check.
+
+Third, there is the Gray-Box Test. This is a hybrid approach. The tester is given some limited information, perhaps a low-level user account to start with. This simulates an attack that might come from an insider or an attacker who has already compromised a user's credentials. It is a balanced approach that is both efficient and realistic.
+
+The process of a penetration test generally follows the 5 phases of an attack we discussed earlier: Reconnaissance, Scanning, Gaining Access, Maintaining Access, and Covering Tracks. The key difference is that every step is documented meticulously. The final deliverable is a detailed Penetration Testing Report. This report does not just list vulnerabilities. It explains the business impact of each finding, provides a step-by-step narrative of how the tester breached the system, and offers clear, actionable recommendations for fixing the issues. This report becomes a roadmap for the organization to improve its security posture significantly.
+
+Glossary for Topic 7:
+
+Penetration Testing (Pen Testing): An authorized, simulated cyberattack performed by ethical hackers to evaluate the security of a system by safely exploiting vulnerabilities.
+
+Vulnerability Assessment: The process of identifying, quantifying, and prioritizing vulnerabilities in a system. It is a list of weaknesses, but it does not typically involve exploiting them.
+
+Scope of Work / Rules of Engagement: A formal agreement that defines the boundaries, systems, and methods allowed during a penetration test. It is the rulebook that keeps the test legal and safe.
+
+Black-Box Test: A type of penetration test where the ethical hacker has no prior knowledge of the target system, simulating an external attacker.
+
+White-Box Test: A type of penetration test where the ethical hacker has full knowledge of and access to the system's infrastructure and code, allowing for a deep and thorough assessment.
+
+Gray-Box Test: A type of penetration test where the ethical hacker has some limited knowledge of the target, such as low-level login credentials.
+
+Penetration Testing Report: The final, detailed document provided after a test. It includes the vulnerabilities found, the methods used to exploit them, the business impact, and recommendations for remediation.
+
+Business Impact: An assessment of how a particular vulnerability or security breach would affect the organization's operations, finances, and reputation.
+

@@ -1,0 +1,38 @@
+Information Security Terminology
+
+Welcome to the world of information security. Every profession has its own language, its own set of words that have very specific meanings. To become an ethical hacker, you need to be fluent in this language. Understanding these terms is not just about passing an exam; it's about being able to think and communicate clearly about security. Let's break down the essential vocabulary you will use every day.
+
+First, let's define a Threat. A threat is anything that has the potential to cause harm to an organization's assets. A threat is not the attack itself, but the potential for an attack. Think of a storm cloud on the horizon. The cloud itself is a threat; it has the potential to bring rain and lightning that could damage your house. In cybersecurity, a threat could be a hacker, a malicious insider, a natural disaster like a flood, or even accidental deletion by an employee. The key thing to remember is that a threat is the *potential* for something bad to happen.
+
+Next, we have a Vulnerability. A vulnerability is a weakness or a flaw in a system, its security procedures, its internal controls, or its design that could be exploited by a threat. This is the crack in the wall of your house. It is not the damage itself, but the weakness that makes damage possible. If your computer is running an old version of software that has a known security hole, that hole is a vulnerability. If your company has a policy of using simple passwords, that is a vulnerability. Vulnerabilities are the gaps in your defenses.
+
+Now, what happens when a threat actually takes advantage of a vulnerability? This is called an Exploit. An exploit is the specific method, technique, or piece of code that an attacker uses to leverage a vulnerability. If the vulnerability is the crack in the wall, the exploit is the crowbar the thief uses to pry that crack open and get inside. An exploit is the actual tool or action. For example, a hacker might write a small program that specifically targets that old software vulnerability to gain control of the computer. That program is the exploit.
+
+The combination of a threat exploiting a vulnerability leads to a Risk. Risk is the potential for loss or damage when a threat exploits a vulnerability. It is the measure of how likely it is that something bad will happen and what the impact would be if it did. Let's put it all together. The storm cloud is the threat. The crack in your roof is the vulnerability. The rain exploiting that crack to leak into your house is the exploit. The risk is the probability of the leak happening multiplied by the cost of the water damage to your furniture. In business terms, risk is often calculated as: Risk = Threat x Vulnerability x Impact. The goal of security is to manage and reduce risk.
+
+Now, let's talk about an Attack. An attack is the actual event, the deliberate action that attempts to exploit a vulnerability to cause harm. It is the thief actually using the crowbar on the crack. An attack is the execution of an exploit. When a hacker sends a phishing email, that is an attack. When they run a password-cracking tool, that is an attack.
+
+To protect ourselves, we use Countermeasures or Safeguards. These are the steps we take to reduce risk. A countermeasure is any action, device, procedure, or technique that reduces a threat, closes a vulnerability, or minimizes the impact of an attack. If the vulnerability is the crack in the roof, the countermeasure is patching the crack. If the threat is a thief, a countermeasure is installing a strong lock on your door. In cybersecurity, countermeasures include firewalls, antivirus software, encryption, security training for employees, and strong password policies.
+
+Finally, let's define an Asset. This is the most important term because everything in security revolves around protecting assets. An asset is anything that has value to the organization and therefore needs to be protected. It can be tangible, like servers and laptops, or intangible, like data, intellectual property, and a company's reputation. Your customer database is an asset. Your source code is an asset. Your brand's public trust is an asset. You cannot protect what you do not know. The first step in any security program is to identify all your valuable assets.
+
+Understanding the relationship between these terms is critical. You protect your Assets by implementing Countermeasures to reduce the Risk posed by Threats who may use an Exploit to attack a Vulnerability.
+
+Glossary for Information Security Terminology
+
+Threat: Any potential danger that could exploit a vulnerability and cause harm to an asset. It is the *possibility* of a bad thing happening, like a hacker or a natural disaster.
+
+Vulnerability: A weakness or a flaw in a system, security procedure, or control that can be exploited by a threat. It is the crack in your armor.
+
+Exploit: The specific method, technique, or tool used to take advantage of a vulnerability. It is the weaponized code or action that attacks the flaw.
+
+Risk: The potential for loss or damage when a threat exploits a vulnerability. It is a measure of the likelihood of an incident and its negative impact.
+
+Attack: The actual event or action where a threat actor uses an exploit against a vulnerability in an attempt to cause harm.
+
+Countermeasure: Also called a safeguard or control. Any action, device, procedure, or technique that reduces a security risk. Firewalls and antivirus software are countermeasures.
+
+Asset: Anything that has value to an organization and must be protected. This includes physical equipment, data, software, and reputation.
+
+Impact: The magnitude of harm or loss that could be caused by a security incident. It is the "cost" part of the risk calculation.
+

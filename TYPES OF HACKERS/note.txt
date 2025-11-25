@@ -1,0 +1,36 @@
+Types of Hackers
+
+Now that we know what ethical hacking is, let's clear up a common misconception. Not all hackers are the same. It's not a single group of people. In fact, the hacking community is very diverse, with different goals, motivations, and legal boundaries. To make it easy to understand, the cybersecurity world often uses a simple color-coded system based on old Western movies where the good guys wore white hats and the bad guys wore black hats. But there's more to it than just that.
+
+First, let's talk about the Black-Hat Hacker. This is the classic villain, the one you see in movies. A black-hat hacker is a malicious actor who breaks into computer networks and systems without any permission. Their goal is usually personal or financial gain. They want to steal sensitive data like credit card numbers, patient records, or corporate secrets. They might deploy ransomware to lock your files and demand money, or they might just vandalize a website for the fun of it. Their actions are illegal and cause real harm to individuals and organizations. They are the digital criminals.
+
+On the opposite end of the spectrum, we have the White-Hat Hacker. This is the ethical hacker we just discussed. A white-hat hacker is a security professional who uses their skills for good. They are hired by companies to find security weaknesses, but they do so with full authorization and a legal contract. Their goal is to improve security. They follow a strict code of conduct and report all their findings to the organization so the problems can be fixed. When you are studying for the CEH and eventually get a job as a penetration tester, you are aiming to become a white-hat hacker.
+
+Now, between the clear-cut good and the clear-cut bad, there is a large, gray area. This is where we find the Gray-Hat Hacker. A gray-hat hacker operates without explicit permission from the system owner, but they also don't have the purely malicious intent of a black-hat. Let me give you a scenario. Imagine a gray-hat hacker finds a critical vulnerability in a popular social media website. Instead of exploiting it for profit, they might hack into the site and leave a message for the administrators saying, "Hey, I found a major flaw. Please fix it." They don't have permission, so their actions are technically illegal, but their stated goal is to help. However, this is a very risky path. The company might see it as a helpful warning, or they might see it as a threat and call the police. The line is very blurry.
+
+Beyond these three main categories, there are other types based on their specific focus and motivation.
+
+Let's talk about the Hacktivist. This is a hacker who is driven by a political or social cause. They use their hacking skills to promote their ideology. They might deface the website of a government they disagree with, leak sensitive information from a corporation they see as unethical, or launch cyber-attacks to disrupt services. While their motivation might be ideological rather than financial, their actions are still illegal and are considered cybercrime.
+
+Another important type is the State-Sponsored Hacker. These are hackers who are employed by a nation-state. They are highly skilled, well-funded, and their targets are often other governments, critical infrastructure like power plants, or large corporations. Their goal is espionage, stealing state secrets, or disrupting the operations of rival countries. They are the digital spies and soldiers of the modern era.
+
+Finally, you have Script Kiddies. This term might sound funny, and it is a bit derogatory. Script kiddies are individuals with little technical expertise. They don't write their own tools or understand the deep mechanics of an attack. Instead, they download pre-written scripts and tools from the internet and use them to launch attacks. They are like vandals who use a spray can they found rather than crafting their own tools. While they may not be highly skilled, they can still cause significant damage, much like a kid with a spray can can still deface a building.
+
+Understanding these different types is crucial because it helps you understand the threat landscape. You are not just defending against one type of enemy. You need to be prepared for the sophisticated, patient state-sponsored actor as well as the random, disruptive script kiddie.
+
+Glossary for Types of Hackers
+
+Black-Hat Hacker: A hacker who breaks into systems without permission for personal or financial gain. Their actions are illegal and malicious. They are the digital criminals.
+
+White-Hat Hacker: Another name for an ethical hacker. They use their hacking skills for good, with explicit permission, to help organizations improve their security.
+
+Gray-Hat Hacker: A hacker who operates in a moral gray area. They may break into systems without permission but without malicious intent, often to expose a vulnerability. Their actions are still technically illegal.
+
+Hacktivist: A hacker who is motivated by political or social beliefs. They use cyber-attacks to promote their ideology or to bring attention to a cause.
+
+State-Sponsored Hacker: A highly skilled hacker who is funded and directed by a government. Their targets are typically other nations or critical infrastructure, and their goals are espionage, sabotage, or cyber warfare.
+
+Script Kiddie: An unskilled individual who uses pre-made scripts and tools developed by others to launch hacking attacks. They lack deep technical knowledge but can still be disruptive.
+
+Threat Landscape: The overall picture of the various cyber threats that an organization faces. This includes the different types of hackers, their methods, and their likely targets.
+

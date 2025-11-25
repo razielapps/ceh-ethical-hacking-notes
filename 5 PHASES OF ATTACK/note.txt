@@ -1,0 +1,35 @@
+The 5 Phases of an Attack
+
+Many people imagine a cyber attack as a single, sudden event. One moment your computer is fine, the next it's infected. But in reality, a successful cyber attack, whether by a sophisticated state actor or a lone criminal, is almost always a process. It is a series of steps, a methodical sequence. Think of it not as a single punch, but as a full military campaign. You don't just rush into enemy territory. You first do reconnaissance, you plan, you gather your forces, you execute, and then you consolidate your gains. Understanding these phases is critical because it allows you to build defenses at every single stage, not just at the front door.
+
+The first phase is Reconnaissance. This is the information-gathering stage. The attacker is like a thief casing a neighborhood before a robbery. They are not causing any damage yet; they are just watching and learning. They want to know everything about their target. What software are you running? What operating system? What are the version numbers? Who are the employees? They can find this information in many ways. They might scan your public websites and network to see what doors and windows are open. This is called active reconnaissance because they are interacting with your systems. Or they might use passive reconnaissance, which is quieter. They look at your public social media profiles, like LinkedIn, to find employee names and email formats. They might look at old job postings to see what technologies you use. The goal here is to build a blueprint of your digital footprint to find the weakest point of entry.
+
+The second phase is Scanning and Enumeration. Now the attacker moves from a general map to a detailed blueprint. Using the information from phase one, they start to probe the potential entry points more deeply. If reconnaissance identified a building, scanning is like checking all the doors and windows to see which are unlocked. They use tools to scan for open ports. A port is like a door on a computer; different services use different doors. They might find that door number 80, used for web traffic, is open. Or door number 21 for file transfers. Then, they move to enumeration, which is actively trying to get more specific information. For example, if they find a web server, they might try to enumerate what kind of server it is, what version it's running, and even what usernates exist on the system. They are gathering a list of targets for the actual attack.
+
+The third phase is Gaining Access. This is the moment most people think of when they hear "hacking." It is the actual breach. The attacker uses a specific exploit to leverage a vulnerability they found during scanning. For instance, they might discover that the web server is running an old version of software that has a known flaw. They then use a pre-made exploit code, like a custom-made key, to unlock that specific flaw and get inside the system. This initial access might be low-level, like getting access as a basic user. But the goal is to get in. This phase is where the attacker crosses the boundary from the outside to the inside.
+
+The fourth phase is Maintaining Access. Once the attacker is inside, their next goal is to make sure they can come back whenever they want. A smart thief doesn't just run in and out; they copy the key so they can return later. In the digital world, this involves installing a backdoor. A backdoor is a piece of software or a configuration change that gives the attacker persistent access, even if the original vulnerability they used to get in is fixed. They might install a remote access trojan or create a secret user account for themselves. This allows them to come and go silently, continuing their mission over days, weeks, or even months without being detected. This phase is crucial for long-term espionage or for slowly stealing large amounts of data.
+
+The fifth and final phase is Covering Tracks. A professional attacker does not want to be caught. After they have achieved their goal, whether it's stealing data or planting a backdoor, they will try to erase any evidence of their presence. They are like a ghost. They will delete log files that recorded their activity. They might alter those logs to make it look like someone else was responsible. They will uninstall temporary tools they used and hide their backdoor processes within normal system activity. The goal is to remain undetected for as long as possible, allowing them to continue using the compromised system or to prevent forensic investigators from understanding how the attack happened.
+
+Understanding these five phases is a game-changer. It shows you that security is not just about having a strong firewall at phase three. You need monitoring to detect the scanning in phase two. You need log management and integrity checks to catch them covering their tracks in phase five. A robust defense must be layered across all five phases.
+
+Glossary for The 5 Phases of an Attack
+
+Reconnaissance: The first phase of an attack where the attacker gathers information about the target. It is the planning and observation stage, like casing a building before a robbery.
+
+Scanning: The second phase, a more active probing of the target's systems to find specific vulnerabilities, like checking which doors and windows are unlocked.
+
+Enumeration: The process of actively extracting detailed information from a system, such as user lists, group memberships, and network shares, after a scan has found an open port.
+
+Gaining Access: The third phase where the attacker actually exploits a vulnerability to break into the system. This is the initial breach.
+
+Maintaining Access: The fourth phase where the attacker ensures they can get back into the system later, usually by installing a backdoor or creating a secret account.
+
+Covering Tracks: The fifth and final phase where the attacker attempts to erase all evidence of their intrusion by deleting logs, hiding files, and removing any trace of their activity.
+
+Port: A virtual door on a computer where network connections begin and end. Different services use different port numbers.
+
+Exploit: A piece of code, a command, or a technique that takes advantage of a vulnerability to cause unintended behavior, like gaining access to a system.
+
+Backdoor: A hidden method, often software, for bypassing normal authentication to gain remote access to a computer.

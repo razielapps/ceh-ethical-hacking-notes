@@ -1,0 +1,42 @@
+The Cyber Kill Chain
+
+Now that we understand the 5 phases of a generic attack, let's look at a more detailed and military-grade version of that concept. The Cyber Kill Chain was developed by the defense company Lockheed Martin. It is a framework that describes the stages of a sophisticated cyber attack, breaking it down into seven sequential steps. The word kill in the name comes from military jargon, where a kill chain is the process of structuring an attack. The idea is that you can break the enemy's attack by disrupting just one link in their chain. This model is especially useful for understanding and defending against advanced persistent threats, which are highly skilled and patient attackers, often state-sponsored.
+
+The first step in the Cyber Kill Chain is Reconnaissance. This is identical to the first phase in the 5-phase model. The attacker is harvesting email addresses, gathering information on social media, studying the target's website, and understanding the organizational structure. They are looking for any piece of information that can be used as a weapon later.
+
+The second step is Weaponization. This is a crucial step that the 5-phase model does not explicitly call out. Here, the attacker creates a weapon tailored to the vulnerabilities and information they found during reconnaissance. This typically involves pairing a remote access trojan, which is a malicious program that gives them control, with an exploit for a specific vulnerability. The most common example is a weaponized document. They might create a PDF or a Word document that looks completely normal, but the moment you open it, it exploits a flaw in your PDF reader or Word to silently install the malicious software on your computer. Think of it as an assassin taking a bullet and loading it into a gun. The bullet is the exploit, and the gun is the trojan.
+
+The third step is Delivery. This is where the attacker transmits the weapon to the target's environment. How do they get that weaponized document to you? The most common delivery method is email, sent as an attachment or with a malicious link. This is phishing. Other delivery methods could be through a infected USB drive left in a parking lot, or by compromising a website the target often visits. This step is the equivalent of the assassin pulling the trigger and sending the bullet towards the target.
+
+The fourth step is Exploitation. This is the moment the weapon arrives and the exploit is triggered. In our example, this happens the moment the victim opens the malicious PDF attachment. The code within the document exploits a vulnerability in the software, which allows the next stage to happen.
+
+The fifth step is Installation. Once the exploit has created a weakness, the attacker uses that opening to install their malicious software, the remote access trojan or backdoor, onto the victim's system. This malware now gives them a persistent foothold inside the network. The weapon has done its job, and the enemy soldier is now inside the castle walls.
+
+The sixth step is Command and Control, often called C2. After the malware is installed, it doesn't just sit there. It calls home. It establishes a connection to a server that the attacker controls. This server is like the attacker's headquarters. It allows them to send commands to the malware and receive the data it steals. This channel is the attacker's lifeline, allowing them to remotely control the compromised machine as if they were sitting in front of it.
+
+The seventh and final step is Actions on Objectives. This is the endgame. The attacker has done all the hard work to get in and establish control. Now, they perform the actions they always intended to do. This could be stealing sensitive data, destroying data, encrypting files for ransom, or moving sideways through the network to compromise other, more important systems. They achieve their final mission.
+
+The power of the Cyber Kill Chain is that it gives defenders a clear map of the attack process. Your security controls should be designed to break this chain at any possible point. You can break it at the delivery stage with a good spam filter. You can break it at the exploitation stage by having updated software that patches the vulnerability. You can break it at the command and control stage by blocking connections to known malicious servers. By understanding each link, you can build a defense for each one.
+
+Glossary for The Cyber Kill Chain
+
+Cyber Kill Chain: A detailed model developed by Lockheed Martin that describes the seven stages of a cyber attack, from early reconnaissance to the achievement of the attacker's goals.
+
+Reconnaissance: The first step, the attacker gathers intelligence on the target.
+
+Weaponization: The second step, the attacker couples a payload like malware with an exploit into a deliverable weapon, such as a malicious document.
+
+Delivery: The third step, the attacker transmits the weapon to the target, for example via a phishing email.
+
+Exploitation: The fourth step, the weapon arrives and the exploit code is triggered, taking advantage of a vulnerability in the system.
+
+Installation: The fifth step, the attacker installs malware, such as a backdoor, on the victim's system to maintain persistent access.
+
+Command and Control (C2): The sixth step, the compromised system calls back to an attacker-controlled server to receive instructions and send data.
+
+Actions on Objectives: The seventh and final step, the attacker accomplishes their ultimate goal, such as data theft or destruction.
+
+Advanced Persistent Threat (APT): A sophisticated and prolonged cyber attack campaign in which an intruder establishes a long-term presence on a network to steal highly sensitive data. These attackers often follow the Cyber Kill Chain meticulously.
+
+Phishing: A common delivery method where attackers send fraudulent emails that appear to be from reputable sources to trick victims into revealing sensitive information or delivering a weaponized payload.
+
