@@ -1,0 +1,59 @@
+ESSENTIAL LINUX CLI COMMANDS
+
+Now we move to the practical application, the verbs of our language. These are the commands that will allow you to move, look, create, and destroy. Mastery of these is non-negotiable. Let's start with navigation.
+
+The first command is pwd, which stands for Print Working Directory. It is the most basic command that answers the question, "Where am I?" When you type pwd and press Enter, the terminal will print the full, absolute path of your current location in the filesystem tree. It is like looking at the GPS coordinates on your phone.
+
+To move, you use the cd command, which stands for Change Directory. This is how you walk through the tree. If you want to go to the etc directory, you type cd /etc. If you want to go to your home directory, you can simply type cd with no arguments, or cd ~. The tilde is a special symbol that the shell expands to mean your home directory. To go up one level in the directory tree, to the parent directory, you use cd ... Two dots represent the parent. A single dot represents the current directory.
+
+Once you are in a directory, you need to see what is inside. The ls command, for List, does this. By itself, ls will show you the names of the files and directories in your current location. But the true power of ls comes with its options. ls -l will give you a long listing, showing details like file permissions, ownership, size, and modification time. ls -a will show all files, including hidden ones. In Linux, any file or directory whose name begins with a dot is hidden. ls -la combines both, giving you the detailed view of all files, including the hidden ones. This is one of the most frequently used command combinations.
+
+Now, let's look at file manipulation. To view the contents of a file without editing it, you have several options. The cat command, short for concatenate, is the simplest. It dumps the entire contents of a file to the terminal screen all at once. This is great for short files. For longer files, you use a pager. The less command is a pager that allows you to scroll through a file one screen at a time. You can press the spacebar to go down a page, the 'b' key to go up a page, and the 'q' key to quit. To just see the top or bottom of a file, use head or tail. By default, they show the first or last 10 lines. This is incredibly useful for quickly checking log files.
+
+Creating files and directories is fundamental. To create a new, empty file, you use the touch command followed by the filename. For example, touch my_notes.txt. It originally was designed to update the timestamp of a file, but if the file does not exist, it creates an empty one. To create a directory, you use mkdir, for Make Directory. mkdir new_folder.
+
+Copying files is done with the cp command. The basic syntax is cp source_file destination. If you want to copy a file from your current directory to your Documents folder, you would write cp report.txt ~/Documents/. To copy entire directories and their contents, you need to use the recursive option: cp -r sourcedir destinationdir.
+
+Moving files is done with the mv command. Its syntax is identical to cp: mv source destination. However, mv also serves as the command to rename files. If you issue the command mv oldname.txt newname.txt within the same directory, you have effectively renamed the file.
+
+Finally, we have removal. The rm command, for remove, deletes files. Be very careful with this command. In the terminal, there is no recycle bin. Once you delete a file with rm, it is generally gone forever. To delete a file, you type rm filename.txt. To delete a directory and everything inside it, you use the recursive and force options: rm -rf directoryname. The -r means recursive, to delete the directory and all its contents, and the -f means force, to not ask for confirmation. This is an extremely powerful and dangerous command. You must always double-check what you are typing after rm -rf.
+
+Another critical command is grep. grep is a search tool. It is used to filter output and search for text within files. Its name comes from a old text editor command, but you can think of it as a "global regular expression print." If you want to search for the word "error" in a log file, you would use grep "error" /var/log/syslog. It will print every line from that file that contains the word "error". You can also pipe the output of another command into grep. For example, ls -la | grep ".txt" would take the long list of all files and only show you the ones that have ".txt" in their name. The vertical bar | is called a pipe. It takes the output from the command on the left and feeds it as input to the command on the right. This is a fundamental concept for chaining commands together to perform complex tasks.
+
+Understanding file permissions is also essential. The ls -l command shows permissions in a string of characters like -rw-r--r--. The first character indicates the file type. A dash is a regular file, a 'd' is a directory. The next nine characters are three sets of three. The first set are the permissions for the file's owner, the second set for the group, and the third set for everyone else. The characters are r for read, w for write, and x for execute. To change permissions, you use the chmod command. To change ownership, you use the chown command.
+
+
+
+Glossary for ESSENTIAL LINUX CLI COMMANDS
+
+pwd: Print Working Directory. A command that shows you the full path of your current location in the filesystem.
+
+cd: Change Directory. The command used to navigate and move to a different directory.
+
+ls: List. The command to display the contents of a directory.
+
+cat: Concatenate. A command used to display the entire contents of a file on the screen.
+
+less: A command used to view the contents of a file one page at a time, allowing for scrolling.
+
+grep: A powerful search command used to find specific text patterns within files or output from other commands.
+
+cp: Copy. The command to create a duplicate of a file or directory in a new location.
+
+mv: Move. The command to move a file or directory from one location to another. It is also used to rename files.
+
+rm: Remove. The command to delete files and directories permanently.
+
+mkdir: Make Directory. The command to create a new, empty directory.
+
+touch: A command most commonly used to create a new, empty file.
+
+Pipe (|): A vertical bar used to connect the output of one command to the input of another command, allowing them to work together.
+
+Recursive Option (-r): An option used with commands like cp and rm to indicate that the command should act on a directory and all of its contents, including subdirectories.
+
+File Permissions: A system of rules that determines who can read, write, or execute a file. Viewed with ls -l and modified with chmod.
+
+chmod: Change Mode. The command used to alter the read, write, and execute permissions of a file or directory.
+
+chown: Change Owner. The command used to change the user and group ownership of a file or directory.

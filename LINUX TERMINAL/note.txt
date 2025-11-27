@@ -1,0 +1,43 @@
+LINUX TERMINAL
+
+The terminal is your gateway to true power in Kali Linux. If the graphical desktop is the dashboard of a car, showing you the speed and fuel level, the terminal is the engine, the transmission, and the steering mechanism all in one. It is a text-based interface where you communicate with the operating system by typing commands.
+
+This might seem old-fashioned, but for a security professional, it is indispensable. Why? Because it offers precision, speed, and power that a graphical interface cannot match. Many security tools do not have a graphical version; they are designed to be run from the command line. Scripts that automate complex tasks are written for the terminal. When you remotely connect to another machine, often all you have is a terminal.
+
+When you open a terminal window, you are greeted by a prompt. In Kali, it typically looks something like kali@kali:~$ . Let's break this down. The part before the @ symbol is your username, in this case 'kali'. After the @ is the hostname of your machine, also 'kali' by default. The ~ symbol is a shorthand for your current directory, which is your home directory. The $ symbol indicates that you are logged in as a regular user.
+
+This prompt is not just a decoration; it is giving you vital information. It tells you who you are, what machine you are on, and where you are in the filesystem. If the prompt ends with a # symbol instead of a $, that means you are logged in as the root user, the superuser with unlimited power. You must be very careful when you see the # prompt.
+
+The fundamental concept of using the terminal is the command structure. You type a command, and the system executes it. A command can often be followed by options and arguments. Options, usually preceded by a hyphen (-) or double hyphen (--), modify the behavior of the command. Arguments are the targets of the command, like a filename or a directory.
+
+For example, the command ls -l /home has three parts. ls is the command itself, which lists files. -l is an option that tells ls to use a long, detailed format. /home is the argument, telling ls which directory to list the contents of.
+
+Another critical concept is the shell. The terminal is the program that gives you the window, but the shell is the program inside that window that interprets your commands. The default shell in Kali Linux is called Bash, which stands for Bourne Again Shell. It is the brain that reads what you type, understands it, and executes the appropriate actions. It can also perform powerful functions like tab completion, where you can start typing a file name and press the Tab key to automatically complete it, and command history, where you can press the Up arrow to cycle through previously used commands.
+
+Everything you do in the terminal happens within a specific working directory. When you first open a terminal, you start in your home directory. Your commands will often be relative to this location unless you specify an absolute path. Learning to navigate and manipulate the filesystem from the terminal is your first and most important skill.
+
+The terminal is also where you will run the hundreds of security tools in Kali. Instead of clicking through menus, you will type the name of the tool, followed by its various options and the target. This allows for precise, repeatable, and documentable actions. For an ethical hacker, the terminal is not an option; it is the primary tool.
+
+
+
+Glossary for LINUX TERMINAL
+
+Terminal: A text-based interface used to control the operating system by typing commands. It is the console or window where you communicate directly with the computer's brain.
+
+Command: An instruction you type into the terminal to tell the operating system to perform a specific task, like listing files or copying data.
+
+Prompt: The text displayed by the shell to indicate it is ready for your input. It usually shows your username, machine name, and current directory.
+
+Shell: The program that runs inside the terminal. It interprets the commands you type and executes them. Bash is the most common shell.
+
+Bash: The Bourne Again Shell, the default command-line interpreter in Kali Linux. It is the program that understands your commands.
+
+Option: A modifier added to a command to change its behavior. Usually a single letter after a single dash like -l or a word after a double dash like --all.
+
+Argument: The target of a command, typically a file name, directory, or other data that the command acts upon.
+
+Root Prompt: The command prompt that ends with a # symbol, indicating you are logged in as the root superuser. It signifies unlimited system access.
+
+Tab Completion: A feature of the shell where pressing the Tab key automatically completes a partially typed command, file name, or directory name. It saves time and prevents typos.
+
+Command History: A feature that remembers the commands you have previously typed. You can scroll through them using the Up and Down arrow keys.

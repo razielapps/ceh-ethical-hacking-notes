@@ -1,0 +1,57 @@
+COMMANDS FOR SECURITY
+
+We have built our foundation. We understand the landscape of the Linux filesystem, we can navigate the terminal, and we know the essential commands for basic operation. Now we elevate our focus to the commands that are of particular importance to a security professional. These are the tools and techniques that transform a standard user into an analyst, an investigator, an ethical hacker.
+
+Let's begin with network analysis. The most fundamental command for understanding your own network connection is ifconfig. This command stands for interface configuration. When you run it, it displays information about all your active network interfaces: your Ethernet connection, your Wi-Fi card, even virtual network adapters. It shows you your IP address, your MAC address, the netmask, and network statistics. It is your first look at how your machine is connected to the world. A more modern alternative is the ip command, which is part of the iproute2 suite. ip addr show will give you similar but more detailed information. Knowing your own IP address and network configuration is the first step in any network reconnaissance.
+
+But what about other machines on the network? The ping command is the simplest network diagnostic tool. It sends a small packet of data to a specified host and waits for a reply. If you type ping 8.8.8.8, you are testing your connection to Google's public DNS server. A successful reply tells you that the remote host is up and that network connectivity exists between you and it. It is like shouting across a canyon and listening for an echo.
+
+For a more detailed view of the network path, we use traceroute. The traceroute command maps the path that your packets take from your machine to a destination host. It shows you every hop, every router along the way, and the time it takes to reach each one. This is crucial for diagnosing where a network failure occurs or for understanding the topology of a target network.
+
+Now we move to the most critical tool in the network security arsenal: netstat. netstat, meaning network statistics, provides a wealth of information about your machine's network connections. The most important usage for security is netstat -tulpn. Let's break down those options. The -t shows TCP connections, -u shows UDP connections, -l shows only listening ports, -p shows the process ID and name that owns the port, and -n shows numerical addresses instead of trying to resolve hostnames. When you run this command, you get a list of every port on your machine that is open and listening for connections. You see exactly which services are running and who can connect to them. This is how you audit your own system for unwanted or malicious backdoors. Seeing an unknown process listening on a port is a major red flag. A similar modern tool is ss, which is faster and provides more detailed information.
+
+Another powerful command is lsof, which stands for List Open Files. In Linux, everything is a file, including network connections and running processes. lsof gives you a list of every file that is currently open by any process. When used with the -i option, lsof -i, it lists all network connections and the processes that own them. This is another way to cross-reference what netstat tells you and get a deeper understanding of your system's activity.
+
+Let's talk about process management. When a program is running, it is a process. The ps command shows you a snapshot of the current processes. Using ps aux gives you a comprehensive list of every process on the system, who owns it, how much CPU and memory it is using, and its full command line. If you suspect a malicious program is running, ps aux is where you look for it.
+
+But sometimes you need to interact with a running process. The kill command is used to terminate a process. You first find the Process ID (PID) using ps or netstat -p, and then you send a signal to that PID using kill. The default signal is TERM, which asks the process to terminate gracefully. If it does not comply, you use kill -9 PID, which sends the KILL signal. This signal is unstoppable and immediately terminates the process. It is the equivalent of pulling the plug.
+
+For continuous monitoring of processes, we use top or its more modern and user-friendly version, htop. These commands provide a real-time, dynamic view of your system's resource usage. You can see which processes are using the most CPU or memory, allowing you to identify resource hogs or potential malware.
+
+Finally, we must discuss the power of searching and filtering with grep in a security context. Log files are the history books of the system. They contain records of every login attempt, every error, every service start and stop. The main log file repository is /var/log. To investigate a failed login attempt, you would grep for "Failed" in the authentication log: grep "Failed" /var/log/auth.log. To look for all activity from a specific IP address, you would use grep "192.168.1.100" /var/log/*. This ability to quickly sift through mountains of textual data to find the relevant security event is a core skill.
+
+Mastering these commands gives you the ability to see what is happening on your system at a fundamental level. You are no longer just a user of the system; you are its operator, its guardian, and its investigator.
+
+
+
+Glossary for COMMANDS FOR SECURITY
+
+ifconfig: Interface Configuration. A command to view and configure network interface parameters, such as IP address and MAC address.
+
+ping: A command to test connectivity to another network host by sending echo request packets and listening for reply packets.
+
+traceroute: A command that maps the path packets take across a network to a remote host, showing all intermediate hops.
+
+netstat: Network Statistics. A command that displays network connections, routing tables, interface statistics, and listening ports.
+
+lsof: List Open Files. A command that lists information about files that are currently open by processes, including network connections.
+
+ps: Process Status. A command to display a snapshot of the currently running processes.
+
+kill: A command to send a signal to a process, most commonly used to terminate a process using its Process ID (PID).
+
+top: A command that provides a real-time, dynamic view of a system's running processes and their resource usage.
+
+htop: An interactive and enhanced version of top with a more user-friendly interface.
+
+grep: Used in a security context to search through log files and command output for specific patterns, IP addresses, or error messages.
+
+Process ID (PID): A unique number that identifies each running process on the system.
+
+Port: A virtual point where network connections start and end. A listening port is like an open door on a computer waiting for a connection.
+
+Network Interface: The software representation of a physical or virtual network connection point, like a Wi-Fi or Ethernet card.
+
+Signal: A software interrupt delivered to a process. The TERM signal asks a process to end, while the KILL signal forces it to end immediately.
+
+Log File: A file that records events and actions that happen on the operating system or within applications, crucial for security auditing and troubleshooting.

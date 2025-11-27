@@ -1,0 +1,258 @@
+KALI LINUX & CEH PROFESSIONAL MASTER CHEATSHEET
+
+This cheatsheet is structured from foundational knowledge to elite professional techniques.
+
+CORE LINUX COMMANDS (FOUNDATIONAL)
+
+FILE SYSTEM NAVIGATION
+pwd - print working directory
+ls - list directory contents
+ls -la - list all files with details
+cd - change directory
+cd .. - move up one directory
+cd ~ - go to home directory
+
+FILE OPERATIONS
+cat - display file content
+less - view file page by page
+head/tail - show first/last lines of file
+touch - create empty file
+cp - copy files
+cp -r - copy directories recursively
+mv - move or rename files
+rm - remove files
+rm -rf - force remove directories (DANGEROUS)
+mkdir - create directory
+find - search for files
+locate - find files using database
+
+TEXT MANIPULATION
+grep - search text patterns
+awk - pattern scanning and processing
+sed - stream editor for filtering/transforming
+sort - sort lines of text
+uniq - report or omit repeated lines
+cut - remove sections from lines
+wc - word count
+
+PERMISSIONS & OWNERSHIP
+chmod - change file permissions
+chown - change file owner
+chgrp - change file group
+umask - set default permissions
+
+PROCESS MANAGEMENT
+ps - process status
+ps aux - detailed process list
+top - dynamic process view
+htop - enhanced process viewer
+kill - terminate process
+killall - kill processes by name
+pkill - kill by pattern
+nice - set process priority
+renice - change running process priority
+
+NETWORK COMMANDS (SECURITY ESSENTIALS)
+
+BASIC NETWORKING
+ifconfig/ip addr - network interface info
+ping - test host connectivity
+traceroute - trace network path
+netstat - network statistics
+ss - socket statistics (modern netstat)
+dig - DNS lookup tool
+nslookup - query DNS servers
+whois - domain information
+route - view routing table
+iptables - firewall configuration
+
+ADVANCED NETWORKING
+tcpdump - command line packet analyzer
+wireshark - GUI packet analyzer
+nc (netcat) - network swiss army knife
+socat - multipurpose relay
+nmap - network discovery and security auditing
+masscan - mass IP port scanner
+
+SECURITY-SPECIFIC COMMANDS
+lsof - list open files and network connections
+strace - trace system calls
+ltrace - trace library calls
+strings - extract text from binary files
+file - determine file type
+md5sum/sha256sum - file hashing
+
+KALI TOOLS BY CATEGORY (CEH FOCUS)
+
+INFORMATION GATHERING
+nmap - Network mapper
+maltego - OSINT and link analysis
+theharvester - Email and subdomain gathering
+recon-ng - Web reconnaissance framework
+dnsenum - DNS enumeration
+dmitry - Deepmagic information gathering
+
+VULNERABILITY ANALYSIS
+nessus - Comprehensive vulnerability scanner
+openvas - Open source vulnerability scanner
+nikto - Web server scanner
+skipfish - Web application security scanner
+lynis - Security auditing tool
+
+WEB APPLICATION ANALYSIS
+burpsuite - Web application testing platform
+owasp-zap - Zed Attack Proxy
+sqlmap - Automatic SQL injection tool
+commix - Automated command injection
+wpscan - WordPress security scanner
+
+PASSWORD ATTACKS
+john - John the Ripper password cracker
+hashcat - Advanced password recovery
+hydra - Online password cracking tool
+crunch - Wordlist generator
+cewl - Custom wordlist generator
+
+WIRELESS ATTACKS
+aircrack-ng - WiFi security auditing suite
+kismet - Wireless network detector
+reaver - WPS attack tool
+wifite - Automated wireless attack tool
+
+EXPLOITATION TOOLS
+metasploit - Penetration testing framework
+armitage - Metasploit GUI
+beef - Browser exploitation framework
+searchsploit - Exploit database search
+
+POST-EXPLOITATION
+mimikatz - Windows credential extraction
+powersploit - PowerShell post-exploitation
+empire - Post-exploitation framework
+backdoor-factory - PE backdooring tool
+
+FORENSIC TOOLS
+autopsy - Digital forensics platform
+binwalk - Firmware analysis tool
+foremost - File recovery tool
+volatility - Memory forensics
+
+REPORTING TOOLS
+dradis - Reporting and collaboration
+magic-tree - Penetration test data management
+cutycapt - Website screenshot tool
+
+ADVANCED TECHNIQUES (ELITE LEVEL)
+
+PRIVILEGE ESCALATION
+Linux: linpeas, linux-exploit-suggester
+Windows: winpeas, windows-exploit-suggester
+Techniques: SUID binaries, cron jobs, sudo rights
+
+LATERAL MOVEMENT
+Pass-the-hash attacks
+Token impersonation
+SSH key reuse
+SMB relay attacks
+
+PERSISTENCE MECHANISMS
+Cron jobs
+SSH authorized_keys
+Web shells
+Service creation
+Registry modifications
+
+ANTI-FORENSICS
+Log cleaning
+File timestamp modification
+Data hiding techniques
+Encrypted communications
+
+SOCIAL ENGINEERING
+Phishing framework setup
+Malicious document creation
+Website cloning
+
+COMMAND CHAINING & SCRIPTING
+
+POWERFUL ONE-LINERS
+File transfer: wget, curl, scp
+Reverse shells: bash, netcat, python, php
+Data exfiltration: base64, dd, nc
+Privilege checks: sudo -l, id, groups
+
+SCRIPTING LANGUAGES
+Bash scripting for automation
+Python for custom tools
+PowerShell for Windows environments
+
+PROFESSIONAL RESOURCES
+
+TRAINING PLATFORMS
+Offensive Security courses (PWK/OSCP)
+Hack The Box
+TryHackMe
+VulnHub
+Cybrary
+
+REFERENCE MATERIALS
+OWASP Testing Guide
+NIST Cybersecurity Framework
+MITRE ATT&CK Matrix
+SANS Reading Room
+Packet Life Cheat Sheets
+
+COMMUNITY RESOURCES
+GitHub security repositories
+Security conferences (DEF CON, Black Hat)
+Podcasts (Darknet Diaries, Security Now)
+Blogs (Krebs on Security, Schneier on Security)
+
+CERTIFICATION PATHS
+CEH (EC-Council)
+OSCP (Offensive Security)
+CISSP (ISC2)
+Security+ (CompTIA)
+
+TOOL DOCUMENTATION
+Man pages (man command)
+--help flags
+Official tool wikis and GitHub repos
+
+BEST PRACTICES FOR CEH PROFESSIONALS
+
+DOCUMENTATION
+Keep detailed notes of all findings
+Maintain command history with timestamps
+Document all tool configurations
+
+LEGAL COMPLIANCE
+Always obtain proper authorization
+Maintain strict scope boundaries
+Follow responsible disclosure procedures
+
+METHODOLOGY
+Follow structured testing methodologies
+Maintain thorough reconnaissance
+Practice comprehensive reporting
+
+CONTINUOUS LEARNING
+Practice regularly in lab environments
+Stay updated with latest CVEs
+Participate in bug bounty programs
+Contribute to open source security tools
+
+SECURITY HARDENING COMMANDS
+
+SYSTEM HARDENING
+fail2ban - protect against brute force
+unattended-upgrades - automatic security updates
+ufw/iptables - firewall configuration
+apparmor/selinux - mandatory access control
+
+MONITORING & DETECTION
+auditd - system call auditing
+aide - file integrity checker
+osquery - OS instrumentation framework
+
+This cheatsheet provides a comprehensive roadmap from beginner to elite security professional. Master the fundamentals before advancing to complex techniques, and always practice ethical hacking principles.

