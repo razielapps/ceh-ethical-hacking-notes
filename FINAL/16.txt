@@ -1,0 +1,108 @@
+Of course. A master of Wireshark is not someone who can just look at packets, but someone who can instantly find the exact packets they need from a capture of millions. This power comes from mastering display filters.
+
+Topic 16: Important Wireshark Filters
+
+Wireshark's display filter system is a language for querying your packet capture. Think of your capture file as a massive, disorganized library. Display filters are the card catalog system that lets you instantly find the specific book, chapter, or even sentence you are looking for. Learning this language is what separates a novice from an expert. It allows you to cut through the noise and focus exclusively on the evidence relevant to your investigation.
+
+The filter syntax is intuitive but powerful. It works by comparing fields within the protocols. For example, `ip.addr` is a field that represents an IP address. The double equals sign `==` means "is equal to". So, `ip.addr == 192.168.1.1` finds all packets where the source OR destination IP is 192.168.1.1.
+
+Here are the most important and frequently used Wireshark filters, categorized for clarity.
+
+**Basic Connectivity and Host Filters:**
+- `ip.addr == 10.0.0.5` : Shows all packets to or from the IP 10.0.0.5.
+- `ip.src == 10.0.0.5` : Shows only packets where the *source* IP is 10.0.0.5.
+- `ip.dst == 192.168.1.100` : Shows only packets where the *destination* IP is 192.168.1.100.
+- `ip.addr == 10.0.0.5 and ip.addr == 192.168.1.100` : Shows the conversation strictly between these two hosts.
+- `eth.addr == aa:bb:cc:dd:ee:ff` : Filters by a specific MAC address.
+
+**Port and Service-Based Filters:**
+- `tcp.port == 80` : Shows all TCP packets with source OR destination port 80 (HTTP).
+- `tcp.dstport == 22` : Shows packets where the *destination* TCP port is 22 (SSH).
+- `tcp.srcport == 443` : Shows packets where the *source* TCP port is 443 (HTTPS).
+- `udp.port == 53` : Shows all UDP packets with source or destination port 53 (DNS).
+- `tcp.port >= 1 and tcp.port <= 1024` : Shows traffic on well-known TCP ports (1-1024).
+
+**Protocol-Based Filters (The simplest and often the most useful):**
+- `http` : Shows only HTTP protocol packets.
+- `dns` : Shows only DNS protocol packets.
+- `tcp` : Shows only TCP packets.
+- `udp` : Shows only UDP packets.
+- `icmp` : Shows only ICMP packets (like ping requests and replies).
+- `arp` : Shows only ARP packets.
+
+**TCP Connection State Filters (Crucial for troubleshooting and attack analysis):**
+- `tcp.flags.syn == 1 and tcp.flags.ack == 0` : Finds only the initial SYN packets of a TCP handshake. This is the core of a SYN scan.
+- `tcp.flags.syn == 1 and tcp.flags.ack == 1` : Finds only SYN-ACK packets, indicating an open port responded.
+- `tcp.flags.reset == 1` : Finds all RST packets. A flood of these can indicate a port scan or a service crashing.
+- `tcp.analysis.retransmission` : This is a magic filter. It uses Wireshark's built-in analysis to find all TCP retransmissions, which indicate packet loss and a bad network connection.
+- `tcp.analysis.duplicate_ack` : Finds duplicate ACKs, which can also indicate network issues.
+
+**HTTP-Specific Filters (The goldmine for web traffic):**
+- `http.request.method == "GET"` : Shows all HTTP GET requests.
+- `http.request.method == "POST"` : Shows all HTTP POST requests. This is where you find form submissions, including logins.
+- `http.request.uri contains "login"` : Shows HTTP requests where the URL contains the word "login".
+- `http.response.code == 404` : Shows all "Not Found" server responses.
+- `http.response.code == 200` : Shows all "OK" successful server responses.
+- `http.host == "example.com"` : Shows all HTTP traffic for the host "example.com".
+
+**Combining Filters with Logical Operators:**
+The real power comes from combining filters using `and`, `or`, and `!` (not).
+- `http and ip.src == 10.0.0.5` : Shows HTTP traffic only from the host 10.0.0.5.
+- `dns and !(ip.addr == 8.8.8.8)` : Shows all DNS traffic that is not to or from Google's DNS (8.8.8.8). Useful for finding internal DNS servers.
+- `tcp.port == 80 or udp.port == 53` : Shows all web or DNS traffic.
+- `http.request and http.request.uri contains "admin"` : Finds all HTTP requests for admin pages.
+
+**A Note on Auto-completion:**
+Wireshark has fantastic auto-completion for its display filters. As you start typing a protocol or field name (like `tcp.f`), press `Ctrl+Space` to see a list of all available options. This is the best way to learn the vast filter language.
+
+Glossary for Topic 16:
+
+Display Filter: A powerful query language in Wireshark used to hide packets that do not meet specific criteria, allowing you to focus on relevant traffic.
+
+Filter Syntax: The grammar and rules for constructing a valid Wireshark display filter, using fields, comparison operators (==, !=, >, <), and logical operators (and, or, !).
+
+Field: A specific piece of data within a protocol, such as `ip.src` (IP source address) or `tcp.dstport` (TCP destination port).
+
+Logical Operator: A symbol that connects filter expressions. `and` means both conditions must be true. `or` means either condition can be true. `!` means "not", and reverses the condition.
+
+TCP Analysis Flags: Special Wireshark filter fields, like `tcp.analysis.retransmission`, that leverage Wireshark's deep packet inspection to flag common TCP problems.
+
+Hands-On Assignment for Topic 16:
+
+Your objective is to become fluent in the language of Wireshark filters by using them to interrogate a packet capture. We will use the same `http.cap` file from the previous topic.
+
+1.  **Open the http.cap file** in Wireshark.
+
+2.  **The Filter Drill**. Execute each of the following filters in order and document what you find. Write down how many packets are displayed and a brief description of what the filter achieved.
+
+    - **Filter 1:** `ip.addr == 145.254.160.237`
+      - *What does this do? How many packets?*
+
+    - **Filter 2:** `tcp.port == 80`
+      - *How does this result compare to Filter 1? Why?*
+
+    - **Filter 3:** `http`
+      - *How does this result compare to Filter 2? Why are they different? (Hint: TCP handshake packets are not HTTP).*
+
+    - **Filter 4:** `http.request.method == "GET"`
+      - *List the specific files that were requested using GET.*
+
+    - **Filter 5:** `http.request.method == "POST"`
+      - *Click on this packet and find the username and password in the Packet Details pane, just as you did before.*
+
+    - **Filter 6:** `http.response.code == 404`
+      - *Was there a "Not Found" error in this capture?*
+
+    - **Filter 7:** `tcp.flags.syn == 1`
+      - *How many SYN packets are there? Identify the three-way handshake for the main HTTP connection.*
+
+    - **Filter 8 (Combination):** `http and ip.src == 145.254.160.237`
+      - *This shows only HTTP packets sent *from* the server. What is the main type of packet shown? (Responses or requests?)*
+
+3.  **The Challenge Filter**: Create a single display filter that shows only TCP traffic that is *not* on port 80 and is *not* on port 443. This is useful for finding services running on non-standard ports.
+    - *Hint: You will need to use the `!` operator and the `and` operator.*
+    - *Your filter should look like: `tcp and !(tcp.port == 80) and ...`*
+
+By completing this drill, you are not just memorizing filters; you are understanding their logic and how they interact with the layered nature of network protocols. This skill is fundamental to efficient and effective security analysis.
+
+Are you ready to proceed to Topic 17: Introduction to Port Scanning & Enumeration?

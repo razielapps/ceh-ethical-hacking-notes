@@ -1,0 +1,105 @@
+Of course. Now we will take the deep theoretical knowledge of port scanning and packet crafting and apply it using the industry's standard tool: Nmap.
+
+Topic 19: Port Scanning and Enumeration with Nmap
+
+Nmap, which stands for Network Mapper, is the undisputed king of port scanners. It is the tool that translates the theory of TCP flags and port states into a powerful, scriptable, and comprehensive reconnaissance engine. While we can craft packets manually with Scapy, Nmap is the workhorse that performs these tasks efficiently at scale, with a vast array of techniques and a powerful scripting engine for service enumeration.
+
+Think of Nmap as a full-spectrum radar system for a network. A simple ping sweep is like a long-range radar detecting if a ship (host) is there. A port scan is like a closer-range scan that maps out the ship's superstructure (open ports). Service version detection is like using high-powered optics to identify the specific model of radar and weapons on that ship. Nmap does all of this.
+
+Let's break down the core functionality:
+
+**Host Discovery: Is the target alive?**
+Before scanning ports, you need to know which hosts are up. Nmap offers several methods:
+- `-sn`: The "ping scan". It doesn't scan ports, it just discovers hosts. It uses a combination of ICMP echo requests, TCP SYN to port 443, TCP ACK to port 80, and ARP requests (on local networks) to determine if a host is online. This is your first command in any network assessment.
+
+**Port Scanning: How does it work?**
+Nmap implements all the scan types we discussed theoretically. You specify them with command-line flags:
+- `-sS`: TCP SYN scan (default, fast and stealthy).
+- `-sT`: TCP Connect scan (used if raw packet privileges are unavailable).
+- `-sU`: UDP scan (slow but essential for discovering DNS, SNMP, DHCP services).
+- `-sN`, `-sF`, `-sX`: Stealth scans (NULL, FIN, Xmas) for firewall evasion.
+
+You also control which ports are scanned:
+- `-p 80`: Scan only port 80.
+- `-p 1-1000`: Scan ports 1 through 1000.
+- `-p-`: Scan all 65,535 ports.
+- `-F`: Fast mode, scan the 100 most common ports.
+
+**Service and Version Detection: What is running?**
+This is where Nmap moves from simple scanning to true enumeration.
+- `-sV`: This flag enables version detection. Nmap doesn't just see that port 22 is open; it connects to it, analyzes the banner, and often can tell you "OpenSSH 8.2p1 Ubuntu 4ubuntu0.5". This information is the direct input for your vulnerability research.
+
+**OS Fingerprinting: What is the underlying operating system?**
+- `-O`: This enables OS detection. Nmap uses TCP/IP stack fingerprinting, sending a series of subtle probes and analyzing the responses to guess the host's operating system (e.g., Linux 3.2 - 4.9, Windows 10).
+
+**Nmap Scripting Engine (NSE): The power of automation.**
+This is Nmap's superpower. The NSE allows you to use (or write) scripts to perform a wide array of network tasks automatically.
+- `--script default`: Runs a suite of safe, common scripts that often provide valuable info like SSH host keys or HTTP server titles.
+- `--script vuln`: Runs a suite of scripts that check for specific known vulnerabilities.
+- `--script http-enum`: A specific script that enumerates common web directories and files.
+
+A typical, comprehensive Nmap scan for a penetration test might look like this:
+`nmap -sS -sV -sC -O -p- -T4 [target]`
+- `-sS`: SYN scan for speed and stealth.
+- `-sV`: Service version detection.
+- `-sC`: Run default NSE scripts.
+- `-O`: OS detection.
+- `-p-`: Scan all ports.
+- `-T4`: Aggressive timing template for a faster scan.
+
+The output of Nmap is your roadmap. It tells you exactly which services to probe next. An open port 80 with Apache 2.4.41 tells you to look for Apache vulnerabilities and start web application testing. An open port 445 (SMB) on a Windows machine tells you to probe for eternal vulnerabilities or attempt to enumerate shares.
+
+Glossary for Topic 19:
+
+Nmap (Network Mapper): A free and open-source utility for network discovery and security auditing.
+
+Host Discovery: The process of determining which IP addresses on a network are associated with active hosts.
+
+SYN Scan (`-sS`): The default Nmap scan, a stealthy half-open scan that is fast and relatively quiet.
+
+Service Version Detection (`-sV`): An Nmap feature that probes open ports to determine the application name and version number.
+
+OS Fingerprinting (`-O`): An Nmap feature that uses TCP/IP stack differences to infer the remote operating system.
+
+Nmap Scripting Engine (NSE): A powerful part of Nmap that allows users to write (or use) scripts to automate a wide variety of networking tasks, from advanced discovery to vulnerability exploitation.
+
+Timing Template (`-T0` to `-T5`): Policies that control the speed and aggressiveness of an Nmap scan. `-T3` is normal, `-T4` is aggressive, `-T5` is insane.
+
+Hands-On Assignment for Topic 19:
+
+Your objective is to use Nmap to perform a comprehensive scan of a target, moving from simple discovery to deep enumeration.
+
+1.  **Host Discovery**:
+    - Scan a network range to find live hosts. Use your own lab network (e.g., 192.168.1.0/24).
+    - Command: `nmap -sn 192.168.1.0/24`
+    - Document the IP addresses of the live hosts you find. Choose one as your primary target for the next steps.
+
+2.  **Fast TCP Scan**:
+    - Perform a fast SYN scan on the top 1000 ports of your target.
+    - Command: `nmap -sS -F -T4 [target_ip]`
+    - Document the open ports. How many did you find?
+
+3.  **Comprehensive TCP Scan with Service Detection**:
+    - Now, perform a deep scan on all TCP ports, enabling service and version detection.
+    - Command: `nmap -sS -sV -p- -T4 [target_ip]`
+    - This will take much longer. Be patient.
+    - Document the results. For each open port, note the service and version. Did you find any more ports than the fast scan?
+
+4.  **Run NSE Scripts**:
+    - Run the default safe scripts against your target to gather even more intelligence.
+    - Command: `nmap -sC [target_ip]`
+    - Document any new information these scripts provide (e.g., SSH key type, HTTP server title, SMB share names).
+
+5.  **UDP Scan**:
+    - UDP scans are slow. Let's target just a few common, important UDP ports.
+    - Command: `nmap -sU -p 53,67,68,69,123,161 [target_ip]`
+    - Document the state of these ports. Is DNS (53) or SNMP (161) open?
+
+6.  **Output to File**:
+    - A professional always saves their results. Use Nmap's output formats.
+    - Command: `nmap -sS -sV -sC -oA my_scan_report [target_ip]`
+    - This creates three files: `my_scan_report.nmap` (human-readable), `my_scan_report.xml` (machine-readable), and `my_scan_report.gnmap` (grepable).
+
+Compile all your findings into a single report. This Nmap report is one of the most critical deliverables in the initial phases of a penetration test. It provides a concrete, evidence-based list of attack vectors.
+
+Are you ready to proceed to Topic 20: Intro to Enumeration?

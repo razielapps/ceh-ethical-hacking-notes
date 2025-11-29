@@ -1,0 +1,99 @@
+Of course. Having learned how to break into systems, it is now imperative to learn how to build the defenses that make it difficult.
+
+Topic 37: Mitigations (System Hacking)
+
+System hacking is the offensive side of the coin. Mitigations are the defensive blueprint. A robust security posture assumes that an attacker will eventually get a foothold and focuses on making it as difficult as possible for them to escalate privileges, move laterally, and achieve their objectives. The goal is to contain the breach and minimize damage.
+
+These mitigations are a layered, defense-in-depth strategy, addressing each stage of the system hacking lifecycle.
+
+**1. Mitigations Against Initial Access:**
+
+This is about reducing the attack surface and preventing the initial breach.
+- **Patch Management:** The single most effective mitigation. Regularly and promptly apply security patches for the operating system, applications, and firmware. This closes the specific vulnerabilities that exploits target. An automated patch management system is non-negotiable.
+- **Network Segmentation:** Divide the network into segments (subnets) and control the traffic between them with firewalls. A web server in a DMZ should not be able to directly talk to the domain controller on the internal network. This contains a breach.
+- **Hardening:** Remove or disable unnecessary services, software, and features. If a server doesn't need to run FTP, uninstall it. This reduces the number of potential entry points.
+- **Application Whitelisting:** Use tools like AppLocker (Windows) or a similar solution to only allow approved applications to run. This prevents malware and unauthorized tools from executing.
+- **User Training:** Conduct regular security awareness training to teach users to recognize phishing attempts and social engineering, which are primary vectors for initial access.
+
+**2. Mitigations Against Privilege Escalation:**
+
+The goal here is to ensure that even if an attacker gets in as a low-privilege user, they cannot become an administrator.
+- **Principle of Least Privilege (PoLP):** Users and applications should only have the minimum permissions necessary to perform their tasks. Standard users should never have local admin rights on their workstations.
+- **Regular Privileged Account Audits:** Regularly review user accounts, especially those in administrative groups. Remove unnecessary privileges.
+- **Protect Local Administrator Accounts:** Use different, complex passwords for local administrator accounts on each machine to prevent "Pass-the-Hash" attacks from moving laterally.
+- **Configure User Account Control (UAC)** on Windows to its highest setting to prompt for consent for any administrative task.
+- **Disable unnecessary SUID/SGID binaries** on Linux systems and audit those that are necessary.
+
+**3. Mitigations Against Persistence:**
+
+Prevent an attacker from easily coming back.
+- **Monitor and Restrict Autostart Locations:** Use tools and policies to monitor and control which programs are allowed to run at startup (Windows Registry Run keys, scheduled tasks, cron jobs, service installations).
+- **Endpoint Detection and Response (EDR):** Deploy EDR solutions that can detect and block known malicious behaviors, such as the creation of persistent backdoors or unusual service installations.
+- **Application Control:** As mentioned with whitelisting, preventing unauthorized executables from running will stop many persistence mechanisms.
+
+**4. Mitigations Against Covering Tracks (and General Detection):**
+
+Make it hard for an attacker to operate silently and ensure you can detect them if they do.
+- **Centralized Logging:** Send all system, application, and security logs to a centralized, secure log server (SIEM - Security Information and Event Management). This prevents an attacker from easily deleting all evidence and allows for correlation of events across the network.
+- **File Integrity Monitoring (FIM):** Use tools to monitor critical system files and configuration for unauthorized changes. If a system binary is replaced, an alert is triggered.
+- **Implement Strong Log Retention Policies:** Keep logs for a sufficient period (often mandated by compliance standards) to allow for forensic investigation after an incident.
+
+**5. Foundational Security Controls:**
+
+- **Antivirus / Anti-Malware:** While not sufficient on its own, it is a necessary baseline defense against known threats.
+- **Multi-Factor Authentication (MFA):** Enforce MFA everywhere possible, especially for remote access (VPN) and administrative accounts. This is a critical control that can stop an attack even if passwords are compromised.
+- **Encryption:** Use full-disk encryption (e.g., BitLocker on Windows, LUKS on Linux) to protect data at rest. If a device is stolen, the data remains inaccessible.
+
+The philosophy behind these mitigations is to create a resilient environment where a single failure does not lead to a catastrophic breach. It forces the attacker to overcome multiple, independent layers of security, increasing their chances of being detected and stopped.
+
+Glossary for Topic 37:
+
+Mitigation: A security control, measure, or action taken to reduce the likelihood or impact of a security threat.
+
+Defense-in-Depth: A layered approach to security that uses multiple, diverse controls to protect an asset. If one layer fails, another may stop the attack.
+
+Patch Management: The process of distributing and applying software updates to address security vulnerabilities.
+
+Principle of Least Privilege (PoLP): The security concept of providing a user or process with only the minimum levels of access—or permissions—needed to perform its function.
+
+Network Segmentation: The act of splitting a network into sub-networks, each being a network segment, to improve security and performance.
+
+Endpoint Detection and Response (EDR): A cybersecurity solution that continuously monitors end-user devices to detect and respond to cyber threats like ransomware and malware.
+
+SIEM (Security Information and Event Management): A solution that provides real-time analysis of security alerts generated by applications and network hardware.
+
+File Integrity Monitoring (FIM): A security process that monitors and detects changes to critical system files and notifies when such changes occur.
+
+Hands-On Assignment for Topic 37:
+
+Your objective is to think like a defender and design a mitigation strategy for a hypothetical small company's primary file server.
+
+1.  **Asset Profiling and Hardening:**
+    - The server is a Linux machine running Samba for file sharing and SSH for remote administration.
+    - List three specific hardening actions you would take.
+        - Example 1: "Disable SSH password authentication and enforce key-based authentication only."
+        - Example 2: "Configure the Samba share permissions to grant read/write access only to specific, required user groups, not 'everyone'."
+
+2.  **Patch Management Policy:**
+    - Draft a simple patch management policy for the company.
+    - It should answer: How often are patches applied? (e.g., "Critical security patches are applied within 72 hours of release."). Who is responsible? What is the process for testing patches?
+
+3.  **Detecting an Attack:**
+    - An attacker has gained a shell on the server as a low-privilege user and is attempting to escalate privileges by searching for SUID files.
+    - What Linux command would they run? (`find / -perm -u=s -type f 2>/dev/null`)
+    - As a defender, how could you potentially detect this activity? (Hint: Think about logging and command auditing).
+
+4.  **Implementing Least Privilege:**
+    - A user, "john", needs to run a specific backup script that requires root privileges to access all files.
+    - What is a more secure alternative to giving John the root password or adding him to the `sudoers` file with full access?
+    - Answer: "Configure the `sudoers` file to allow John to run *only* that specific backup script as root, without a password, using the command `sudo visudo` and adding the line: `john ALL=(root) NOPASSWD: /usr/local/bin/backup.sh`"
+
+5.  **Layered Defense Design:**
+    - Create a simple diagram (in text) showing three layers of defense for the server.
+    - **Layer 1 (Network):** Firewall blocking all ports except 22 (SSH) and 445 (SMB).
+    - **Layer 2 (Host):** The server itself is hardened, has EDR installed, and logs are sent to a SIEM.
+    - **Layer 3 (Application/Data):** Samba shares are configured with least privilege, and sensitive files are encrypted.
+
+This assignment completes the offensive-defensive cycle. You are no longer just a hacker; you are a security architect who understands how to build systems that can resist the very attacks you know how to perform.
+
+Are you ready to proceed to Topic 38: Introduction to Server Hacking?

@@ -1,0 +1,92 @@
+Of course. A true security professional doesn't just know how to break in; they know how to build defenses that are difficult to break. Let's discuss how to protect against the very attacks we've been practicing.
+
+Topic 31: Mitigations (Password Hacking)
+
+We have spent considerable time understanding the attacker's perspective on passwords. Now, we must flip the script. The goal of any security program is not to create uncrackable passwords—that's often impossible for users—but to create a system that remains secure *even if* an attacker obtains the password hashes or is able to make online login attempts. The mitigations are a defense-in-depth strategy, creating multiple layers of obstacles for the attacker.
+
+Here are the critical mitigations, explained from a defender's and policy maker's viewpoint:
+
+1.  **Implement Strong Password Policies (But Be Smart About It):**
+    For years, the standard advice was "complexity": require uppercase, lowercase, numbers, and symbols. However, this often leads to predictable patterns like "Password1!". The modern guidance from NIST (National Institute of Standards and Technology) emphasizes **password length** over complexity.
+    - **Mitigation:** Enforce a *minimum length of 12-15 characters*. A long passphrase like `correct-horse-battery-staple` is both strong and easier to remember than a complex but short password like `P@ssw0rd!`.
+    - **Block Common Passwords:** Maintain and check new passwords against a database of the top 100,000 or million worst passwords (like the `rockyou.txt` list) to prevent users from choosing known-bad passwords.
+
+2.  **Use Strong, Adaptive, and Salted Hashing Algorithms:**
+    This is the most critical technical defense against offline cracking.
+    - **Salted Hashes:** As discussed, a salt is a unique, random value added to each password before hashing. This ensures that two users with the same password will have different hashes, defeating rainbow table attacks and making cracking a single hash a unique effort.
+    - **Adaptive Hashes:** Use *slow* hashing functions like **bcrypt, Argon2, or PBKDF2**. These algorithms are designed to be computationally expensive and memory-intensive, dramatically slowing down an attacker's cracking speed. While a system only needs to hash a password once during login, a cracker must do it billions of times. Making each hash take 0.1 seconds instead of 0.0000001 seconds increases the cracking time from days to centuries.
+
+3.  **Enforce Multi-Factor Authentication (MFA):**
+    This is the single most effective mitigation against password-based attacks. MFA requires a user to present two or more separate forms of evidence (factors) to authenticate.
+    - **Factors are:**
+        - Something you know (a password)
+        - Something you have (a smartphone with an authenticator app, a hardware token)
+        - Something you are (a fingerprint, facial recognition)
+    - **Mitigation:** Enforce MFA, especially for administrative accounts, remote access (VPN), and access to sensitive data. Even if an attacker cracks a user's password, they cannot log in without possessing the user's physical token or device.
+
+4.  **Implement Account Lockout and Monitoring Policies:**
+    These defenses are targeted at *online* password attacks like brute-forcing and password spraying.
+    - **Account Lockout:** Temporarily lock an account after a small number of consecutive failed login attempts (e.g., 5-10). This cripples traditional online brute-force attacks.
+    - **Progressive Delays:** Instead of a hard lockout, implement a system that introduces a time delay between login attempts after each failure. This slows down an attacker without fully locking out a legitimate user who is mistyping.
+    - **Alerting:** Monitor authentication logs for patterns that indicate an attack, such as a single account having many failed logins (brute-force) or many accounts having a single failed login from the same IP address (password spraying).
+
+5.  **Conduct Regular Security Awareness Training:**
+    Humans are the weakest link. Training is essential.
+    - **Teach Password Hygiene:** Educate users on creating strong passphrases and never reusing passwords across work and personal accounts.
+    - **Phishing Awareness:** Train users to recognize phishing emails designed to steal their credentials. A strong password is useless if a user willingly gives it to an attacker.
+
+6.  **Proactive Defense: Penetration Testing and Vulnerability Scanning:**
+    The best way to know if your defenses are working is to test them.
+    - **Mitigation:** Regularly hire ethical hackers to perform penetration tests, including password cracking attacks against your own password hashes (if obtained). This will show you exactly how resilient your password policies and hashing implementations are in practice.
+
+By implementing these layers, an organization can build a robust defense. Even if one layer fails (e.g., a password is cracked), the next layer (e.g., MFA) can prevent a full breach.
+
+Glossary for Topic 31:
+
+Mitigation: An action taken to reduce the severity or impact of a security threat.
+
+Password Policy: A set of rules designed to enhance computer security by encouraging users to create and use strong passwords.
+
+Salted Hash: A password hash that includes a random value (the salt) unique to each user, making pre-computed rainbow table attacks ineffective.
+
+Adaptive Hash: A deliberately slow hashing function (like bcrypt) that is resistant to brute-force attacks by requiring significant computational resources.
+
+MFA (Multi-Factor Authentication): A security system that requires more than one method of authentication from independent categories of credentials to verify the user's identity.
+
+Account Lockout: A security feature that disables an account after a specified number of failed login attempts.
+
+NIST (National Institute of Standards and Technology): A US government agency that develops cybersecurity standards and guidelines, including modern password policies.
+
+Passphrase: A long, memorable sequence of words that is used as a password, often stronger than a short, complex password.
+
+Hands-On Assignment for Topic 31:
+
+Your objective is to think like a defender and design a password security policy for a hypothetical company.
+
+1.  **Design a Password Policy**:
+    - Create a one-page password policy document for "ABC FinTech".
+    - It must include the following rules, written in clear language for employees:
+        - Minimum password length.
+        - A rule about password complexity (or lack thereof, following NIST guidance).
+        - A rule against password reuse (e.g., cannot be similar to the last 5 passwords).
+        - How often passwords must be changed (or if they don't expire, which is the newer NIST recommendation).
+        - A requirement to use a password manager.
+
+2.  **Technical Control Specification**:
+    - Write a technical specification for the IT team to implement. This should be in bullet points.
+        - **Hashing Algorithm:** Specify which adaptive hashing algorithm should be used to store passwords in the database (e.g., bcrypt with a cost factor of 12).
+        - **Account Lockout:** Specify the lockout policy (e.g., "Lock account for 30 minutes after 5 failed attempts in 10 minutes").
+        - **MFA:** Specify which groups of users or systems require mandatory MFA (e.g., "All users accessing the VPN or cloud email must use MFA").
+
+3.  **Attack and Defend Analysis**:
+    - Revisit the `target_hashes.txt` file you created. Imagine these are unsalted MD5 hashes from a database you are auditing.
+    - **Question 1:** What is the primary weakness of using unsalted MD5 for password storage?
+    - **Question 2:** If you could force a change to one of the mitigations listed above (hashing, MFA, lockout), which one would have the biggest impact on protecting these credentials? Justify your answer.
+
+4.  **MFA Implementation Plan**:
+    - Research one popular MFA solution (e.g., Google Authenticator, Microsoft Authenticator, YubiKey).
+    - Write a brief paragraph explaining how it works from a user's perspective. For example: "A user enables MFA in their account settings. When they log in with their password, a prompt appears asking for a time-based one-time code. The user opens the Authenticator app on their phone, which displays a 6-digit code that changes every 30 seconds. They enter this code to complete the login."
+
+This assignment completes the cycle. You have learned to attack passwords, and now you have designed the defenses to stop those attacks. This holistic understanding is what makes you a valuable security professional, capable of both finding flaws and prescribing solutions.
+
+Are you ready to proceed to Topic 32: Introduction to System Hacking?

@@ -1,0 +1,51 @@
+Of course. Now that we understand what a session is, let's explore the various ways an attacker can steal and misuse it. This is where theory meets the attacker's methodology.
+
+***
+
+Topic 70: Session Hijacking Techniques
+
+Imagine you have that secure bank visitor badge. An attacker wants it. They wouldn't just walk up and grab it from your shirt. They would use stealth, trickery, or force depending on the situation. Session hijacking techniques are the digital equivalents of these methods.
+
+We can group these techniques into a few main categories.
+
+First, let's talk about Session Sniffing. This is the digital eavesdropping method. If the communication between your browser and the web server is not encrypted, meaning it's using HTTP instead of HTTPS, all the data travels across the network in plain text. This includes your session ID cookie. An attacker on the same network as you, like on a public Wi-Fi, can use a packet sniffer like Wireshark to capture all this traffic. They can then simply look through the captured data, find the packet containing your cookie header, and extract your session ID. It's like someone listening to every word you say on an unsecured phone line and writing down your badge number when you say it. This is why HTTPS, which encrypts the connection, is absolutely non-negotiable for any website that uses login.
+
+Next, we have a very common and dangerous web application flaw used for hijacking: Cross-Site Scripting, or XSS. In an XSS attack, the attacker manages to inject a malicious script into a web page that is then served to other users. Imagine if the bank had a public bulletin board where you could pin notes, and the security guard would read them out loud. An attacker pins a note that says, "Security Policy Update: Please read your badge number aloud to verify it." This is what XSS does. The malicious script, now running in your browser, can access your cookies for that website. It can then send your session ID cookie directly to a server controlled by the attacker. The attacker never needs to be on your network; they just need you to visit a vulnerable page while logged in.
+
+Another technique is Session Prediction. This attacks the first step of session management: the generation of the Session ID. What if the session IDs are not random? What if they are based on the time, or a simple counter, or a predictable algorithm? If an attacker can observe a few session IDs and figure out the pattern, they can calculate what the next valid session ID will be and use it to impersonate another user. It's like if the bank's visitor badges were just sequential numbers. If you see someone with badge 101, you can confidently assume you can use badge 102.
+
+Then there is a more active server-side attack called Session Fixation. In this attack, the attacker does not steal an existing session; they force a user to use a session ID that the attacker already knows. Here is how it works. The attacker first visits the website and obtains a valid session ID, perhaps by just clicking login and getting a cookie. They then trick the victim into using this same session ID. This could be done by sending the victim a special link that sets the session ID as a parameter in the URL. The victim clicks the link, arrives at the site, and logs in. The server, seeing the known session ID, simply updates the session state from unauthenticated to authenticated. The attacker, who has been watching that session ID, now sees that it has become a logged-in session belonging to the victim. They can then use it. It's like the attacker creating a fake visitor badge at the bank and then tricking you into wearing it. When the bank verifies your identity and stamps the badge as valid, the attacker can use a copy of that same badge to get in.
+
+We also have Client-Side Attacks. If an attacker can install malware on your computer, that malware can directly read the browser's memory or its cookie storage files to extract active session IDs. This is a direct theft from the source.
+
+Finally, there is a Man-in-the-Browser attack. This is where a malicious extension or browser malware intercepts and modifies the web traffic within the browser itself, before it's even encrypted. It can steal session IDs and much more, and it's very hard to detect.
+
+For the CEH exam and for your practical work, you need to know how to test for these vulnerabilities. For sniffing, you check if the site uses HTTPS everywhere. For XSS, you test every input field for script injection. For prediction, you gather multiple session IDs and look for patterns. For fixation, you see if the application accepts a session ID from the URL and if it issues a new one upon login.
+
+Hands-On Assignment for Topic 70
+
+Using your lab and bWAPP, you can practice some of these concepts. bWAPP has specific exercises for them.
+
+1.  Session Sniffing Simulation: In bWAPP, there is a scenario for this. Navigate to a module like "SSL Bugs" or "Server-Side Includes (SSI) Injection" which might be served over HTTP. Use OWASP ZAP as your proxy. Perform a action and in ZAP, look at the history of requests. Find the request that contains your Cookie header. Since this is likely in a lab over HTTP, you will see the cookie in plain text in the request. This simulates what a sniffer would see.
+
+2.  Cross-Site Scripting (XSS) to Steal a Cookie: This is a core exercise in bWAPP. Go to the XSS - Reflected (GET) module. In the input field, instead of your name, try a basic XSS payload designed to display your cookie. For example: <script>alert(document.cookie)</script>. If it works, an alert box pops up with your session ID. Now, imagine instead of showing it to you, the script sent it to an attacker's server. This demonstrates how XSS can be used for session hijacking.
+
+3.  Session Fixation: bWAPP has a specific "Session Fixation" module. Follow the instructions. It will likely show you a session ID in the URL. Log in using that link. Then, as the attacker, try to access a protected page using that same session ID from the URL in a different browser. You should see that you are now logged in as the victim.
+
+Glossary for Topic 70
+
+Session Sniffing: The passive interception of network traffic to capture an unencrypted session ID. It is wiretapping a phone call to hear a secret code.
+
+Cross-Site Scripting (XSS): A vulnerability that allows an attacker to inject malicious scripts into web pages viewed by other users. These scripts can steal session cookies from the user's browser.
+
+Session Prediction: An attack where an attacker guesses or calculates a valid session ID because the application uses a predictable method to generate them.
+
+Session Fixation: An attack where an attacker forces a user to authenticate using a session ID known to the attacker. This allows the attacker to hijack the user's session after they log in.
+
+Man-in-the-Browser (MitB): A Trojan infection that targets a web browser. Once installed, it can intercept and modify communications between the browser and the web server, including stealing session IDs.
+
+Packet Sniffer: A software tool that captures and analyzes all data packets traveling over a network. It is used for legitimate network analysis but also for malicious eavesdropping.
+
+***
+
+Are you ready to move to a massive and critical web vulnerability, Topic 71: Introduction to SQL Injection? This is one of the most dangerous and common attacks you will encounter.

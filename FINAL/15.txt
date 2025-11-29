@@ -1,0 +1,84 @@
+Of course. Let's move from simply viewing packets to actively analyzing them like a professional.
+
+Topic 15: Analyzing Packets with Wireshark
+
+Capturing packets is only the first step. The real skill, the art of the network analyst, lies in making sense of the flood of data. Analyzing packets with Wireshark is a process of asking the right questions and using the tool's powerful features to find the answers. You are a digital detective, and the packet capture is your crime scene. Your job is to reconstruct events, find the anomaly, and uncover the truth.
+
+The process is rarely linear. You will follow leads, hit dead ends, and circle back. Here is a structured methodology for effective analysis:
+
+1.  **Start with the End in Mind**: What is your goal? Are you looking for a specific conversation? Trying to find why a website is slow? Hunting for malicious traffic? Your goal dictates your entire approach.
+
+2.  **Get an Overview**: When you first open a capture file, don't dive into the first packet. Look at the big picture.
+    - Check the **Statistics** menu. Go to **Conversations**. This tab is a goldmine. It shows you all the "conversations" between hosts, sorted by protocol (Ethernet, IPv4, IPv6, TCP, UDP). You can quickly see which hosts are talking the most, and on which ports. A single internal host having thousands of connections to an external IP on a strange port is a massive red flag.
+    - Look at the **Protocol Hierarchy** (Statistics -> Protocol Hierarchy). This shows you the breakdown of traffic by protocol. If you are analyzing a web server, you expect to see mostly HTTP/HTTPS and TCP. If you see a significant amount of an unexpected protocol, like IRC or a custom protocol, it warrants investigation.
+
+3.  **Use Display Filters Intelligently**: This is your primary tool for slicing and dicing the data. Start broad and then narrow down.
+    - To focus on a specific host: `ip.addr == 192.168.1.100`
+    - To see traffic between two hosts: `ip.addr == 192.168.1.100 and ip.addr == 10.0.0.5`
+    - To isolate a specific protocol and port: `tcp.port == 443`
+    - To find failed connections: `tcp.flags.reset == 1`
+    - To look for clear-text passwords: `http.request.method == "POST"` and then look at the packet details for the `HTML Form URL-Encoded` section, which often contains `username` and `password` fields.
+
+4.  **Follow the Streams**: As you saw in the last topic, the "Follow TCP Stream" feature is indispensable. It reassembles the entire application-layer conversation into a readable format. This is how you read the actual text of an HTTP session, an SMTP email exchange, or an FTP file transfer. It abstracts away the underlying TCP sequence numbers and acknowledgments, letting you focus on the content.
+
+5.  **Use Coloring Rules**: Wireshark comes with built-in coloring rules to highlight certain types of traffic. For example, packets with TCP errors might be black with red background. You can also create your own rules. Go to **View -> Coloring Rules**. You could create a rule to color all DNS traffic light blue, making it easy to spot, or color all HTTP `POST` requests in yellow to quickly find data being sent to a server.
+
+6.  **Look for Patterns and Anomalies**: This is where your knowledge of protocols pays off.
+    - **Time Columns**: Add the "Delta Time" column (right-click the column header -> Column Preferences -> Add "Delta Time") to see the time between packets. A large gap might indicate a problem.
+    - **Excessive Retransmissions**: If you see the same TCP sequence number repeated, it means a packet was lost and is being retransmitted. This indicates network problems.
+    - **Unusual Ports**: Traffic on non-standard ports, especially high-numbered ports, can be a sign of malware or a backdoor.
+    - **DNS Anomalies**: A host making repeated DNS queries for random, nonsensical subdomains (e.g., `fj39fjw9.example.com`) could be infected with malware that uses Domain Generation Algorithms (DGA) to find its command and control server.
+
+7.  **Expert Information**: Wireshark has a built-in "expert" system that can flag potential issues for you. Go to **Analyze -> Expert Information**. This will show you a tabbed view of Errors, Warnings, Notes, and Chats. It can quickly point you to things like connection resets, duplicate ACKs, and malformed packets.
+
+A practical example for a penetration tester: You've captured traffic during a test. You want to see if any passwords were sent in plaintext.
+- Step 1: Apply a filter for HTTP POST requests: `http.request.method == "POST"`
+- Step 2: Look through the filtered packets. When you find one, click on it.
+- Step 3: In the Packet Details pane, expand the "Hypertext Transfer Protocol" section and then look for a line called "HTML Form URL-Encoded". If you see it, expand it. You will likely see the `username` and `password` fields in plain text.
+- Step 4: Right-click the packet and "Follow -> TCP Stream" to see the entire login process in context.
+
+Glossary for Topic 15:
+
+Packet Analysis: The process of interpreting captured network traffic to understand network behavior, troubleshoot problems, or investigate security incidents.
+
+Conversations View: A Wireshark statistics window that groups traffic by the pairs of communicating hosts, providing a high-level overview of who is talking to whom.
+
+Protocol Hierarchy: A Wireshark statistics window that shows the percentage of traffic for each protocol type in the capture.
+
+Coloring Rules: User-defined or built-in rules that color packets in the packet list based on specific criteria, allowing for quick visual identification.
+
+Expert Information: A Wireshark feature that provides a consolidated view of errors, warnings, and other notable events found in the capture.
+
+Delta Time: The time difference between the current packet and the previous packet in the capture.
+
+Retransmission: When a TCP packet is sent again because the sender did not receive an acknowledgment that the original was received, indicating potential network congestion or failure.
+
+Hands-On Assignment for Topic 15:
+
+Your objective is to analyze a packet capture to solve a mystery. You will use a pre-made capture file from the Wireshark wiki. This is a classic exercise.
+
+1.  **Download a Sample Capture**:
+    - Go to the Wireshark Sample Captures page: `https://wiki.wireshark.org/SampleCaptures`
+    - Find and download the capture file for "http.cap". This is a simple HTTP communication.
+
+2.  **Open and Analyze the Capture**:
+    - Open the `http.cap` file in Wireshark.
+    - Your first goal: **What is the password the user submitted to the website?**
+
+3.  **Follow the Detective Process**:
+    - **Step 1: Overview**. Look at the Protocol Hierarchy (Statistics -> Protocol Hierarchy). What is the dominant protocol?
+    - **Step 2: Filter**. Since it's a web login, filter for HTTP POST requests: `http.request.method == "POST"`
+    - **Step 3: Inspect**. Click on the POST request packet. In the Packet Details pane, expand the "Hypertext Transfer Protocol" section and then the "HTML Form URL-Encoded" section. What do you see? You should find the username and password in plain text. Document them.
+
+4.  **Dig Deeper with a Stream**:
+    - Right-click the same POST packet and select **Follow -> HTTP Stream**. This is a specialized version of "Follow TCP Stream" for HTTP. It shows you the entire HTTP conversation related to this request, including the server's response. Did the login succeed? What was the server's response code (e.g., 200 OK, 302 Found)?
+
+5.  **Investigate the Network Conversation**:
+    - Clear your filter. Now, let's see the whole picture. Go to **Statistics -> Conversations**. Click on the "IPv4" tab.
+    - Identify the two main IP addresses having the conversation. One is the client, one is the server.
+    - Now, filter the main view to show just their conversation: `ip.addr == [Client_IP] and ip.addr == [Server_IP]`
+    - Scroll through the capture. Can you see the initial TCP three-way handshake? Can you see the DNS query that resolved the server's name before the HTTP connection started? (Hint: look for DNS packets at the very beginning).
+
+By completing this assignment, you have performed a real-world analysis task. You located sensitive data (a password), verified the outcome of an action (the login), and mapped the entire network conversation from start to finish. This is the core workflow of a security analyst.
+
+Are you ready to proceed to Topic 16: Important Wireshark Filters?

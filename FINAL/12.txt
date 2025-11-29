@@ -1,0 +1,85 @@
+Of course. To truly master sniffing and understand the conversations you're capturing, you need to understand the language of the internet. That language is built on protocols, and one of the most fundamental is TCP.
+
+Topic 12: TCP Flags
+
+Imagine you are sending a very long, important letter to a friend, but you can only use postcards. You would have to break the letter down into many postcards, number them so your friend can reassemble them, and you'd need a way to confirm that each postcard was received. This is essentially what the Transmission Control Protocol (TCP) does for data on the internet. It provides reliable, ordered, and error-checked delivery of a stream of data.
+
+But how does it manage this complex conversation? It uses a system of control messages, and at the heart of this system are TCP Flags. These are single-bit signals within the TCP header that control the state of a connection. They are like the traffic signals and turn signals of a network conversation, telling the other computer how to interpret the data being sent.
+
+Think of a TCP connection like a phone call. The flags are the specific words and tones you use to manage the call: "Hello?" to start, "Okay, go ahead" to continue, and "Goodbye" to end.
+
+There are six primary TCP flags you must know:
+
+1.  **SYN (Synchronize)**: This is the "Hello" of the digital world. The `SYN` flag is set on the very first packet sent to initiate a new connection. It's like picking up the phone and saying "Hello, I'd like to talk." Its job is to synchronize sequence numbers between the two devices, which is how they keep the postcards in order.
+
+2.  **ACK (Acknowledgment)**: This is the "I got it" signal. The `ACK` flag is set to acknowledge that a packet, or a series of packets, has been successfully received. Almost every packet after the initial `SYN` will have the `ACK` flag set. It's the fundamental mechanism for ensuring reliable delivery. If you send postcard number 3 and don't get an "ACK" for it, you know you need to send it again.
+
+3.  **FIN (Finish)**: This is the polite "Goodbye." When a device is done sending data, it sets the `FIN` flag to gracefully close its side of the connection. It's like saying, "I have nothing more to say." The other side will `ACK` the `FIN` and then can send its own `FIN` when it is also done. This results in a clean, four-way termination of the conversation.
+
+4.  **RST (Reset)**: This is the "Stop talking to me!" signal. The `RST` flag is used to abruptly reset a connection. This happens when a device receives a packet for a connection it doesn't recognize, or if a service crashes, or if a host wants to immediately reject a connection attempt. It's not polite like `FIN`; it's a hard, immediate shutdown. Imagine hanging up the phone suddenly in the middle of a sentence.
+
+5.  **PSH (Push)**: This flag tells the receiving operating system to "push" the received data immediately to the application, rather than buffering it and waiting for more. For example, when you type a command in a terminal over SSH, each keystroke is often sent with the `PSH` flag to ensure it appears on the screen instantly, instead of being delayed in a buffer.
+
+6.  **URG (Urgent)**: This is a rarely used flag that indicates that certain data in the packet is "urgent" and should be processed ahead of other data. The TCP header has an "Urgent Pointer" field that points to the end of the urgent data. It's like marking a part of your letter with "URGENT: READ THIS FIRST."
+
+These flags are almost never used alone. They are combined to perform specific actions. The most common combinations are:
+- **SYN**: A connection request.
+- **SYN-ACK**: The response to a connection request. It means, "I acknowledge your SYN and here's my own SYN to synchronize things from my end."
+- **ACK**: Standard packet acknowledging received data.
+- **FIN-ACK**: A graceful connection termination. "I'm done sending (FIN), and this also acknowledges your last packet (ACK)."
+- **RST-ACK**: A reset that also acknowledges a sequence number.
+
+As a hacker, analyzing TCP flags in Wireshark is crucial. A flood of `SYN` packets to a single port is a sign of a SYN flood Denial-of-Service attack. A `RST` packet from a server in response to your connection attempt might mean a firewall is actively blocking you. Understanding this language allows you to diagnose network problems, identify attacks, and craft your own custom packets.
+
+Glossary for Topic 12:
+
+TCP (Transmission Control Protocol): A core protocol of the Internet protocol suite that provides reliable, ordered, and error-checked delivery of a stream of data.
+
+TCP Flags: Single-bit indicators in the TCP header used to control the state of a connection.
+
+SYN (Synchronize): The flag used to initiate a new TCP connection.
+
+ACK (Acknowledgment): The flag used to acknowledge the receipt of packets.
+
+FIN (Finish): The flag used to gracefully close a connection.
+
+RST (Reset): The flag used to immediately abort a connection.
+
+PSH (Push): The flag that requests the immediate delivery of data to the application.
+
+URG (Urgent): The flag that indicates that certain data should be prioritized.
+
+TCP Header: The part of a TCP packet that contains control information, including source/destination ports, sequence numbers, and the flags.
+
+Hands-On Assignment for Topic 12:
+
+Your objective is to use Wireshark to capture a real TCP conversation and identify the flags used in each stage.
+
+1.  **Start a Capture**: Open Wireshark and start capturing on your active network interface.
+
+2.  **Generate a Simple TCP Connection**: In your terminal, use a command that creates a simple, clean TCP connection. The `telnet` command is perfect for this, as it uses plain TCP. Let's try to connect to a web server on port 80 (HTTP).
+    - Command: `telnet example.com 80`
+    - If the connection is successful, you will see a blank screen. Type the letters `GET` and then press `Ctrl+C` to close the terminal. This creates an incomplete but valid HTTP request, which is fine for our purposes.
+
+3.  **Stop the Capture in Wireshark**.
+
+4.  **Analyze the TCP Three-Way Handshake**:
+    - In Wireshark, type `tcp.port == 80` in the filter bar and press Enter. This will show only the traffic related to your telnet session.
+    - Look at the first three packets. You should see:
+        - Packet 1: Your machine sends a packet to `example.com` with the `[SYN]` flag set.
+        - Packet 2: `example.com` responds with a packet that has the `[SYN, ACK]` flags set.
+        - Packet 3: Your machine sends a final packet with the `[ACK]` flag set.
+    - This is the TCP Three-Way Handshake. Click on each packet and in the middle pane, expand the "Transmission Control Protocol" section. You will see the flags listed, with the set flags checked.
+
+5.  **Find the Connection Teardown**:
+    - Scroll to the end of the conversation. When you pressed `Ctrl+C`, your machine should have given up on the connection.
+    - You will likely see your machine send a packet with the `[RST]` flag to abruptly reset the connection, since the session was not closed gracefully with a `FIN`.
+
+6.  **Create a Display Filter for Flags**:
+    - In the Wireshark filter bar, you can filter for specific flags. Try these filters one by one to see other traffic on your network:
+        - `tcp.flags.syn==1 and tcp.flags.ack==0` (Finds only SYN packets)
+        - `tcp.flags.rst==1` (Finds all RST packets)
+
+By completing this assignment, you move from just seeing packets to understanding the intent behind them. You can now look at a Wireshark capture and read the story of the connection: how it started, how data was acknowledged, and how it ended.
+
+Are you ready to proceed to Topic 13: TCP Three(3) Way Handshake?

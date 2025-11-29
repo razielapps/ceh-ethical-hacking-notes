@@ -1,0 +1,100 @@
+Of course. Let's move into the realm of the airwaves, where data flows invisibly, creating a vast and often vulnerable attack surface.
+
+Topic 47: Introduction to Hacking Wireless Networks
+
+Wireless networks have liberated us from cables, but they have also extended the battlefield for attackers beyond physical walls. The very nature of broadcasting data through the air means that anyone within range can potentially listen in, intercept, or attack the network. Hacking wireless networks involves understanding the protocols (like Wi-Fi), their inherent weaknesses, and the techniques to exploit them to gain unauthorized access.
+
+The primary target is the Wi-Fi network, which is governed by the IEEE 802.11 standards. The security of these networks has evolved over time, but legacy systems and misconfigurations are everywhere.
+
+**Key Wireless Security Protocols (from weakest to strongest):**
+
+- **WEP (Wired Equivalent Privacy):** The original security protocol. It is fundamentally broken and can be cracked in minutes with tools like `aircrack-ng`. It should never be used.
+- **WPA (Wi-Fi Protected Access):** Introduced as a temporary replacement for WEP. It uses TKIP (Temporal Key Integrity Protocol), which also has known vulnerabilities.
+- **WPA2 (Wi-Fi Protected Access 2):** The long-standing standard. It uses CCMP (Counter Mode Cipher Block Chaining Message Authentication Code Protocol) based on the strong AES encryption. It is secure against direct attacks, but is vulnerable to **KRACK (Key Reinstallation Attacks)** which targets the handshake process, and to brute-force attacks if a weak password is used.
+- **WPA3:** The latest standard, designed to fix the flaws in WPA2. It provides forward secrecy and protects against offline password cracking. However, it is not yet universally adopted.
+
+**The Core Workflow for Wireless Hacking:**
+
+The general process for assessing a Wi-Fi network's security follows these steps:
+
+1.  **Reconnaissance (Discovery):** Identifying all wireless networks and clients in the area. This is done by putting your wireless adapter into **monitor mode**. This special mode allows the card to see all wireless traffic passing through the air, not just traffic destined for your machine.
+    - **Primary Tool: `airodump-ng`**
+
+2.  **Packet Capture:** Once you've identified a target network, you capture data packets from that specific network. These packets are needed for the cracking process.
+    - **Primary Tool: `airodump-ng`** (used to capture the "4-way handshake").
+
+3.  **Exploitation / Attack:** This step depends on the target's security.
+    - **For WEP:** Use `aireplay-ng` to generate traffic and then `aircrack-ng` to crack the key.
+    - **For WPA/WPA2:** You need to capture the 4-way handshake (the process when a client connects to the network). Then, you can take this handshake file and perform an offline brute-force or dictionary attack to guess the password.
+    - **Deauthentication Attack:** To force a client to reconnect and thus capture a handshake, you send "deauth" packets, which forcibly disconnect a client from the access point. The client will then automatically try to reconnect, allowing you to capture the handshake.
+
+4.  **Cracking:** Once you have the necessary data (like the handshake for WPA/WPA2), you use a cracking tool like `aircrack-ng` or `hashcat` to test millions of passwords from a wordlist against the captured hash.
+
+**Prerequisites for Wireless Hacking:**
+
+- A wireless network adapter that supports **monitor mode** and **packet injection**. Not all Wi-Fi cards can do this. Common chipsets are from Atheros and Ralink.
+- The `aircrack-ng` suite installed on your Kali machine.
+- Physical proximity to the target network.
+
+For an ethical hacker, this skill is crucial for performing physical penetration tests and wireless security audits for clients. You can demonstrate how an attacker sitting in a parking lot or a nearby cafe could breach the corporate network.
+
+Glossary for Topic 47:
+
+Wireless Hacking: The process of exploiting security weaknesses in wireless networks to gain unauthorized access.
+
+Wi-Fi: A family of wireless network protocols based on the IEEE 802.11 family of standards.
+
+Monitor Mode: A mode for a wireless network interface controller that allows it to monitor all traffic received from the wireless network, not just the traffic addressed to it.
+
+4-Way Handshake: A process used in WPA/WPA2 to authenticate a client to an access point and derive a fresh encryption key.
+
+WPA2-PSK (Pre-Shared Key): The personal mode of WPA2, where a single password is used by all clients to connect to the network.
+
+Deauthentication Attack: An attack that sends deauthentication frames to disconnect a client from a wireless access point.
+
+Aircrack-ng: A complete suite of tools to assess Wi-Fi network security, including monitoring, attacking, testing, and cracking.
+
+Packet Injection: The ability to artificially create and send raw network packets onto the network, which is essential for many wireless attacks.
+
+Hands-On Assignment for Topic 47:
+
+Your objective is to familiarize yourself with the wireless hacking toolkit and process in your own lab environment. **You must only perform these steps on your own wireless network or a dedicated lab network you are authorized to test.**
+
+1.  **Identify Your Wireless Adapter:**
+    - Plug in your compatible USB Wi-Fi adapter.
+    - Run the command `iwconfig` in your Kali terminal. Identify your wireless interface name (e.g., `wlan0` or `wlan1`).
+
+2.  **Put the Adapter into Monitor Mode:**
+    - First, take the interface down: `sudo airmon-ng check kill`
+    - Then, start monitor mode: `sudo airmon-ng start wlan0` (replace `wlan0` with your interface).
+    - Run `iwconfig` again. Your interface name will likely change to something like `wlan0mon`. This is your monitor interface.
+
+3.  **Reconnaissance with `airodump-ng`:**
+    - Use `airodump-ng` to see all wireless networks in your area.
+    - Command: `sudo airodump-ng wlan0mon`
+    - Let it run for 30-60 seconds. You will see a list of BSSIDs (MAC addresses of access points), ESSIDs (network names), and channels.
+    - Identify your own lab network from the list. Note its BSSID and the channel it is on.
+
+4.  **Targeted Packet Capture:**
+    - Now, capture packets only from your target lab network.
+    - Command: `sudo airodump-ng -c [channel] --bssid [BSSID] -w capture wlan0mon`
+    - `-c [channel]`: The channel your target is on.
+    - `--bssid [BSSID]`: The MAC address of the target access point.
+    - `-w capture`: This will save the capture to files starting with "capture".
+    - This command will run and show you connected clients. Leave it running.
+
+5.  **Deauthentication Attack (To Capture a Handshake):**
+    - Open a second terminal window.
+    - To capture the WPA handshake, you need a client to reconnect. Force this by sending deauthentication packets.
+    - Command: `sudo aireplay-ng --deauth 10 -a [BSSID] wlan0mon`
+    - `--deauth 10`: Sends 10 deauthentication packets.
+    - `-a [BSSID]`: The target access point.
+    - Look at your first terminal window (where `airodump-ng` is running). In the top right, you should see a message: `[ WPA handshake: <BSSID>`. This means you have successfully captured the handshake.
+
+6.  **Stop the Capture:**
+    - Press `Ctrl+C` in the `airodump-ng` terminal to stop the capture.
+    - You will now have a file called `capture-01.cap`. This file contains the handshake.
+
+You have now completed the critical data-gathering phase for a WPA/WPA2 attack. In the next topic, we will use this `.cap` file to crack the password.
+
+Are you ready to proceed to Topic 48: Cracking WPA/WPA2 PSK Password?

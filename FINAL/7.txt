@@ -1,0 +1,89 @@
+Of course. Let's focus on a critical server that is often a prime target for attackers: the mail server.
+
+Topic 7: Mail Server Reconnaissance
+
+Email is the lifeblood of communication for nearly every organization. The servers that handle this communication, the mail servers, are therefore high-value targets. Compromising a mail server can lead to access to sensitive communications, password reset links, and a powerful foothold for further attacks like spear-phishing against other employees. Mail Server Reconnaissance is the process of probing these systems to understand their software, configuration, and potential weaknesses.
+
+From your DNS reconnaissance, you should already have a list of the target's mail servers by looking up the MX (Mail Exchange) records. For example, a query like `dig abc-fintech.com MX` might return `mail.abc-fintech.com` or a third-party service like `aspmx.l.google.com`. The goal now is to interact directly with these servers to gather intelligence.
+
+Mail servers operate using specific protocols. The main ones you will encounter are:
+- **SMTP (Simple Mail Transfer Protocol)**: Used for sending email. It typically runs on port 25, 587, or 465.
+- **IMAP (Internet Message Access Protocol)**: Used by email clients to retrieve messages from a server. It runs on port 143 or 993 (SSL/TLS).
+- **POP3 (Post Office Protocol version 3)**: An older protocol for retrieving email, running on port 110 or 995 (SSL/TLS).
+
+Our initial reconnaissance will focus heavily on the SMTP server because its primary job is to receive commands, making it very chatty and informative.
+
+Here are the key techniques for Mail Server Reconnaissance:
+
+1.  **SMTP Banner Grabbing**: Just like a web server, an SMTP server presents a banner when you connect to it. This banner often reveals the software and version. You can connect to the SMTP server using a simple tool like `telnet` or `netcat` (nc).
+    - Command: `nc mail.abc-fintech.com 25`
+    - The server will respond with something like `220 mail.abc-fintech.com ESMTP Postfix`. This immediately tells you the server is running Postfix. You now have a specific software to research for vulnerabilities.
+
+2.  **Enumerating Users with SMTP Commands**: A powerful feature, and a common misconfiguration, is the ability to verify the existence of email addresses on the server. This is called SMTP User Enumeration. Not all mail servers allow this, but many do. You use the `VRFY` (verify) and `RCPT TO` (recipient to) commands to ask the server if a specific user exists.
+    - Using `VRFY`:
+      - After connecting, you can issue the command `VRFY john.doe`
+      - The server will respond with `250 John Doe <john.doe@abc-fintech.com>` if the user exists, or a `550` error if not.
+    - Using `RCPT TO`:
+      - This is done within the flow of a fake email. You connect, use `MAIL FROM:` to set a sender (which can be fake), and then use `RCPT TO: <jane.smith@abc-fintech.com>` to see if the recipient is valid.
+      - A `250` response code means the user exists; a `550` means it does not.
+
+3.  **Testing for Open Relays**: An SMTP open relay is a server that is configured to allow anyone on the internet to send email through it, not just authorized users. This is a severe misconfiguration because spammers can abuse it to send millions of emails, hiding their own origin. To test for this, you try to send an email through the target's server to a domain that is *not* the target's. If it accepts it, it is an open relay.
+
+4.  **Probing Other Ports and Services**: The mail server might have other services running. You should perform a port scan specifically on the mail server's IP address to see if it's running a webmail interface (port 80/443), SSH (port 22), or other services that could be attacked.
+
+The information gained from mail server recon is directly actionable. A list of valid email addresses is the foundation for a targeted phishing campaign. Knowledge of the software version allows you to search for and use specific exploits. Finding an open relay is a critical security finding that must be reported immediately.
+
+Glossary for Topic 7:
+
+Mail Server Reconnaissance: The process of gathering information about a target's email infrastructure, including software, valid users, and configuration weaknesses.
+
+SMTP (Simple Mail Transfer Protocol): The standard communication protocol used for sending email across the internet.
+
+MX Record (Mail Exchange Record): The DNS record that specifies the mail servers responsible for receiving email for a domain.
+
+SMTP Banner: The initial greeting message from an SMTP server that often reveals the software and version.
+
+SMTP User Enumeration: The technique of using SMTP commands (VRFY, RCPT TO) to determine whether a specific email address exists on the target's mail server.
+
+Open Relay: An SMTP server configured to allow unauthenticated users to send email through it to any domain, making it a tool for spammers.
+
+telnet / netcat (nc): Command-line tools used to interact with network services directly via TCP or UDP.
+
+Hands-On Assignment for Topic 7:
+
+Your objective is to probe the mail server of your target and attempt to enumerate valid users.
+
+1.  **Identify the Mail Server**: First, use DNS to find the target's mail server.
+    - Command: `dig abc-fintech.com MX`
+    - Note the hostname of the primary mail server (the one with the lowest preference number).
+
+2.  **Banner Grabbing**: Connect to the SMTP service on port 25 and record the banner.
+    - Command: `nc mail.abc-fintech.com 25`
+    - Document the full banner message. What mail server software and version is it?
+
+3.  **Attempt SMTP User Enumeration (VRFY)**:
+    - After connecting with `nc`, try to verify a user. The conversation will look like this:
+      `220 mail.abc-fintech.com ESMTP`
+      `VRFY john.doe`
+      `250 John Doe <john.doe@abc-fintech.com>`
+    - Now try a user that likely doesn't exist:
+      `VRFY fakeuser12345`
+      `550 5.1.1 <fakeuser12345>: Recipient address rejected: User unknown in local recipient table`
+    - Document which commands work and the responses.
+
+4.  **Attempt SMTP User Enumeration (RCPT TO)**:
+    - If VRFY is disabled, try the RCPT TO method within a fake email transaction:
+      `HELO yourdomain.com`
+      `MAIL FROM: <test@yourdomain.com>`
+      `RCPT TO: <jane.smith@abc-fintech.com>`
+      - A `250 OK` response to RCPT TO means the user exists. A `550` error means they do not.
+      - Type `QUIT` to end the session.
+
+5.  **Test for an Open Relay (Advanced)**: **WARNING: Only do this on a target you are explicitly authorized to test. It can be seen as a malicious action.**
+    - Within your SMTP session, after `MAIL FROM`, try to send an email to a domain *not* hosted by the target, like your own personal Gmail account.
+      `RCPT TO: <your-personal-email@gmail.com>`
+    - If the server accepts this recipient (gives a 250 code), it is likely an open relay. The final test would be to use the `DATA` command to try to send a full email.
+
+Compile a list of valid email addresses you were able to enumerate and note the mail server software and version. This information is extremely valuable for social engineering and for launching targeted attacks against the email system itself.
+
+Are you ready to proceed to Topic 8: Subdomain Reconnaissance?

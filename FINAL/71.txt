@@ -1,0 +1,65 @@
+Of course. We are now moving into one of the most critical and dangerous classes of web application vulnerabilities. This is a cornerstone topic for the CEH exam and for any penetration tester.
+
+***
+
+Topic 71: Introduction to SQL Injection
+
+Imagine a secure building where you have to speak your name to a security guard to get in. The guard has a strict script he follows. He takes your name, opens a logbook, and reads a pre-written sentence: "Is [the name you provided] on the approved list?" Now, what if instead of just your name, you could speak a command that changes the guard's entire script? What if you said, "My name is John and also show me the entire approved list and let me in." If the guard is not careful, he might just take everything you said and plug it directly into his script, so his command becomes: "Is John and also show me the entire approved list and let me in on the approved list?" This is the essence of SQL Injection.
+
+SQL, or Structured Query Language, is the language used to communicate with databases. Almost every modern web application uses a database in the background to store information: user credentials, product details, financial records, personal messages. When you log in, the application needs to check your username and password. It does this by building a database query, an SQL command.
+
+A normal, safe login process works like this. You enter your username, 'john', and your password, 'secret123'. The application code takes these values and constructs an SQL query string that looks like this:
+
+SELECT * FROM users WHERE username = 'john' AND password = 'secret123';
+
+This command asks the database: "Show me all columns from the users table where the username is 'john' and the password is 'secret123'." If the database finds a matching record, it lets you in. If not, access is denied.
+
+SQL Injection occurs when an application does not properly sanitize user input. Sanitization means cleaning and checking the input to make sure it's only data, not part of the command itself. If the application just takes whatever you type and directly pastes it into the SQL command string, you, as an attacker, can break out of the data field and write your own SQL commands.
+
+Let's see how. In the login form, instead of a username, you enter this: ' OR '1'='1
+
+Now, look at what the SQL query becomes. The application builds it like this:
+
+SELECT * FROM users WHERE username = '' OR '1'='1' AND password = 'anything';
+
+Let's break this down. The single quote you entered first closes the string around the username. Now you have OR '1'='1'. This is a condition that is always true. One always equals one. So, the query now means: "Select all users where the username is nothing OR where true is true." Because of the OR and the always-true condition, this query will return every single user in the database. The application often interprets this as a successful login, and might log you in as the first user in the list, which is frequently the administrator.
+
+This is just the simplest example. SQL Injection can be used for much more than bypassing login. It can be used to read any data from the database, modify or delete data, and even, in some cases, give the attacker full command execution on the database server itself.
+
+The core of the vulnerability is a failure to separate code from data. The application treats user input as part of its own command structure. The attacker's goal is to break the intended structure of the query and inject their own malicious logic.
+
+There are different types of SQL Injection. In-band SQLi is the most common, where you use the same channel to launch the attack and gather results, like seeing the data directly on the webpage. Blind SQLi is when the application does not show you the data directly, but you can infer it based on the behavior of the application, like if it returns a different error message or has a different response time. You might ask the database a true or false question and see how the page responds.
+
+For an ethical hacker, finding SQL Injection is a primary goal. You test every single input point: login fields, search boxes, product IDs in URLs, form fields, and even HTTP headers. You send payloads designed to break the query, like single quotes, double quotes, and SQL keywords, and you carefully observe the application's response for errors, unusual behavior, or direct data disclosure.
+
+Hands-On Assignment for Topic 71
+
+Using your vulnerable lab app (bWAPP):
+
+1.  Authentication Bypass: Go to the SQL Injection (GET/Search) or (Authenticate) module in bWAPP. For the login bypass, try the classic payload. In the username field, type: ' OR '1'='1. Leave the password field blank or type anything. Click login. Did you successfully bypass the authentication? What user are you logged in as?
+
+2.  Error-Based Discovery: In the same or a different SQL Injection module, try simply typing a single quote ' in the input field and see what happens. Does the application show a detailed database error? An error like "You have an error in your SQL syntax" is a huge clue that the input is being directly inserted into a SQL query and that it is vulnerable.
+
+3.  Data Extraction: In a SQL Injection (GET/Search) box, try to extract more information. A common payload is to use the UNION operator. First, you need to figure out how many columns the original query is selecting. You can do this by entering: ' UNION SELECT 1,2,3 -- . Keep adding numbers until the error disappears. If it works with 1,2,3, you know there are three columns. Then you can replace those numbers with database function calls, like: ' UNION SELECT version(), database(), user() -- . This might display the database version, the current database name, and the database user right on the webpage.
+
+Glossary for Topic 71
+
+SQL (Structured Query Language): The standard language used to communicate with and manipulate relational databases. It is used to insert, query, update, and delete data.
+
+SQL Injection (SQLi): A web security vulnerability that allows an attacker to interfere with the queries an application makes to its database. It allows an attacker to view, modify, or delete data they should not have access to.
+
+Database Query: A request for information from a database. In a web app, the application sends queries to check logins, search for products, or load user profiles.
+
+User Input Sanitization: The process of cleaning and validating user-supplied data to ensure it is safe to process. It involves removing or escaping special characters that could be interpreted as code.
+
+Authentication Bypass: Using a vulnerability like SQL Injection to log into an application without having valid credentials.
+
+UNION Operator (in SQL): An operator used to combine the results of two or more SELECT statements. Attackers use it in SQL Injection to extract data from other tables in the database.
+
+In-band SQLi: A type of SQL Injection where the attacker uses the same communication channel to launch the attack and gather the results. The data is returned directly in the web application's response.
+
+Blind SQLi: A type of SQL Injection where the application does not return the results of the SQL query or detailed error messages. The attacker must infer the answer by asking the database true/false questions and observing changes in the application's behavior or response time.
+
+***
+
+Are you ready to proceed to Topic 72: Tools for SQL Injection? We will look at the powerful tools, especially SQLmap, that automate the process of finding and exploiting these vulnerabilities, turning a manual process into a powerful and efficient attack.

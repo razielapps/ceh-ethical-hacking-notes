@@ -1,0 +1,95 @@
+Of course. As we become more aggressive in our testing, we must understand the defenses that are designed to detect and stop us.
+
+Topic 22: Introduction to IDs, Firewall and Honeypots
+
+Until now, we have operated as if the target is a passive entity. In reality, organizations deploy active defense systems to monitor, filter, and block malicious activity. As an ethical hacker, you are not just attacking a system; you are engaging in a game of cat and mouse with its security infrastructure. Understanding these defenses is not just about evasion; it is about accurately assessing the target's security posture and providing realistic recommendations.
+
+Let's break down the three primary active defenses you will encounter.
+
+**Firewall: The Gatekeeper**
+
+A firewall is a network security system that monitors and controls incoming and outgoing network traffic based on predetermined security rules. It acts as a barrier between a trusted internal network and an untrusted external network, such as the internet.
+
+Think of a firewall as a strict bouncer at a nightclub. The bouncer has a list of rules:
+- Rule 1: No one under 21 (Block packets to port 25, SMTP).
+- Rule 2: Only people on the guest list can enter through the VIP door (Allow IP 10.0.0.5 to access port 22, SSH).
+- Rule 3: Everyone must enter through the main door and be searched (Allow traffic to port 80/443, but inspect it).
+
+Firewalls operate by examining packets and making decisions based on:
+- Source/Destination IP Address
+- Source/Destination Port Number
+- Protocol (TCP, UDP, ICMP)
+- The state of a connection (Stateful firewalls track connections and are smarter)
+
+From a hacker's perspective, a port that appears "filtered" in an Nmap scan often indicates a firewall is silently dropping the packets, unlike a "closed" port where the target itself sends a RST packet.
+
+**Intrusion Detection System (IDS) and Intrusion Prevention System (IPS): The Alarm and the Armed Guard**
+
+While a firewall is a gatekeeper deciding who gets in, an IDS/IPS is a security camera and a roving guard inside the club.
+
+- **Intrusion Detection System (IDS)**: This is a passive monitoring system. It analyzes network traffic (Network IDS or NIDS) or system activity (Host IDS or HIDS) looking for patterns that match known attacks or suspicious behavior—called *signatures*. If it detects something, it raises an alert for a human to investigate. It does not block the traffic itself. It's like a security camera that records a theft and alerts the security company, but doesn't stop the thief.
+
+- **Intrusion Prevention System (IPS)**: This is an active system. It sits inline with the traffic flow and can not only detect malicious activity but also automatically block it in real-time. It can reset a TCP connection, drop malicious packets, or block a source IP address. It's the roving guard who sees a fight break out and physically intervenes to stop it.
+
+The primary challenge for a hacker is evading the signatures used by IDS/IPS systems. This is why packet crafting and using non-standard scan techniques are so important.
+
+**Honeypot: The Decoy**
+
+A honeypot is a security mechanism designed to detect, deflect, or study attempts at unauthorized use of information systems. It is a trap. It is a system that is designed to appear as a valuable, vulnerable target, but is actually isolated, monitored, and instrumented to log every interaction.
+
+Think of it as a beautifully wrapped empty box left in the middle of a store to catch a shoplifter. A hacker who stumbles into a honeypot might think they have found a critical server, but in reality, they are wasting their time and revealing their tools and techniques to the security team.
+
+There are two main types:
+- **Low-Interaction Honeypots**: Emulate only a limited set of services (e.g., just an SSH banner). They are safe and easy to deploy but can be detected by a skilled attacker.
+- **High-Interaction Honeypots**: Are real systems with real services and vulnerabilities. They provide a wealth of information but are complex to manage and carry a higher risk if compromised.
+
+For an ethical hacker, the key is to be able to recognize the signs of a honeypot. Does the system have unrealistically old software? Is the data on it fake or uninteresting? Does its network behavior seem odd? If you suspect a honeypot, you must note it in your report, as attacking it is often outside the scope of engagement and provides no value to the client.
+
+Glossary for Topic 22:
+
+Firewall: A network security device that monitors and filters incoming and outgoing network traffic based on an organization's previously established security policies.
+
+IDS (Intrusion Detection System): A monitoring system that detects suspicious activity and generates alerts, but does not take action to stop it.
+
+IPS (Intrusion Prevention System): A system that can detect and actively prevent or block identified threats.
+
+Signature: A set of rules or patterns used by IDS/IPS to identify malicious traffic, such as a specific sequence of bytes in a packet or a known port scan pattern.
+
+Honeypot: A decoy system or server designed to attract and trap attackers, allowing security researchers to study their methods.
+
+Stateful Firewall: A firewall that keeps track of the state of network connections (such as TCP streams) and can make filtering decisions based on the context of the traffic.
+
+NIDS (Network Intrusion Detection System): An IDS that analyzes network traffic for signs of malicious activity.
+
+HIDS (Host Intrusion Detection System): An IDS that monitors a single host for malicious activity by analyzing system calls, log files, and other host-based data.
+
+Hands-On Assignment for Topic 22:
+
+Your objective is to identify the presence and behavior of these defensive systems by analyzing the results of your scans.
+
+1.  **Firewall Detection with Nmap**:
+    - Perform a TCP SYN scan (`-sS`) against your target on a range of ports. Note the state of the ports: open, closed, or filtered.
+    - Now, perform a TCP ACK scan (`-sA`) on the same ports. The ACK scan is used to map firewall rulesets. It sends a packet with only the ACK flag set.
+    - Compare the results. A stateful firewall that is blocking incoming connections will show ports as "unfiltered" in an ACK scan but "filtered" in a SYN scan. This confirms the presence of a firewall that is filtering based on connection state.
+
+2.  **Analyzing IDS/IPS Evasion**:
+    - Use Nmap to perform a very slow, stealthy scan designed to evade basic IDS signatures.
+    - Command: `nmap -sS -T1 --scan-delay 5s -p 80,443,22 [target_ip]`
+    - The `-T1` is the slowest timing template, and `--scan-delay 5s` adds a 5-second delay between probes. This makes the scan traffic blend in with normal, sporadic network noise, making it harder for an IDS to identify it as a port scan.
+    - Document whether the scan results differ from your faster, noisier scans.
+
+3.  **Honeypot Research and Identification**:
+    - This is a research task. You will not attack a real honeypot, but you will learn to recognize one.
+    - Research common open-source honeypots like "Cowrie" (SSH honeypot) and "Dionaea" (multi-service honeypot).
+    - Visit the website `https://www.honeypot.org/` or similar projects and read about their default configurations and the services they emulate.
+    - Based on your research, write down three potential indicators that a system might be a honeypot. For example:
+        - An SSH service that presents a very old, vulnerable version of OpenSSH.
+        - A system with many open ports offering services that are rarely used together.
+        - Banner messages that seem slightly "off" or contain grammatical errors.
+
+4.  **Packet Crafting for Evasion (Conceptual)**:
+    - Using the knowledge from the Packet Crafting topic, describe how you would use Scapy to create a SYN packet that might evade a simple IDS signature looking for Nmap's default TCP window size or TTL values. (You don't need to run this, just describe the theory). For example, you could set a custom, non-standard TCP window size: `TCP(dport=80, flags="S", window=12345)`
+
+This assignment shifts your mindset from pure offense to a tactical balance of offense and defense awareness. You are now thinking not just about what is open, but *why* it's open and what systems are watching you. This is the mark of a professional security tester.
+
+Are you ready to proceed to Topic 23: Tools for Evasion?

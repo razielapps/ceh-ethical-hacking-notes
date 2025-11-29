@@ -1,0 +1,75 @@
+Of course. We are now moving from the reconnaissance phase into a new and critical area of offensive security: gaining a deep, real-time understanding of network traffic.
+
+Topic 11: Intro to Sniffing
+
+Up to this point, you have been an active participant in the network conversation. You have been sending requests to servers and analyzing their replies. Sniffing, also known as network traffic analysis or packet analysis, is different. It is the practice of capturing and inspecting packets of data as they travel across a network. Think of it as being a telephone operator in the old days, silently listening in on a phone call. You are not talking; you are listening to everyone else's conversations. This allows you to observe communications you are not even a part of, revealing a treasure trove of information.
+
+For an ethical hacker, sniffing is a powerful technique for several reasons:
+- **Capturing Credentials**: Many older applications and even some modern ones (if misconfigured) send usernames and passwords in plaintext over the network. By sniffing this traffic, you can literally watch people log in and see their credentials fly by.
+- **Understanding Network Protocols**: You can see exactly how devices on the network communicate, which helps you understand the network's structure and find weaknesses.
+- **Analyzing Malware Traffic**: If a machine is infected, you can capture the communication between the malware and its command-and-control (C2) server.
+- **Troubleshooting**: It is an essential skill for diagnosing network problems.
+
+However, to understand how sniffing works, you must first understand the environment in which it operates. Modern networks are built with switches. A switch is an intelligent device that learns which device (identified by its MAC address) is connected to which physical port. When a switch receives a packet, it doesn't just blast it out to every other device like an old-fashioned hub did. It looks at the destination MAC address and intelligently forwards the packet only to the port where that device is connected. This is a major obstacle for a hacker, as it means your network card, by default, will only see traffic that is specifically addressed to you, plus some general broadcast traffic.
+
+To overcome this, a hacker must place their machine in a position to see more traffic. This leads to two primary modes of sniffing:
+
+1.  **Passive Sniffing**: This works on a network hub (now obsolete) or on a wireless network. In a wireless setting, if you are connected to the same Wi-Fi network, you can potentially capture all the traffic flowing through the air, depending on encryption. This is passive because you are just listening.
+
+2.  **Active Sniffing**: This is required on a switched network. It involves tricking the switch into sending you traffic that was meant for someone else. The main techniques for this are:
+    - **Port Mirroring/SPAN**: A legitimate administrative feature where a network switch is configured to copy all traffic from one or more ports to another "monitoring" port. This is how security teams do it, but a hacker rarely has this access.
+    - **ARP Poisoning (or ARP Spoofing)**: This is the hacker's method. The Address Resolution Protocol (ARP) is used to map IP addresses to MAC addresses on a local network. By sending forged ARP messages, a hacker can trick other machines on the network into believing that the hacker's machine is the network gateway. All their traffic then gets sent to the hacker's machine first, who can then forward it to the real gateway, all while reading every single packet. This is a Man-in-the-Middle (MitM) attack and is the foundation for many other exploits.
+
+The tool you will use to capture this traffic is a packet sniffer. The most famous and powerful is **Wireshark** (with its command-line counterpart **tshark**). Another classic command-line tool is **tcpdump**. These tools put your network interface card (NIC) into **promiscuous mode**. Normally, a NIC ignores any traffic not addressed to it. In promiscuous mode, it captures every single packet that it sees on the network wire, regardless of the destination.
+
+A critical legal and ethical warning: Sniffing traffic on a network that you do not own or do not have explicit written permission to test is highly illegal. It is a direct violation of privacy and computer fraud laws. Even during an authorized penetration test, the Rules of Engagement must explicitly permit packet capture, as it can contain extremely sensitive personal data.
+
+Glossary for Topic 11:
+
+Sniffing: The process of monitoring and capturing all data packets passing through a given network.
+
+Packet: A small segment of a larger message. Data sent over a network is broken down into packets for transmission.
+
+Switch: A network device that connects devices on a computer network and uses MAC addresses to forward data only to the specific device it is intended for.
+
+Hub: An obsolete network device that connects multiple devices and broadcasts all data to every connected device.
+
+Promiscuous Mode: A mode for a network interface controller (NIC) that causes it to pass all traffic it receives to the central processing unit (CPU) rather than just the frames it is specifically intended to receive.
+
+ARP Poisoning (ARP Spoofing): A technique where an attacker sends falsified ARP messages over a local area network to link their MAC address with the IP address of another host (like the default gateway).
+
+Man-in-the-Middle (MitM) Attack: A cyberattack where the attacker secretly relays and possibly alters the communications between two parties who believe they are directly communicating with each other.
+
+Wireshark: A free and open-source packet analyzer used for network troubleshooting, analysis, software and communications protocol development, and education.
+
+Hands-On Assignment for Topic 11:
+
+Your objective is to set up your machine for packet sniffing and perform a basic capture of your own traffic. We will do this safely in your own lab environment.
+
+1.  **Identify Your Network Interface**:
+    - Open a terminal and type `ip link show` or `ifconfig`.
+    - Identify your active network interface. It is likely named `eth0` (Ethernet) or `wlan0` (Wi-Fi). Note this name.
+
+2.  **Install Wireshark and tcpdump**:
+    - `sudo apt update && sudo apt install wireshark tcpdump -y`
+    - During installation, it may ask if non-superusers should be able to capture packets. Select "Yes" for convenience.
+
+3.  **Basic Capture with tcpdump**:
+    - We will start with the command line. Use `tcpdump` to capture a few packets.
+    - Command: `sudo tcpdump -i [your_interface] -c 10 -w my_capture.pcap`
+    - Breakdown: `-i` specifies the interface, `-c 10` captures only 10 packets, `-w` writes the output to a file.
+    - While this is running, generate some traffic by pinging `google.com` or visiting a website.
+    - The capture will stop after 10 packets.
+
+4.  **Analyze the Capture in Wireshark**:
+    - Now, open the saved file in Wireshark to analyze it visually.
+    - Command: `wireshark my_capture.pcap`
+    - The Wireshark GUI will open. You will see a list of packets. Click on one. The middle pane shows the protocol layers of that packet, and the bottom pane shows the raw packet data in hexadecimal and ASCII.
+
+5.  **Find Your Traffic**:
+    - In Wireshark, look at the "Protocol" column. Can you find an ICMP packet from your ping? Or TCP packets from your web browsing?
+    - Click on a TCP packet. In the middle pane, expand the sections like "Ethernet II", "Internet Protocol Version 4", and "Transmission Control Protocol". This shows you the headers of the packet, containing the source and destination IPs and ports.
+
+This assignment gets you familiar with the fundamental process of capturing and viewing traffic. In the next topics, we will dive deep into the protocols themselves (TCP, HTTP) and learn how to use Wireshark's powerful filtering to find exactly what we're looking for in a sea of data.
+
+Are you ready to proceed to Topic 12: TCP Flags?

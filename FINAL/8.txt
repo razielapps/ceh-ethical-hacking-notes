@@ -1,0 +1,71 @@
+Of course. Let's expand our view of the target's attack surface by discovering its hidden subdomains.
+
+Topic 8: Subdomain Reconnaissance
+
+A company's main website, like abc-fintech.com, is often its most fortified digital asset. It has a dedicated security team, regular patches, and robust monitoring. However, the same level of security is frequently not applied to the subdomains. A subdomain is a subdivision of the main domain name, like `dev.abc-fintech.com`, `staging.abc-fintech.com`, or `api.abc-fintech.com`. These subdomains often host development sites, testing environments, administrative panels, or backend APIs. They are the forgotten back doors and side entrances to the castle. Subdomain reconnaissance is the process of discovering these hidden entry points, which are often less secure and perfect for initial access.
+
+The goal is to build a comprehensive list of every subdomain associated with the target. This significantly expands the scope of your penetration test and reveals targets that the client may not even be aware are publicly accessible. A development or staging site might have weaker credentials, contain known vulnerabilities, or even have debugging features enabled that leak sensitive information.
+
+There are three primary methods for discovering subdomains: Passive, Active, and Brute-Force.
+
+1.  **Passive Subdomain Discovery**: This involves using third-party services that have already crawled and indexed the internet. You are querying their massive databases for any subdomains they have seen associated with your target. This is completely stealthy because you are not sending any traffic to the target's servers.
+    - **Tools and Services**:
+        - **Certificate Transparency Logs**: Every time an SSL certificate is issued for a domain, it is logged in a public Certificate Transparency (CT) log. Websites like `crt.sh` allow you to search these logs for any certificate issued for `*.abc-fintech.com` and will reveal all the subdomains that have been secured with SSL. This is an incredibly rich source of information.
+        - **Search Engines**: Using Google dorks can find subdomains. A search like `site:abc-fintech.com` will list many indexed subdomains.
+        - **Passive DNS Databases**: Services like SecurityTrails and PassiveTotal maintain historical DNS data. They can show you all the subdomains that have ever resolved to an IP address for your target.
+        - **Tool: subfinder**: This is a command-line tool designed specifically for passive subdomain discovery. It queries dozens of different sources in one go. A simple command is `subfinder -d abc-fintech.com -silent`.
+
+2.  **Active Subdomain Discovery (DNS Brute-Forcing)**: This method is more direct and involves interacting with the target's DNS servers. You take a massive wordlist containing common subdomain names (like `www`, `mail`, `ftp`, `admin`, `api`, `test`) and systematically query the DNS server for each one (`word.abc-fintech.com`). If the DNS server returns an IP address, you have found a valid subdomain. This method is noisier than passive discovery because the target's DNS server logs your queries, but it is highly effective at finding subdomains that are not indexed by public services.
+    - **Tool: gobuster**: While often used for web directories, `gobuster` can also brute-force subdomains using the `dns` mode. The command is: `gobuster dns -d abc-fintech.com -w /usr/share/wordlists/subdomains.txt`.
+    - **Tool: amass**: A very powerful tool that combines both passive and active techniques. It can perform passive enumeration and then use the results to fuel a more intelligent active brute-force.
+
+3.  **Permutation and Alteration**: This is an advanced technique. You start with a list of known subdomains you've already found (e.g., `dev.abc-fintech.com`). Then, you use a tool to generate permutations or alterations. For example, it might create `test-dev.abc-fintech.com`, `dev-test.abc-fintech.com`, or `d3v.abc-fintech.com`. This can discover related subdomains that a standard wordlist would miss.
+
+Once you have a list of subdomains, the next step is to resolve them to IP addresses and then perform service discovery (like port scanning) on each one. You will often find that subdomains point to different IPs, sometimes even to cloud infrastructure or third-party hosting, further expanding the attack surface.
+
+Glossary for Topic 8:
+
+Subdomain Reconnaissance: The process of discovering sub-sections of a target's main domain to identify less-secure parts of their online presence.
+
+Subdomain: A prefix added to a domain name to separate a section of a website. e.g., `api.example.com` is a subdomain of `example.com`.
+
+Passive Discovery: Finding subdomains by querying third-party services and databases without sending traffic to the target.
+
+Active Discovery (Brute-Forcing): Finding subdomains by systematically guessing names and querying the target's DNS servers directly.
+
+Certificate Transparency (CT): An open framework that logs all SSL certificates issued by Certificate Authorities. It is a public record of all domains that use SSL.
+
+DNS Brute-Forcing: The automated process of trying a large list of possible subdomain names against a DNS server to see which ones are valid.
+
+Wordlist: A text file containing a list of words, in this context, common subdomain names like "www", "mail", "admin".
+
+Hands-On Assignment for Topic 8:
+
+Your objective is to create a comprehensive list of all subdomains for your target using both passive and active methods.
+
+1.  **Passive Discovery with subfinder**:
+    - Install `subfinder` if needed: `sudo apt install subfinder`
+    - Run a passive scan: `subfinder -d abc-fintech.com -silent > passive_subdomains.txt`
+    - This command runs silently and saves the results to a file.
+
+2.  **Passive Discovery with crt.sh**:
+    - Open a web browser and go to `https://crt.sh`.
+    - In the search box, enter `%.abc-fintech.com` and set the output to "JSON".
+    - You will get a list of all certificates. This data can be messy. You can use a command-line tool like `jq` to parse it, or simply scan through it manually to find unique subdomain names. Add any new ones to your list.
+
+3.  **Active Discovery with gobuster**:
+    - Use `gobuster` to perform a DNS brute-force. You will need a good wordlist. The `SecLists` repository has great ones.
+    - Command: `gobuster dns -d abc-fintech.com -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt -o active_subdomains.txt`
+    - This will try 5000 common subdomain names and save the valid ones to a file.
+
+4.  **Combine and Validate**:
+    - Combine all your findings into one master list and remove duplicates: `cat passive_subdomains.txt active_subdomains.txt | sort -u > all_subdomains.txt`
+    - Now, resolve these subdomains to IP addresses to confirm they are live and to see where they point. You can use a tool like `massdns` or a simple bash loop:
+      `for sub in $(cat all_subdomains.txt); do dig $sub A +short | grep -v '^;' && echo " - $sub"; done`
+
+5.  **Analysis**:
+    - Analyze your final list. Do you see interesting subdomains like `vpn.abc-fintech.com`, `admin.abc-fintech.com`, `staging.abc-fintech.com`, or `api.abc-fintech.com`? These are high-priority targets for the next phases of your attack.
+
+Document every subdomain and its corresponding IP address. This master list represents a significantly expanded view of your target's attack surface and will be the source of your targets for vulnerability scanning and exploitation.
+
+Are you ready to proceed to Topic 9: Email Server Reconnaissance?

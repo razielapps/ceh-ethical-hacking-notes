@@ -1,0 +1,76 @@
+Of course. Let's look at a tool that automates one of the most common social engineering attacks.
+
+Topic 60: Social Engineering with BlackEye
+
+BlackEye is a powerful, open-source tool written in Python that automates the process of creating and managing phishing campaigns. It is designed to be a "one-stop-shop" for simulating credential harvesting attacks, making it a valuable tool for ethical hackers to demonstrate the ease and effectiveness of phishing to a client.
+
+At its core, BlackEye does one thing very well: it clones the login pages of popular websites and sets up a server to host these fake pages. When a victim enters their credentials into the fake page, BlackEye captures them and displays them in real-time to the attacker.
+
+**How BlackEye Works (The Attack Flow):**
+
+1.  **Setup:** The attacker runs BlackEye on their machine (e.g., Kali Linux). The tool presents a menu with dozens of templates for popular sites like Google, Facebook, Instagram, Netflix, Microsoft, and many more.
+2.  **Cloning:** The attacker selects a template (e.g., `10` for Google). BlackEye sets up a local web server hosting a near-perfect copy of the Google login page.
+3.  **Delivery:** The attacker now needs to get the victim to visit their fake page. Since it's running on the attacker's local machine, they use a tunneling service like **Ngrok** or **LocalTunnel**. These services create a public, temporary URL (e.g., `https://abc123.ngrok.io`) that redirects traffic to the attacker's local server. This URL is what the attacker sends to the victim via a phishing email or message.
+4.  **The Trap:** The victim clicks the link, sees what looks like the real Google login page, and enters their username and password.
+5.  **Capture and Reporting:** The credentials are posted to the attacker's server. BlackEye instantly logs the credentials to its terminal and can also save them to a file. Some versions may even send a notification to the attacker's Discord or Telegram.
+
+**Key Components and Concepts:**
+
+- **Ngrok:** A critical tool used alongside BlackEye. It exposes a local web server to the internet with a public HTTPS URL, bypassing firewalls and NAT.
+- **Templates:** The collection of cloned login pages. The realism of these templates is what makes the attack convincing.
+- **Social Engineering:** The tool itself is just technology. The success of the attack depends entirely on the phishing message (the "lure") that convinces the victim to click the link. This could be a fake security alert, a promise of a free gift, or a notification about a shared document.
+
+**The Ethical Hacker's Use Case:**
+
+A professional penetration tester would use BlackEye in a controlled, authorized assessment.
+- They would craft a targeted phishing email (a "spear-phishing" email) tailored to the client's employees.
+- They would use BlackEye to host a clone of the client's own corporate login portal (like Office 365).
+- The results provide the client with a clear, measurable metric: "X% of employees clicked the link, and Y% entered their credentials." This is powerful data to justify investments in security awareness training.
+
+**A Critical Legal and Ethical Warning:**
+Using a tool like BlackEye to phish anyone without their explicit, prior consent is illegal. It is a form of fraud and identity theft. It should only be used on systems and people you own, or as part of a formal, written penetration testing agreement.
+
+Glossary for Topic 60:
+
+BlackEye: An open-source tool used to automate phishing attacks by cloning login pages and capturing submitted credentials.
+
+Phishing: A cyberattack that uses disguised sites or emails to trick individuals into revealing sensitive information.
+
+Ngrok: A tool that creates a secure tunnel from a public endpoint to a locally running web service, allowing it to be accessed over the internet.
+
+Template: In the context of BlackEye, a pre-made clone of a popular website's login page.
+
+Credential Harvesting: The process of collecting usernames and passwords, typically through a phishing attack.
+
+Spear Phishing: A highly targeted phishing attack directed at specific individuals or companies.
+
+Tunneling: The process of encapsulating a network protocol within another protocol, in this case, used to expose a local server to the internet.
+
+Hands-On Assignment for Topic 60:
+
+Your objective is to understand the workflow of a tool like BlackEye in a controlled, educational environment. **Do not run this against any real target.**
+
+1.  **Tool Installation (Lab Setup):**
+    - The command to clone BlackEye from GitHub is typically: `git clone https://github.com/.../BlackEye.git` (The exact repository may vary; always use the official source).
+    - What is the primary command to run the tool after navigating into its directory? `sudo python3 BlackEye.py`
+
+2.  **Template Selection:**
+    - When you run BlackEye, it presents a list of sites. If you were testing a corporate environment, which template would likely be the most relevant and damaging if successful?
+    - Answer: "The Microsoft Office 365 or corporate VPN login page template, as these credentials provide access to the company's core systems and data."
+
+3.  **The Delivery Mechanism:**
+    - BlackEye runs a server on your local machine (e.g., on `127.0.0.1`). Why can't you just send the IP `127.0.0.1` to the victim?
+    - Answer: "Because `127.0.0.1` is the localhost address, meaning 'this computer.' It will only work on the machine running the server. The victim's computer cannot reach your localhost address over the internet."
+
+4.  **The Ngrok Solution:**
+    - What is the specific purpose of using Ngrok in this attack?
+    - Answer: "Ngrok creates a public, internet-accessible URL (like `abc123.ngrok.io`) that tunnels all traffic back to the local BlackEye server running on my machine, allowing the victim to access my fake page from anywhere."
+
+5.  **Post-Attack Analysis:**
+    - After a successful simulated phishing test, what are the two most important pieces of information to include in your report to the client?
+    - 1. The **Click-through Rate**: The percentage of users who clicked the phishing link.
+    - 2. The **Credential Submission Rate**: The percentage of users who entered their credentials into the fake page.
+
+This assignment provides a conceptual understanding of how automated phishing tools lower the barrier for entry for attackers and why demonstrating their use is a critical part of a security assessment. The defense is robust user training and technical controls like multi-factor authentication (MFA), which would make stolen passwords useless.
+
+Are you ready to proceed to Topic 61: Introduction to Cryptography?

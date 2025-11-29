@@ -1,0 +1,85 @@
+Of course. Now that we understand the theory, let's master the tool that turns theory into actionable intelligence.
+
+Topic 14: Introduction to Wireshark
+
+Wireshark is the world's foremost and widely-used network protocol analyzer. It is the microscope through which we examine the lifeblood of a network. For an ethical hacker, it is not just a tool; it is an extension of your senses. It allows you to see the invisible conversations happening between devices, to diagnose problems, to reverse engineer protocols, and to find the evidence of a security breach or the subtle signs of an attacker's presence.
+
+Think of the internet as a vast, bustling city. Your computer is a single building in this city. The network cables and Wi-Fi signals are the streets. Data packets are the cars, trucks, and motorcycles speeding around. Your network card is the garage of your building; it only accepts vehicles (packets) that are specifically addressed to your building. Wireshark, when you start a capture, forces your garage door to stay open, allowing you to see and record every single vehicle that passes by on your street, regardless of its destination. It then lays every one of these captured vehicles out on a giant inspection table, allowing you to examine their make, model, contents, and where they are going.
+
+The power of Wireshark lies in its deep dissection of protocols. It doesn't just show you raw data. It understands the layered structure of network communication. When you click on a packet, Wireshark breaks it down for you:
+- The Frame: The raw data as it was captured from the wire.
+- The Ethernet Header: The information for the local network, including source and destination MAC addresses.
+- The IP Header: The internet-layer information, including source and destination IP addresses.
+- The TCP or UDP Header: The transport-layer information, including ports and sequence numbers.
+- The Application Layer Protocol: This is the actual data being exchanged, like an HTTP request for a web page, the text of an email, or a DNS query.
+
+The Wireshark interface is divided into three main panes:
+1.  **The Packet List Pane**: This is at the top. It shows a summary of every captured packet, including a number, timestamp, source and destination addresses, the protocol, and length. This is your high-level overview.
+2.  **The Packet Details Pane**: This is in the middle. When you click on a packet in the top pane, this pane shows the hierarchical structure of the protocol layers within that single packet. You can expand each section (e.g., Ethernet II, Internet Protocol, Transmission Control Protocol, Hypertext Transfer Protocol) to see the details of every field in the header.
+3.  **The Packet Bytes Pane**: This is at the bottom. It shows the raw data of the packet exactly as it was captured, in hexadecimal and ASCII (or EBCDIC) format. When you select a field in the Packet Details pane, the corresponding bytes are highlighted in this raw view.
+
+To use Wireshark effectively, you must understand the concept of capture filters and display filters. They are different and serve distinct purposes.
+
+- **Capture Filters**: These are applied *before* the capture starts. They use the BPF (Berkeley Packet Filter) syntax and tell the capturing engine to only save packets that meet certain criteria. This is useful for reducing the size of your capture file when you are targeting a specific host or protocol. Example: `host 192.168.1.100` will only capture traffic to or from that IP.
+- **Display Filters**: These are applied *after* the capture. They are much more powerful and flexible. You can capture everything and then use display filters to hide the packets you don't want to see. The syntax is different and more intuitive. Example: `ip.addr == 192.168.1.100 and tcp.port == 80`
+
+For an elite hacker, Wireshark is indispensable for:
+- **Forensics**: Investigating a security incident by analyzing captured traffic to see what data was exfiltrated or how an attacker gained access.
+- **Reverse Engineering**: Figuring out how a proprietary application communicates over the network, which can help in finding vulnerabilities.
+- **Exploit Development**: Watching the network traffic of an exploit to see if it is working as expected.
+- **Evasion Analysis**: Testing your own attacks and tools to see what they look like on the wire, so you can modify them to evade detection.
+
+Glossary for Topic 14:
+
+Wireshark: A free and open-source packet analyzer used for network troubleshooting, analysis, software and communications protocol development, and education.
+
+Packet List Pane: The top section of the Wireshark interface that displays a one-line summary for each captured packet.
+
+Packet Details Pane: The middle section of the Wireshark interface that shows the detailed, hierarchical breakdown of the currently selected packet.
+
+Packet Bytes Pane: The bottom section of the Wireshark interface that shows the raw data of the packet in hexadecimal and ASCII.
+
+Protocol Dissection: The process by which Wireshark interprets the raw bytes of a packet and presents them as structured, understandable protocol fields.
+
+Capture Filter: A filter applied before a capture begins to limit which packets are saved to the capture file. Uses BPF syntax.
+
+Display Filter: A filter applied after a capture to limit which packets are displayed in the packet list pane. Uses Wireshark's own syntax.
+
+BPF (Berkeley Packet Filter): A syntax used for capturing and filtering network traffic at the kernel level.
+
+Hands-On Assignment for Topic 14:
+
+Your objective is to become familiar with the Wireshark interface and perform a basic capture and analysis of your own web browsing traffic.
+
+1.  **Launch and Configure Wireshark**:
+    - Open Wireshark. You may need to run it with `sudo wireshark` to have the necessary permissions to capture.
+    - You will see a list of network interfaces. Identify your active one (it will have a graph of traffic). Double-click on it (e.g., `wlan0` or `eth0`) to start a capture.
+
+2.  **Generate and Capture Traffic**:
+    - With the capture running, open your web browser and go to a simple HTTP (not HTTPS) website. A good example is `http://neverssl.com`.
+    - Browse the site for a few moments, then go back to Wireshark and click the red square "Stop" button.
+
+3.  **Basic Interface Familiarization**:
+    - Look at the Packet List Pane. You will see many packets.
+    - In the filter bar at the top, type `http` and press Enter. This display filter will show only HTTP traffic.
+    - Find a packet that says `GET / HTTP/1.1` in the Info column. Click on it.
+
+4.  **Analyze the Packet Details**:
+    - In the middle pane (Packet Details), expand the sections.
+    - Expand "Ethernet II". You will see your and the gateway's MAC addresses.
+    - Expand "Internet Protocol Version 4". You will see your IP and the server's IP.
+    - Expand "Transmission Control Protocol". You will see the source and destination ports.
+    - Expand "Hypertext Transfer Protocol". Here you will see the actual HTTP request, including the `Host:` header and the `GET /` command.
+
+5.  **Follow a TCP Stream**:
+    - This is a crucial feature. Right-click on the `GET /` packet and select **Follow** -> **TCP Stream**.
+    - A new window will open, reconstructing the entire text-based conversation between your browser and the web server. You will see your HTTP request in blue and the server's HTML response in red. This is an incredibly powerful way to see the full application-layer conversation.
+    - Close the TCP Stream window.
+
+6.  **Use a Display Filter to Find DNS**:
+    - In the filter bar, clear the `http` filter and type `dns`.
+    - You should see the DNS query your computer made to resolve `neverssl.com` into an IP address. Click on a DNS packet and analyze its structure in the Packet Details pane.
+
+This assignment forces you to interact with the core components of Wireshark. You have captured traffic, applied display filters, inspected protocol layers, and used the "Follow TCP Stream" feature. This is the foundational skill set for all advanced packet analysis.
+
+Are you ready to proceed to Topic 15: Analyzing Packets with Wireshark?

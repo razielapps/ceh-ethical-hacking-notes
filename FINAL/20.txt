@@ -1,0 +1,83 @@
+Of course. We have found the open doors; now it's time to step inside and see what's in the room.
+
+Topic 20: Intro to Enumeration
+
+Port scanning answers the question, "What services are running?" Enumeration answers the much more powerful question, "What information can I extract from these services?" It is the process of actively querying and interacting with the open ports and services you discovered with Nmap to gather detailed intelligence. This includes user lists, network shares, application data, and other configuration details that are often inadvertently exposed by the services themselves.
+
+Think of it this way: Port scanning told you that Apartment 443 (HTTPS) has its lights on and someone is home. Enumeration is you knocking on the door and asking, "Who lives here? What's your name? Can I see the guest list? What's the layout of the apartment?" You are extracting as much information as possible without yet trying to break down the door.
+
+Enumeration is a critical phase because the information gathered here is what you will use to launch your actual attacks. A username is not a vulnerability, but a list of valid usernates is the first step to a password brute-force attack. A network share name is not a vulnerability, but if you can access it, it might contain sensitive data.
+
+The techniques for enumeration are entirely dependent on the service that is running. Each protocol has its own commands and methods for extracting information.
+
+For SMB/CIFS (Ports 139/445 - Common on Windows networks):
+- You can enumerate user lists, group lists, network shares, and even password policies.
+- Tools like `enum4linux` and `smbclient` are used for this. A command like `enum4linux -a [target_ip]` can dump a wealth of information about a Windows system.
+
+For SNMP (Port 161 - Simple Network Management Protocol):
+- SNMP is used to manage network devices like routers, switches, and servers. If it's misconfigured with a weak or default "community string" (which is like a password), you can read a massive amount of system information.
+- Using tools like `snmpwalk`, you can extract network statistics, user lists, running processes, and even entire configuration files. The command `snmpwalk -c public -v1 [target_ip]` tries to walk the entire SNMP tree using the common default community string "public".
+
+For DNS (Port 53):
+- We've already covered DNS reconnaissance, but enumeration can also include attempting a zone transfer (`axfr`) to get a full list of all hosts in the domain, which is a classic misconfiguration.
+
+For LDAP (Port 389 - Lightweight Directory Access Protocol):
+- LDAP is a protocol for accessing and maintaining distributed directory information services, like an corporate employee directory. If it's exposed, you can often query it to get the full organizational chart, including usernames, email addresses, departments, and phone numbers.
+
+For RPC (Port 111 - Remote Procedure Call):
+- Services like rpcbind can be queried to find out what other RPC services are running on the machine, which can then be enumerated further.
+
+The mindset for enumeration is one of thoroughness and curiosity. You must try every possible query, use every known default credential, and probe every available function of the service. The goal is to build a rich profile of the target: Who are the users? What data is being shared? How is the network structured? What software versions are running? This detailed profile transforms a generic IP address into a specific target with known weaknesses and valuable assets.
+
+Glossary for Topic 20:
+
+Enumeration: The phase of ethical hacking that involves actively extracting detailed information about users, networks, shares, and services from a target system.
+
+SMB/CIFS (Server Message Block/Common Internet File System): A network protocol for providing shared access to files, printers, and serial ports between nodes on a network.
+
+SNMP (Simple Network Management Protocol): An Internet Standard protocol for collecting and organizing information about managed devices on IP networks.
+
+Community String: A password-like mechanism used in SNMP to authenticate access to the managed device's data. "Public" is a common default read-only string.
+
+LDAP (Lightweight Directory Access Protocol): An open, vendor-neutral, industry standard application protocol for accessing and maintaining distributed directory information services.
+
+RPC (Remote Procedure Call): A protocol that a program can use to request a service from a program located on another computer in a network.
+
+enum4linux: A tool for enumerating information from Windows and Samba systems.
+
+snmpwalk: An SNMP application that uses SNMP GETNEXT requests to query a network entity for a tree of information.
+
+Hands-On Assignment for Topic 20:
+
+Your objective is to perform service-specific enumeration against the open ports you found in your Nmap scan. You will focus on two common and information-rich services: SMB and SNMP.
+
+1.  **SMB Enumeration with enum4linux**:
+    - If your Nmap scan revealed ports 139 or 445 open, use `enum4linux` to perform a comprehensive enumeration.
+    - Command: `enum4linux -a [target_ip]`
+    - While it runs, it will perform many checks. Document the following from its output:
+        - Does it find any user accounts? (Look for lines like `Local User:`).
+        - Does it find any network shares? (Look for the `Share Enumeration` section).
+        - What is the workstation or domain name?
+        - What is the password policy? (Look for `Password Policy`).
+
+2.  **SMB Enumeration with smbclient**:
+    - Use `smbclient` to list the shares without a password. This often works if null session authentication is allowed.
+    - Command: `smbclient -L //[target_ip] -N`
+    - The `-L` lists available shares. The `-N` forces it to not ask for a password.
+    - Did it list any shares? Try to connect to a non-default share like `IPC$` or `ADMIN$`: `smbclient //[target_ip]/[share_name] -N`
+
+3.  **SNMP Enumeration with snmpwalk**:
+    - If your Nmap scan revealed port 161 (UDP) open, attempt to walk the SNMP tree using common community strings.
+    - First, try the public community string: `snmpwalk -c public -v1 [target_ip]`
+    - If that doesn't work, try `private`: `snmpwalk -c private -v1 [target_ip]`
+    - If you get a large amount of data back, you have successfully enumerated the device. To make it manageable, you can grep for specific information. For example, to find user accounts: `snmpwalk -c public -v1 [target_ip] | grep -i user`
+    - Document any system information, user names, or network interfaces you can find.
+
+4.  **DNS Zone Transfer Revisited**:
+    - From your DNS reconnaissance, you have the target's name servers. Now, formally attempt a zone transfer using the `dig` command you learned.
+    - Command: `dig @[name_server] [domain_name] AXFR`
+    - Document whether the transfer was successful. If it was, you now have a complete list of all hosts in the domain.
+
+Compile all the enumerated data—usernames, share names, SNMP data—into your master notes. This data is no longer just about the system's configuration; it's about the *people* and *data* on the system, which are the ultimate targets of your assessment.
+
+Are you ready to proceed to Topic 21: Tools for Enumeration?

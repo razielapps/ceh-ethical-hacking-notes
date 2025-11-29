@@ -1,0 +1,76 @@
+Of course. Let's move from the web server to the very system that acts as the internet's phonebook: the Domain Name System (DNS). This is a critical and often overlooked source of intelligence.
+
+Topic 6: DNS Server Reconnaissance
+
+Before you can connect to a website like abc-fintech.com, your computer needs to translate that human-friendly name into a machine-readable IP address, like 192.0.2.1. This translation is the job of the Domain Name System, or DNS. It is the fundamental directory service of the entire internet. For a hacker, the DNS infrastructure is a goldmine of information because its primary purpose is to be publicly queryable. We can ask it questions, and it is designed to give us answers.
+
+DNS Reconnaissance is the process of querying DNS servers to discover information about a target's network architecture. Think of it as looking up a business in a complex phonebook that not only gives you the main switchboard number but also the direct lines for the shipping department, the HR office, and the executive suites. By mapping out the DNS records, you can build a picture of the target's digital real estate without ever sending a single packet to their main servers.
+
+The goal is to find all the hostnames and IP addresses associated with the target domain. This often reveals development servers, internal servers accidentally exposed to the internet, mail servers, and other systems that are not linked from the main website. These peripheral systems are often less secure than the main public-facing website, making them perfect entry points.
+
+Here are the key types of DNS records and what they tell a hacker:
+
+1.  **A Record (Address Record)**: This is the most basic record. It maps a domain name directly to an IPv4 address. For example, the A record for `abc-fintech.com` points to `203.0.113.10`. Finding all A records for a domain and its subdomains gives you a direct list of target IPs.
+
+2.  **AAAA Record (Quad-A Record)**: This is the same as an A record, but for IPv6 addresses. As the world transitions to IPv6, these records become increasingly important.
+
+3.  **CNAME Record (Canonical Name Record)**: This is an alias. It points one domain name to another. For example, you might find that `www.abc-fintech.com` is a CNAME for `abc-fintech.com`. This might not seem important, but it can reveal the underlying structure. Sometimes, a CNAME might point to a third-party service, like a hosting provider or a content delivery network (e.g., `xyz.cloudprovider.net`), which gives you information about their technology partners.
+
+4.  **MX Record (Mail Exchange Record)**: This specifies the mail servers responsible for receiving email for the domain. Finding the MX records is a critical step. It tells you the target's email server hostnames, which are often separate from their web servers. These mail servers can then be probed for vulnerabilities separately. A command like `dig abc-fintech.com MX` will list them.
+
+5.  **TXT Record (Text Record)**: This record holds arbitrary text. It is used for various purposes, but most importantly for two things: Sender Policy Framework (SPF) records and DKIM records, which are used for email security. SPF records list all the IP addresses that are authorized to send email on behalf of the domain. This literally gives you a list of approved IPs for their email infrastructure. TXT records can also sometimes contain verification codes for cloud services, accidentally exposing their use of platforms like Google Workspace or Microsoft Azure.
+
+6.  **NS Record (Name Server Record)**: These records tell you which DNS servers are authoritative for the domain. For `abc-fintech.com`, the NS records might point to `ns1.hostingcompany.com` and `ns2.hostingcompany.com`. This tells you who is hosting their DNS, which can be a valuable piece of the puzzle.
+
+7.  **PTR Record (Pointer Record)**: This does the reverse of an A record; it maps an IP address back to a domain name. This is used for reverse DNS lookups. If you find an IP but don't know what it is, a PTR lookup can give you a hostname.
+
+The primary tool for DNS reconnaissance is `dig` (Domain Information Groper). It is a powerful and flexible command-line tool available on Linux and macOS. `nslookup` is another common tool, but `dig` provides more detailed and scriptable output.
+
+A powerful technique is a DNS Zone Transfer. A zone transfer is a mechanism used by DNS servers to replicate their databases across multiple servers (e.g., a primary and a secondary server). Ideally, this should only be allowed between trusted servers. However, a common misconfiguration is to allow anyone to request a zone transfer. If successful, this will dump the *entire* DNS zone for the domain, giving you a complete list of all hosts, IPs, and records. It is the jackpot of DNS reconnaissance. You attempt a zone transfer using `dig` with the `AXFR` query type: `dig @ns1.abc-fintech.com abc-fintech.com AXFR`. You specify the name server to query (`@ns1...`) and request a transfer of the zone for `abc-fintech.com`.
+
+Glossary for Topic 6:
+
+DNS Reconnaissance: The process of gathering information about a target's network by querying its Domain Name System (DNS) servers.
+
+DNS (Domain Name System): The hierarchical and decentralized naming system used to translate human-readable domain names into numerical IP addresses.
+
+A Record: The fundamental DNS record that maps a domain name to an IPv4 address.
+
+MX Record: The DNS record that specifies the mail servers for a domain.
+
+TXT Record: A DNS record that holds text information. Often used for SPF and DKIM to prevent email spoofing.
+
+DNS Zone Transfer (AXFR): A mechanism to copy the entire DNS database from a primary to a secondary server. A misconfiguration can allow an attacker to obtain a full list of all hosts in the domain.
+
+dig (Domain Information Groper): A powerful command-line tool for querying DNS name servers.
+
+SPF Record (Sender Policy Framework): A type of TXT record that lists the IP addresses authorized to send email for a domain.
+
+Hands-On Assignment for Topic 6:
+
+Your objective is to perform a comprehensive DNS reconnaissance on your target domain.
+
+1.  **Find the Name Servers**: First, you need to know which DNS servers to query.
+    - Command: `dig abc-fintech.com NS`
+    - Document the NS records. These are your primary targets for further queries.
+
+2.  **Perform a Standard DNS Lookup**: Get a broad overview of the common records.
+    - Command: `dig abc-fintech.com ANY`
+    - The `ANY` query asks for all record types the server is willing to provide. Document the A, AAAA, MX, and TXT records you find.
+
+3.  **Query Specific Record Types Individually**: For a more detailed view, query each important record type separately.
+    - A Record: `dig abc-fintech.com A`
+    - MX Record: `dig abc-fintech.com MX` - Note the mail server hostnames.
+    - TXT Record: `dig abc-fintech.com TXT` - Look for SPF records and other information.
+
+4.  **Attempt a Zone Transfer**: This is a critical test. Use the name servers you found in step 1.
+    - Command: `dig @ns1.abc-fintech.com abc-fintech.com AXFR`
+    - Try this for each name server listed. If the command returns a large list of records, you have hit the jackpot. If it fails with a "transfer failed" message, that is the expected and secure result.
+
+5.  **Perform Reverse DNS Lookups**: Take the IP addresses you found from A records and try to find their hostnames.
+    - Command: `dig -x 203.0.113.10`
+    - The PTR record returned might give you a more descriptive internal hostname, like `internal-web.abc-fintech.com`.
+
+Document every single hostname and IP address you discover. This DNS map will form the foundation of your target's network scope and will be used for all subsequent scanning and exploitation phases. You are now moving from a single website to mapping an entire network footprint.
+
+Are you ready to proceed to Topic 7: Mail Server Reconnaissance?

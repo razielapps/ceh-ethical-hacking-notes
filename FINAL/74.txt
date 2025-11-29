@@ -1,0 +1,52 @@
+Of course. Let's move on to a vulnerability that occurs after a user is authenticated. It's not about breaking in, but about what you can do once you're inside.
+
+***
+
+Topic 74: Introduction to Broken Access Control
+
+You've managed to get into the bank building. You have a valid visitor badge. But what does that badge allow you to do? It probably lets you go to the public teller area, but it should not let you walk into the vault, into the manager's office, or into the staff lounge. Access Control is the security system that defines and enforces these rules. It answers the question: What are you allowed to do once you are who you say you are?
+
+Broken Access Control is when those rules are either missing, misconfigured, or can be bypassed. It means a user can perform actions or access data that they are not supposed to, based on their role and privileges.
+
+Let's break down the types of access control. The first is Vertical Access Control. This is about different levels of power. A regular user has a certain set of permissions. An administrator has more, broader permissions. Broken Vertical Access Control is when a regular user can somehow perform an action that only an administrator should be able to do. For example, a normal user being able to access the /admin.php page and delete other users.
+
+The second type is Horizontal Access Control. This is about users at the same level accessing each other's resources. Imagine every bank customer has a safety deposit box. You should only be able to access your own box, not the box of the customer next to you. Broken Horizontal Access Control is when User A can view or modify the data of User B, simply by changing an identifier, like an account number, in the URL. For example, if you are logged in and you see your profile at /view-profile.php?user_id=123, what happens if you change the user_id to 124? If you can see another user's profile, that is a horizontal access control failure.
+
+A more complex type is Context-Dependent Access Control. This means the rules change based on the situation. For example, you can only edit a blog post if you are the author and if the post is still in "draft" status. You cannot edit it after it's been published. A flaw here might allow an author to edit a published post when they shouldn't.
+
+The core of these vulnerabilities often lies in the fact that the application trusts the client-side too much. The server shows you a link to /admin/delete-user.php because you are an admin, but it doesn't actually check your role on the server when you click that link. Or, it uses an identifier like user_id from the URL to load data without verifying that the currently logged-in user is the owner of that data.
+
+For an attacker, finding broken access control is a goldmine. They don't need to find a complex injection flaw they just need to be a low-privilege user and then try to access high-privilege functionality by guessing URLs, known as forced browsing. Or, they log into their own account and then try to access the data of other users by manipulating parameters, a technique called Insecure Direct Object Reference or IDOR.
+
+For an ethical hacker, testing for broken access control is a major part of an assessment. You test every single function. You log in as a low-privilege user and try to access every admin page you can think of admin, administrator, dashboard, manager, root. You look for identifiers in URLs and parameters user_id, account_id, order_id, file_id and you try changing them to see if you can access another user's information. The key is that the server must re-verify the user's permissions for every single request.
+
+Hands-On Assignment for Topic 74
+
+Using your bWAPP lab:
+
+1.  Horizontal Privilege Escalation: Log into bWAPP as a low-privilege user like one of the regular users you found in the database. Go to your user profile. Look at the URL. It might have a parameter like user_id or something similar. Note the value. Now, change that value to another user's ID. Try to access the profile of user 1 who is likely the admin. Can you see it? This is a classic IDOR vulnerability and a broken horizontal access control.
+
+2.  Vertical Privilege Escalation: While logged in as a low-privilege user, try to directly browse to an admin page. For bWAPP, try going to /bWAPP/admin.php directly by typing it into the address bar. What happens? Does it let you in? Or does it give you an error? A properly secured application would redirect you to a login page or show an "access denied" message. A broken one would let you in. Also, look for menu items or links that are hidden in the HTML source code but still functional if you know the direct URL.
+
+3.  Parameter Tampering: Find a page where you can change your own information, like your email address. Use your proxy like ZAP to intercept the request when you submit the change. Look for a parameter that identifies your user account. Try changing that parameter to a different user's ID and then forward the request. Does the application change another user's email? This would be a broken access control that allows you to modify other users' data.
+
+Glossary for Topic 74
+
+Access Control: The security mechanism that determines what resources a user can access and what operations they can perform after they have been authenticated. It is the set of rules for what your visitor badge allows you to do inside the building.
+
+Broken Access Control: A vulnerability where restrictions on what authenticated users are allowed to do are not properly enforced. Users can act outside their intended permissions.
+
+Vertical Privilege Escalation: When a user with lower privileges can access functions or data reserved for users with higher privileges, like a customer becoming an administrator.
+
+Horizontal Privilege Escalation: When a user can access resources or data belonging to another user who has the same level of privileges. For example, User A viewing User B's private messages.
+
+Insecure Direct Object Reference (IDOR): A specific type of broken access control where an application exposes a reference to an internal implementation object, like a file, database record, or key, in the URL. An attacker can manipulate this reference to access unauthorized data.
+
+Forced Browsing: An attack where the attacker attempts to access resources that are not referenced by the application but are still accessible by guessing or knowing the direct URL.
+
+Authentication: The process of proving who you are logging in.
+Authorization: The process of determining what you are allowed to do after you are logged in. Access control is about authorization.
+
+***
+
+Are you ready to proceed to Topic 75: Detecting and Exploiting Broken Access Control? We will look at the practical methodologies for finding and demonstrating these flaws.

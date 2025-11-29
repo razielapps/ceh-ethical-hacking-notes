@@ -1,0 +1,68 @@
+Absolutely. Now that you have built your anonymous foundation, it is time to begin the actual attack process. We start with the most critical phase: Reconnaissance.
+
+Topic 4: Introduction to Reconnaissance
+
+If you were planning a physical heist of a secure building, you would not just run up to the front door and start trying to pick the lock. You would spend days, maybe weeks, observing. You would watch the guards, note their shift changes, identify all the entrances and exits, study the blueprints if you could find them, and even go through the company's trash to find useful information. In the world of hacking, this meticulous information-gathering stage is called Reconnaissance, or simply Recon. It is the first and most important of the five phases of an attack.
+
+The goal of reconnaissance is simple: to learn as much as possible about the target without sending a single packet that could trigger an alarm. Knowledge is power. The more you know about your target, the more precise and effective your attack will be. A hacker with good reconnaissance can find a single, overlooked vulnerability. A hacker without it is just blindly throwing attacks at a wall, hoping something sticks.
+
+We break reconnaissance down into two main types: Passive and Active.
+
+Passive Reconnaissance is the art of gathering information without directly interacting with the target's systems. You are collecting data from third-party sources. Think of it as reading about a company in the news, studying their public website, or looking up their employees on LinkedIn. You are not touching their servers, so there is virtually no risk of detection. The target has no way of knowing you are looking. This is always your first step.
+
+What are you looking for during passive recon?
+- Employee Information: Names, email addresses, job titles, and social media activity gathered from LinkedIn, Facebook, and other platforms.
+- Technology Stack: What software and technologies does the company use? You can often find this in job postings ("Looking for a WordPress developer"), or by using tools that analyze the company's website to see what web server, programming language, or JavaScript libraries they are using.
+- Domain Information: Who owns the domain? When was it registered? What are their name servers? This is found using WHOIS lookup tools.
+- Existing Data Breaches: Have any company emails or passwords been leaked in previous breaches? Websites like Have I Been Pwned or breach databases can tell you this.
+
+Active Reconnaissance involves interacting directly with the target's systems. This is where you start to knock on doors and check for loose windows. While you can gather much richer and more accurate data, you also create a log entry on their servers with your IP address. This is where your anonymity tools from the previous topics become essential. Using proxychains and a spoofed MAC address during active recon is critical.
+
+Examples of active recon include:
+- Visiting the target's website to view the page source and look for comments or hidden paths.
+- Using a tool like `ping` to see if a host is online.
+- Scanning for open ports to see what services are running (though intensive scanning is often categorized under the next phase, Scanning).
+
+The line between passive and active can sometimes be blurry. Is visiting a website passive or active? Technically, it's active because your browser downloaded data from their server, but it's considered a low-impact activity.
+
+The mindset for reconnaissance is one of a digital detective. You are piecing together a puzzle. An email address found on LinkedIn can become a username for a login portal. A technology version number found on a website can lead you to a known exploit. A job title can be used to craft a convincing phishing email. No piece of information is too small. You must be patient, thorough, and organized. Use a notetaking application like Obsidian or KeepNote to document every finding, no matter how insignificant it may seem at the time. These small pieces will form the blueprint for your entire attack.
+
+Glossary for Topic 4:
+
+Reconnaissance: The first phase of ethical hacking, focused on gathering intelligence and information about a target before launching any attacks.
+
+Passive Reconnaissance: Collecting information about a target without directly interacting with their systems. This is done through third-party sources and is considered low-risk and stealthy.
+
+Active Reconnaissance: Gathering information by directly interacting with the target's systems, such as pinging a server or visiting their website. This is faster and more accurate but carries a higher risk of detection.
+
+WHOIS: A protocol and database used to query information about the registration of a domain name, including the owner, registrar, and name servers.
+
+Technology Stack: The combination of programming languages, frameworks, libraries, and software products used to build and run a web application or service.
+
+OSINT (Open-Source Intelligence): The collection and analysis of information gathered from publicly available sources. Passive reconnaissance is a form of OSINT.
+
+Hands-On Assignment for Topic 4:
+
+Your mission is to perform a passive reconnaissance exercise on a sample target. We will use a fictional company, but the techniques are universal. Let's assume our target is a company called "ABC FinTech Inc." with the website `abc-fintech.com`.
+
+1.  **WHOIS Lookup**: Use a passive tool to perform a WHOIS lookup on the domain. You can use a website like whois.domaintools.com or the command line: `whois abc-fintech.com`. Document the following:
+    - Registrar
+    - Registration date
+    - Name servers
+    - Registrant organization (if not hidden)
+
+2.  **DNS Reconnaissance**: Use passive DNS tools. Go to a site like securitytrails.com or viewdns.info. Look up the DNS history for `abc-fintech.com`. See if you can find any historical IP addresses associated with the domain.
+
+3.  **Employee Hunting (Simulated)**: Go to LinkedIn and search for "ABC FinTech Inc." Try to find at least three employee names and their job titles. Note the pattern of their email addresses. For example, if you see "John Doe" and "Jane Smith", the email format is likely `jdoe@abc-fintech.com` or `john.doe@abc-fintech.com`.
+
+4.  **Technology Identification**: Use a tool like Wappalyzer (a browser extension) or a website like builtwith.com. Enter `abc-fintech.com`. Document the technologies it detects. For example:
+    - Web Server: Apache
+    - Programming Language: PHP
+    - JavaScript Framework: jQuery
+    - Analytics: Google Analytics
+
+5.  **Subdomain Discovery (Passive)**: Use a passive subdomain finder. A great tool for this is the `subfinder` command-line tool. You can run it passively: `subfinder -d abc-fintech.com -silent`. Alternatively, use a website like crt.sh, which searches SSL certificates for domain names. Look for subdomains like `dev.abc-fintech.com`, `mail.abc-fintech.com`, or `api.abc-fintech.com`. These often represent less-secure parts of the network.
+
+Compile all this information into a structured report. This is your initial intelligence dossier on the target. This dossier will guide all your subsequent active scanning and exploitation efforts. The quality of your recon will directly determine the success of your entire engagement.
+
+Are you ready to move to Topic 5: Web Server Reconnaissance?

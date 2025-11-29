@@ -1,0 +1,109 @@
+Of course. Now we will explore a more advanced and deceptive wireless attack: creating a trap for unsuspecting users.
+
+Topic 49: Setting Up a Rogue Access Point
+
+A rogue access point (AP) is an unauthorized wireless access point that is installed on a network, or in this context, set up by an attacker to mimic a legitimate one. It is one of the most effective social engineering attacks in the wireless realm. The goal is to trick users into connecting to the attacker's network instead of the legitimate one, allowing the attacker to monitor, manipulate, and steal all the data that passes through it.
+
+Think of it as a con artist setting up a fake bank booth right next to a real one. The fake booth looks identical, but when you hand over your money and details, they go straight to the criminal.
+
+**How a Rogue Access Point Attack Works:**
+
+1.  **Imitation:** The attacker creates a wireless network with an SSID (name) that is identical to, or very similar to, a trusted network. For example, if the target has a network called "Company_Guest", the attacker might create one called "Company-Guest" or "Company_Guest_Free".
+2.  **Lure:** The attacker makes their rogue AP have a stronger signal than the legitimate one in the immediate area. This is often done by using a high-gain antenna. Most devices are configured to automatically connect to the strongest signal from a known SSID.
+3.  **Exploitation:** Once a victim connects to the rogue AP, the attacker becomes the "Man-in-the-Middle." All of the victim's internet traffic—including passwords, emails, and credit card details—flows through the attacker's machine before being forwarded to the real internet.
+
+**Tools for Creating a Rogue AP:**
+
+The primary tool for this on Kali Linux is **`hostapd`** (Host Access Point Daemon). It allows a wireless network interface to act as an access point. We will also use `dnsmasq` to handle DHCP (assigning IP addresses to connecting clients) and DNS services.
+
+**The Technical Process:**
+
+1.  **Prepare the Wireless Adapter:** Ensure your adapter supports AP mode. You will need two wireless interfaces: one to host the rogue AP and another (or an Ethernet connection) to share the internet connection.
+2.  **Configure `hostapd`:** Create a configuration file for `hostapd` to define your rogue AP.
+    - **SSID:** The name of the fake network.
+    - **Channel:** The Wi-Fi channel to use.
+    - **Driver:** The driver interface type (usually `nl80211`).
+    - **Security:** You can set it as open (no password) to be more enticing, or use WPA2 to mimic a secure corporate network (though you'd need to handle the handshake).
+3.  **Configure `dnsmasq`:** Set up a configuration to act as a DHCP server, giving IP addresses to clients that connect to your rogue AP.
+4.  **Enable IP Forwarding and Set up IPTables Rules:** This is the core of the attack. You configure your Kali machine to forward traffic from the rogue AP's network to your real internet connection (e.g., your Ethernet port). You also set up firewall rules (IPTables) to perform Network Address Translation (NAT), so the traffic appears to come from your machine.
+5.  **Start the Services:** Launch `hostapd` and `dnsmasq`. Your rogue AP is now broadcasting and ready for victims.
+
+**Why This Attack is So Dangerous:**
+
+- **It Bypasses All Network Security:** The victim's device might be fully patched and have a strong firewall, but by connecting to the rogue AP, they have voluntarily placed themselves on the same network as the attacker.
+- **It Enables Further Attacks:** Once users are connected, the attacker can:
+    - **Perform SSL Stripping:** Downgrade HTTPS connections to HTTP to read the traffic in plaintext.
+    - **Serve Malicious Content:** Intercept downloads and replace them with malware.
+    - **Phish for Credentials:** Present fake login pages for common services.
+
+For an ethical hacker, demonstrating a rogue AP shows a client the critical risk of "trusted" network names and the importance of training users to verify networks and use VPNs on untrusted Wi-Fi.
+
+Glossary for Topic 49:
+
+Rogue Access Point: An unauthorized wireless access point installed on a network or set up by an attacker to deceive users.
+
+SSID (Service Set Identifier): The technical term for a Wi-Fi network name.
+
+hostapd: A user-space daemon software used to create wireless access points on Linux.
+
+dnsmasq: A lightweight service that provides DNS caching, DHCP server, and router advertisement functionality.
+
+IPTables: The user-space utility program for configuring the Linux kernel firewall.
+
+NAT (Network Address Translation): A method of remapping one IP address space into another by modifying network address information in the IP header of packets while they are in transit across a traffic routing device.
+
+Man-in-the-Middle (MitM): A cyberattack where the attacker secretly relays and possibly alters the communication between two parties who believe they are directly communicating with each other.
+
+Social Engineering: The psychological manipulation of people into performing actions or divulging confidential information.
+
+Hands-On Assignment for Topic 49:
+
+Your objective is to understand the process of setting up a rogue access point by creating a configuration plan for a lab environment.
+
+1.  **Scenario and Planning:**
+    - You are performing a physical penetration test for a company. Their guest network is "CorpGuest".
+    - Plan your rogue AP setup:
+        - What will you name your rogue SSID to trick users? (e.g., "Corp-Guest", "CorpGuest_Free")
+        - Will you set a password? Why or why not? (An open network might attract more users, but a secured one might appear more legitimate).
+
+2.  **Create the `hostapd` Configuration File:**
+    - Create a file named `rogue_ap.conf`.
+    - Populate it with the following basic configuration, filling in the blanks:
+        ```
+        interface=wlan0
+        driver=nl80211
+        ssid=CorpGuest_Free  # Your chosen rogue SSID
+        hw_mode=g
+        channel=6
+        macaddr_acl=0
+        ignore_broadcast_ssid=0
+        ```
+    - This config tells `hostapd` to use your `wlan0` interface to host an AP named "CorpGuest_Free" on channel 6.
+
+3.  **Create the `dnsmasq` Configuration File:**
+    - Create a file named `dnsmasq.conf`.
+    - Populate it with this configuration:
+        ```
+        interface=wlan0
+        dhcp-range=192.168.10.100,192.168.10.200,255.255.255.0,24h
+        dhcp-option=3,192.168.10.1
+        dhcp-option=6,192.168.10.1
+        server=8.8.8.8
+        ```
+    - This tells `dnsmasq` to listen on `wlan0`, hand out IP addresses in the range `192.168.10.100-200`, and tell clients that the gateway (router) is at `192.168.10.1` (which will be your Kali machine).
+
+4.  **IPTables and Forwarding Plan:**
+    - Write down the series of commands you would run to enable IP forwarding and set up the NAT routing.
+        - `echo 1 > /proc/sys/net/ipv4/ip_forward` (Enables IP forwarding)
+        - `iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE` (Assuming `eth0` is your internet-connected interface. This rule masks all outgoing traffic as coming from your Kali machine).
+
+5.  **Execution and Monitoring:**
+    - The final commands to start the attack would be:
+        - `sudo systemctl stop NetworkManager` (Stop the network manager that might interfere)
+        - `sudo hostapd rogue_ap.conf` (Start the access point)
+        - `sudo dnsmasq -C dnsmasq.conf -d` (Start the DHCP/DNS server in the foreground)
+    - For this assignment, you only need to write down these commands. You do not need to run them unless you are in a controlled, isolated lab.
+
+This assignment provides you with the complete blueprint for one of the most deceptive wireless attacks. You have created the configuration files and know the commands required to launch the attack, which is a critical skill for any wireless security professional.
+
+Are you ready to proceed to Topic 50: Man-in-the-Middle Attack?

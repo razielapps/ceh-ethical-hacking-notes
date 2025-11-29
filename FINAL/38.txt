@@ -1,0 +1,98 @@
+Of course. We will now focus our attention on the crown jewels of most organizations: their servers.
+
+Topic 38: Introduction to Server Hacking
+
+Servers are the workhorses of the digital world. They host websites, store databases, manage email, and run critical applications. Consequently, they are high-value targets for attackers. Server hacking is the process of compromising these central systems to steal data, disrupt services, or use them as a launchpad for further attacks within the network.
+
+The mindset for server hacking is one of precision and persistence. Unlike a user workstation, a server is often more hardened, runs specific services, and is monitored more closely. However, it also presents a larger attack surface due to the numerous services it runs and its constant availability.
+
+The attack methodology follows a clear path, building on our general system hacking knowledge but with a focus on common server-specific components.
+
+1.  **Reconnaissance and Service Enumeration:**
+    This is your foundation. You need a detailed map of the server.
+    - **Port Scanning:** Use Nmap for a comprehensive scan: `nmap -sS -sV -sC -O -p- <server_ip>`. This reveals all open ports, service versions, and operating system.
+    - **Web Server Inspection:** If it's a web server (ports 80/443), use tools like `nikto`, `gobuster`, and `whatweb` to find hidden directories, specific technologies, and known vulnerabilities.
+    - **Other Services:** Enumerate any other services found—SSH, FTP, SMB, RDP, database ports (MySQL: 3306, PostgreSQL: 5432, MSSQL: 1433).
+
+2.  **Vulnerability Identification:**
+    Cross-reference your enumeration data with known vulnerabilities.
+    - **Service-Specific CVEs:** Is the Apache version vulnerable to a specific RCE? Is the OpenSSH version affected by a user enumeration bug?
+    - **Misconfigurations:** These are often more common than pure software bugs.
+        - **Default Credentials:** Many services (especially in development environments) are left with default usernames and passwords (e.g., `admin:admin`).
+        - **Exposed Administrative Interfaces:** Finding `/phpmyadmin` or `/wp-admin` exposed to the internet.
+        - **Insecure File Permissions:** World-readable configuration files that contain database passwords.
+
+3.  **Initial Compromise (Exploitation):**
+    This is where you gain your first foothold on the server.
+    - **Exploiting a Public Vulnerability:** Use a known exploit for a service, like an SQL injection in a web app that leads to a web shell, or a buffer overflow in an FTP server.
+    - **Credential Attacks:** Brute-forcing or using default credentials on SSH, FTP, or a web login panel.
+    - **Web Shell Upload:** If you find a file upload vulnerability, you can upload a malicious script (a web shell) that gives you command execution through the browser.
+
+4.  **Post-Exploitation and Privilege Escalation:**
+    You are now on the server, likely as a low-privileged user (e.g., `www-data` on Linux or `IUSR` on Windows).
+    - **Privilege Escalation:** This is your primary goal. Use the techniques discussed in Linux/Windows hacking: kernel exploits, SUID/SGID files, sudo misconfigurations, weak service permissions, etc.
+    - **Credential Harvesting:** Dump hashes from the `/etc/shadow` file (Linux) or the SAM database (Windows). Look for configuration files (e.g., `wp-config.php` for WordPress) that contain database credentials, which are often reused.
+    - **Pivot and Lateral Movement:** The server is rarely the end goal. Use it as a foothold to attack other, more sensitive systems on the internal network that are not accessible from the outside.
+
+5.  **Data Exfiltration and Persistence:**
+    Once you have control, you aim to maintain it and achieve your objective.
+    - **Data Theft:** Locate and exfiltrate sensitive data—customer databases, source code, financial records.
+    - **Establish Persistence:** Install a backdoor, create a reverse shell as a scheduled task/cron job, or add an SSH key for persistent access.
+
+Server hacking is a test of comprehensive knowledge. You must be proficient in network protocols, web applications, operating system internals, and multiple exploitation techniques to successfully compromise a well-configured server.
+
+Glossary for Topic 38:
+
+Server Hacking: The process of gaining unauthorized access to a server computer system, typically to steal data, disrupt services, or use it as a pivot point.
+
+Service Enumeration: The process of identifying the services running on a server, including their software and version numbers.
+
+Web Shell: A malicious script that provides a command-line interface on a web server, allowing an attacker to execute commands remotely through a web browser.
+
+Default Credentials: The pre-configured username and password that come with a software or hardware product, which are often not changed by administrators.
+
+Privilege Escalation: The act of exploiting a bug or misconfiguration to gain elevated access to resources that are normally protected from an application or user.
+
+Pivot / Lateral Movement: The technique of using a compromised system to attack other systems on the same network.
+
+Data Exfiltration: The unauthorized transfer of data from a computer or server.
+
+Misconfiguration: An incorrect or suboptimal configuration of a system or application that exposes it to security risks.
+
+Hands-On Assignment for Topic 38:
+
+Your objective is to plan an attack against a vulnerable server in your lab (like Metasploitable). This is a strategic planning exercise.
+
+1.  **Comprehensive Reconnaissance:**
+    - Perform a full Nmap scan on your lab server.
+    - Command: `nmap -sS -sV -sC -O -p- <server_ip>`
+    - Document *all* open ports, the associated service, and its version number. Create a table for clarity.
+
+2.  **Vulnerability Mapping:**
+    - Choose two services from your Nmap results.
+    - For each service, research one known vulnerability or common misconfiguration associated with that specific version.
+    - Example:
+        - Service: vsFTPd 2.3.4
+        - Vulnerability: Backdoor Command Execution (CVE-2011-2523).
+        - Service: Apache 2.2.8
+        - Misconfiguration: Exposed `server-status` page revealing internal information.
+
+3.  **Initial Access Strategy:**
+    - Based on your research, choose one vulnerability/misconfiguration that seems the most promising for gaining initial access.
+    - Write down the exact Metasploit module or manual exploit command you would use.
+    - Example: "I would use the `exploit/unix/ftp/vsftpd_234_backdoor` module in Metasploit."
+
+4.  **Post-Exploitation Roadmap:**
+    - Assume your initial exploit is successful and you have a low-privilege shell.
+    - List the first three commands you would run on the server to start your post-exploitation process.
+        - 1. `whoami` (to confirm current user).
+        - 2. `uname -a` (to get kernel version for privilege escalation research).
+        - 3. `cat /etc/passwd` (to list system users).
+
+5.  **Privilege Escalation Hypothesis:**
+    - Based on the OS and kernel version from your Nmap scan (`-O` flag) or your post-exploitation commands, research one potential privilege escalation technique for that specific system.
+    - Document the name of the technique (e.g., "Dirty COW kernel exploit" or "Exploiting a writable `/etc/passwd` file").
+
+This assignment forces you to approach server hacking methodically. The planning and research phase is often more important than the execution, as it ensures you use the most appropriate and effective technique for the target.
+
+Are you ready to proceed to Topic 39: Server Hacking with Brute-Force Method (Hydra)?

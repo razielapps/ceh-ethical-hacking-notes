@@ -1,0 +1,136 @@
+Of course. Here is a comprehensive, raw-text cheatsheet designed for elite penetration testers. It moves beyond basic tool usage and focuses on the methodology, advanced techniques, and mindset required for high-level engagements.
+
+***
+
+ELITE PENETRATION TESTING CHEATSHEET
+CONCEPT: Go beyond automated tools. The elite tester uses tools for efficiency but relies on manual techniques, deep understanding, and creative thinking to find vulnerabilities automation misses.
+
+PHASE 1: PLANNING & RECONNAISSANCE (The Foundation)
+
+OBJECTIVE: Understand the target better than they understand themselves.
+
+PASSIVE RECONNAISSANCE (No direct contact):
+- Google Dorking: Use advanced operators.
+  - site:target.com filetype:pdf
+  - "index of" "database password" site:target.com
+  - inurl:admin site:target.com
+- Shodan/Hunter.io/Censys: Find exposed devices, services, and emails.
+  - Shodan: net:"192.168.0.0/24" product:"apache"
+  - Hunter.io: Find email format and verify emails.
+- WHOIS/Lookup: Identify IP blocks, ASNs, and related domains.
+- Social Media Recon (LinkedIn, GitHub):
+  - GitHub: Search for company names, find API keys, passwords, and source code in commits.
+  - LinkedIn: Identify employee names, email formats, and tech stack (e.g., "works with Citrix").
+- SSL Certificate Analysis: Use tools like censys.io to find all domains sharing the same certificate.
+
+ACTIVE RECONNAISSANCE (Direct contact):
+- Subdomain Enumeration:
+  - Tools: Amass, Subfinder, Assetfinder.
+  - Command: amass enum -passive -d target.com > subs.txt
+  - Brute-force: gobuster dns -d target.com -w /usr/share/wordlists/subdomains.txt
+- Port & Service Scanning:
+  - Initial: nmap -sC -sV -O target.com (Standard script, version, OS)
+  - Full TCP: nmap -p- -T4 target.com (All ports)
+  - UDP: nmap -sU -p 53,161,123 (Slow, be selective)
+  - Sneaky: nmap -sS -T2 --source-port 53 (Slower, use common source port)
+- Web Server Fingerprinting:
+  - WhatWeb, Wappalyzer (Browser extension).
+  - Manual: Check HTTP headers, favicon.ico hash, custom error pages.
+- Directory & File Brute-Forcing:
+  - Tools: Feroxbuster, Dirb, Gobuster.
+  - Command: feroxbuster -u https://target.com -w /usr/share/wordlists/dirb/big.txt -x php,txt,json,bak
+
+PHASE 2: VULNERABILITY ANALYSIS & EXPLOITATION
+
+OBJECTIVE: Chain vulnerabilities to achieve deep compromise.
+
+SOCIAL ENGINEERING (The Human Layer)
+- Phishing (Weaponized):
+  - Tools: GoPhish, SET (Social-Engineer Toolkit).
+  - Technique: Clone a real site (corporate login, O365). Use a trusted sender address (SMTP abuse). Craft a credible pretext ("Password Expiry", "Voicemail Notification").
+  - Payloads: Not just executables. Macro-enabled documents, .LNK files, and links to fake login pages are often more effective.
+- Vishing (Voice Phishing):
+  - Pretext: Posing as IT support needing a password for a "critical update".
+  - Goal: Initial access or password reset.
+- Physical Social Engineering:
+  - Tailgating: Following an employee into a secure area.
+  - Dropped Media: Leaving a malicious USB drive labeled "Q4 Salaries" in the parking lot.
+- OSINT for Targeting:
+  - Use LinkedIn to find employees who recently posted about a specific software (e.g., "Learning Salesforce!"), then send a targeted phishing email about that software.
+
+WEB APPLICATION (Beyond the Scanner)
+- Manual Testing with Proxies (Burp Suite / ZAP):
+  - Always test every input. Parameters, headers, cookies, file uploads.
+- SQL Injection (Advanced):
+  - Boolean-Based Blind: Use tools like SQLmap with --level and --risk flags, but understand the manual payloads.
+  - Time-Based Blind: Use SLEEP() or WAITFOR DELAY to infer data based on response times.
+  - Out-of-Band (OAST): Use DNS exfiltration with tools like Burp Collaborator to trigger a DNS lookup from the database server, proving execution.
+- Cross-Site Scripting (XSS):
+  - Test for stored XSS in all user-controlled data (profile names, comments, etc.).
+  - Use polyglot payloads that execute in multiple contexts.
+  - Abuse DOM-based XSS where the sink is within JavaScript code.
+- Server-Side Request Forgery (SSRF):
+  - Test all URL parameters. Try to access internal endpoints http://localhost, http://169.254.169.254/ (AWS metadata).
+  - Use tools like Burp Collaborator to confirm blind SSRF.
+- XML External Entity (XXE):
+  - Test all XML input (file uploads, API requests). Try to read /etc/passwd or cause a Denial of Service.
+- Insecure Direct Object Reference (IDOR):
+  - Don't just test sequential IDs. Test GUIDs/UUIDs. Test horizontal AND vertical privilege escalation.
+  - Test parameter pollution: user_id=123&user_id=124.
+- File Upload Bypasses:
+  - Bypass client-side checks by intercepting the request.
+  - Bypass blacklists: .phtml, .phar, .jspx.
+  - Use magic bytes at the start of a file (GIF89a;) to bypass content checks.
+- API Testing:
+  - Find hidden endpoints: /api/v1/, /graphql.
+  - Test for broken object level authorization, excessive data exposure, and mass assignment.
+
+MOBILE APPLICATION (iOS & Android)
+- Static Analysis:
+  - Android: Decompile APK with jadx or APKTool. Analyze smali code. Search for hardcoded keys, passwords, and API endpoints.
+  - iOS: Use otool or class-dump on the IPA file. Analyze the binary.
+- Dynamic Analysis:
+  - Tools: Frida, Objection, MobSF.
+  - Root/Jailbreak Bypass: Use Frida to patch root detection checks at runtime.
+  - SSL Pinning Bypass: Use Objection (android sslpinning disable) or Frida scripts to bypass certificate pinning.
+  - Intercepting Traffic: Use Burp Suite as a proxy. Must bypass pinning first.
+- Testing Local Storage:
+  - Check SharedPreferences, SQLite databases, and Keychain/KeyStore for sensitive data.
+- Deep Link & URL Scheme Abuse:
+  - Test for insecure deep links that can be triggered by a malicious app to perform unauthorized actions.
+
+POST-EXPLOITATION & LATERAL MOVEMENT
+- Windows Environments:
+  - Credential Dumping: Mimikatz, lsassy.
+  - Lateral Movement: Pass-the-Hash, Pass-the-Ticket, PsExec, WMI.
+  - Enumeration: BloodHound.py to map attack paths to Domain Admin.
+- Linux Environments:
+  - Privilege Escalation: Check for SUID/GUID files, cron jobs, writable services, kernel exploits.
+  - Tools: LinPEAS (Linux Privilege Escalation Awesome Script).
+- Living Off the Land:
+  - Use built-in tools to avoid detection.
+  - Windows: certutil.exe (download files), sc.exe (create services), wmic.
+  - Linux: curl/wget, ssh, bash reverse shells.
+
+PHASE 3: REPORTING & PIVOTING
+
+OBJECTIVE: Maintain access, escalate privileges, and document impact.
+- Persistence: Create scheduled tasks, services, backdoors, or add SSH keys.
+- Pivoting: Use compromised host as a relay to attack the internal network.
+  - Tools: Chisel, SSH dynamic forwarding (ssh -D), Metasploit's socks4a module.
+- Data Exfiltration: Compress and encrypt data before exfiltration. Use slow, stealthy channels like DNS tunneling.
+- Reporting: The most critical phase.
+  - Executive Summary: Business impact in plain English.
+  - Technical Details: Clear, reproducible steps for each finding.
+  - Evidence: Screenshots, command output.
+  - Risk Rating: CVSS score and business context.
+  - Remediation: Actionable, specific advice for developers and sysadmins.
+
+GLOSSARY OF KEY TOOLS & TERMS
+- OAST (Out-of-Band Application Security Testing): Using external networks to detect vulnerabilities that are "blind".
+- Pivoting: Using a compromised machine to access other machines on its internal network.
+- Living Off the Land: Using native OS tools and services for post-exploitation to avoid detection by AV/EDR.
+- Frida: A dynamic instrumentation toolkit used to hook into running processes on mobile and desktop.
+- BloodHound: A tool that maps relationships in an Active Directory environment to reveal hidden attack paths.
+- C2 (Command & Control): The server that compromised machines call back to for instructions.
+- EDR (Endpoint Detection and Response): Advanced security software that monitors endpoints for malicious activity. Elite testing requires evading EDR.

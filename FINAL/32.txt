@@ -1,0 +1,95 @@
+Of course. We now move to the phase where we turn a vulnerability into a tangible foothold inside the target's environment.
+
+Topic 32: Introduction to System Hacking
+
+System hacking is the culmination of all the previous phases. It is the art of exploiting a vulnerability to gain unauthorized access to a computer system or network. Reconnaissance told you what the target is. Scanning and enumeration told you where the doors and windows are. Vulnerability assessment told you which window has a weak latch. System hacking is the act of prying that window open and climbing inside.
+
+The ultimate goal of system hacking is to elevate your privileges on the system, gain persistent access, and then pillage the system for sensitive data while covering your tracks. This is often referred to as the "assess, exploit, escalate, persist" cycle.
+
+Let's break down the core stages of system hacking:
+
+1.  **Gaining Initial Access (Exploitation):**
+    This is the point of entry. You use a specific exploit to leverage a vulnerability you discovered. This could be:
+    - **Exploiting a Software Vulnerability:** Using a buffer overflow or remote code execution flaw in a service like a web server (e.g., Apache) or an application.
+    - **Credential-Based Attacks:** Using cracked or stolen usernames and passwords to log into a service like SSH, RDP, or a web application.
+    - **Client-Side Attacks:** Tricking a user inside the network into running a malicious program (e.g., via a phishing email) that gives you access.
+    The result of successful initial access is often a limited user shell or a connection to the system with low-level privileges.
+
+2.  **Privilege Escalation:**
+    You are inside, but you are a lowly user. Your goal now is to become the administrator or root. Privilege escalation is the process of exploiting a vulnerability or misconfiguration on the system itself to gain higher-level privileges.
+    - **Vertical Escalation:** Going from a low-privilege user (e.g., a regular user) to a high-privilege user (e.g., root/administrator). This is the primary goal.
+    - **Horizontal Escalation:** Going from one user to another user at the same privilege level. This might be done to access a different user's files or data.
+    Techniques include exploiting kernel vulnerabilities, abusing misconfigured file permissions, leveraging weak service configurations, or extracting credentials from memory.
+
+3.  **Maintaining Persistence:**
+    A smart attacker doesn't want to re-exploit the system every time they want access. Persistence is about ensuring you can get back in whenever you want, even if the system is rebooted or the original vulnerability is patched.
+    This involves installing backdoors, such as:
+    - Creating a new user account with administrative privileges.
+    - Installing a remote access trojan (RAT) or a web shell.
+    - Creating scheduled tasks or cron jobs that call back to your machine at regular intervals.
+    - Modifying existing system services to run your malicious code.
+
+4.  **Covering Tracks (Anti-Forensics):**
+    Once you have what you need, you don't want to get caught. This phase involves erasing evidence of your activities to avoid detection and forensic investigation.
+    - **Clearing Logs:** Deleting or modifying system, application, and security logs that recorded your actions.
+    - **Hiding Files:** Using hidden attributes or storing files in obscure directories.
+    - **Uninstalling Tools:** Removing the exploitation tools and scripts you uploaded to the system.
+
+The mindset for system hacking is one of patience and opportunism. You must be ready to pivot from one technique to another. Your initial exploit might fail, a privilege escalation method might be patched, so you must have multiple tools and techniques at your disposal. It's a puzzle where you constantly adapt to the environment you find inside.
+
+For an ethical hacker, every action in this phase must be meticulously documented. You must be able to show the client exactly how you gained access, what you could do, and most importantly, how they can prevent it.
+
+Glossary for Topic 32:
+
+System Hacking: The process of exploiting a vulnerability to gain unauthorized access to a computer system, followed by privilege escalation, maintaining access, and covering tracks.
+
+Exploitation: The act of taking advantage of a vulnerability to execute unauthorized commands or code on a target system.
+
+Initial Access: The first foothold an attacker gains within a network or system.
+
+Privilege Escalation: The process of exploiting a bug, design flaw, or configuration oversight in an operating system or application to gain elevated access to resources that are normally protected from a user.
+
+Persistence: Any method, technique, or tool that an attacker uses to maintain reliable, long-term access to a compromised system.
+
+Covering Tracks: The process of removing, altering, or obfuscating evidence of a system intrusion to avoid detection.
+
+Shell: A user interface for access to an operating system's services, often a command-line interface (CLI). Gaining a "shell" means gaining command execution.
+
+Backdoor: A method of bypassing normal authentication or encryption in a system, often secretly installed to grant future access.
+
+Hands-On Assignment for Topic 32:
+
+Your objective is to understand the system hacking lifecycle by planning an attack against a known vulnerable machine in your lab (like a Metasploitable VM).
+
+1.  **Target Selection and Reconnaissance:**
+    - Choose a vulnerable lab machine as your target.
+    - Perform a full Nmap scan to identify its open ports and services.
+    - Document the results. Identify one service with a known vulnerability that could lead to initial access. (e.g., An outdated ProFTPD service, a vulnerable Samba share, or a web application flaw).
+
+2.  **Research and Exploitation Planning:**
+    - Based on your chosen service, research the specific vulnerability and exploit.
+    - Go to a site like Exploit-DB (https://www.exploit-db.com) and search for an exploit for that service and version.
+    - Find one potential exploit. Read its description. Document the following:
+        - **Vulnerability Name:**
+        - **CVE Number (if available):**
+        - **How the exploit works (briefly):** (e.g., "It sends a crafted command to the FTP service to execute a reverse shell.")
+
+3.  **Privilege Escalation Research:**
+    - Assume your initial exploit will give you a low-privilege shell (a "www-data" user on Linux or a "guest" user on Windows).
+    - Research one common privilege escalation technique for the target's operating system.
+    - For Linux, this could be exploiting a vulnerable program with the SUID bit set.
+    - For Windows, this could be exploiting a misconfigured service permission.
+    - Document the name of the technique you would try first.
+
+4.  **Persistence Strategy:**
+    - Describe one method you would use to maintain access to the compromised system.
+    - For Linux: "I would add a reverse shell command to the user's `.bashrc` file or create a cron job."
+    - For Windows: "I would use Metasploit's `persistence` module to install a payload that runs on startup."
+
+5.  **Covering Tracks (Conceptual):**
+    - Which log file on a Linux system would you need to clear if you logged in via SSH? (`/var/log/auth.log` or `/var/log/secure`).
+    - What command could you use to view the last 10 entries in that log? (`sudo tail -10 /var/log/auth.log`).
+
+This assignment forces you to think through the entire attack chain before executing a single command. This planning and research phase is critical for a successful and professional engagement. You are building your methodology.
+
+Are you ready to proceed to Topic 33: Introduction to Metasploit?

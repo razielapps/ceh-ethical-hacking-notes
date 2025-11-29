@@ -1,0 +1,73 @@
+Of course. We are now moving from passive observation to active interaction. Reconnaissance told us *what* the target is; port scanning tells us *where* we can talk to it.
+
+Topic 17: Introduction to Port Scanning & Enumeration
+
+Reconnaissance gives you a list of targets—IP addresses and hostnames. But an IP address is just a building. Port scanning is the process of walking up to that building and checking every single door and window to see which ones are open, locked, or even boarded up. A "port" is a virtual concept, a number between 1 and 65535 that an operating system uses to distinguish between different network services on the same machine. Think of it as an apartment number. The IP address is the street address, and the port number is the specific apartment unit where a service (like a web server or file server) lives.
+
+Port 80 is typically for HTTP web traffic.
+Port 22 is for SSH (Secure Shell).
+Port 25 is for SMTP (email).
+Port 443 is for HTTPS (secure web).
+
+Port scanning is the systematic process of probing a target host to determine which of these 65,535 potential doors are accepting connections. It is the most direct way to map the attack surface of a target. Finding an open port is like finding an open door into the castle. It doesn't mean you can walk in yet, but it tells you where to focus your efforts.
+
+The goal of port scanning is twofold:
+1.  **Discover Open Ports**: Find which services are running and accessible from your position on the network.
+2.  **Enumerate Services**: Determine what software and version is running on that open port. This is critical. Finding "port 80/tcp open" is good. Finding "port 80/tcp open http Apache httpd 2.4.41 ((Ubuntu))" is infinitely more valuable because it tells you exactly what to attack.
+
+However, this activity is not stealthy. You are actively knocking on doors, and the target's security systems (firewalls, Intrusion Detection Systems) are listening for this knocking. Therefore, a professional hacker must understand the different *types* of port scans, each with its own trade-off between speed, stealth, and reliability.
+
+The different scan types manipulate the TCP protocol we learned about to achieve different goals. The main scans to understand are:
+
+-   **TCP Connect Scan (`-sT`)**: This is the most basic and reliable scan. It performs a full TCP three-way handshake with the target port. If the handshake completes, the port is open. This is very accurate but also the noisiest, as every connection is fully logged. It's like walking up to a door, knocking, and having a full conversation with the person inside.
+
+-   **SYN Scan (or Half-Open Scan) (`-sS`)**: This is the default and most popular scan type. It only sends the initial SYN packet. If the target responds with a SYN/ACK, the port is open, and the scanner immediately sends a RST packet to tear down the connection without completing the handshake. This is faster and stealthier than a full connect scan because many systems don't log incomplete connections. It's like knocking on the door and running away before anyone can get a good look at you.
+
+-   **UDP Scan (`-sU`)**: TCP is for connection-oriented traffic; UDP is for connectionless traffic (like DNS, DHCP). UDP scanning is more difficult and slower because UDP ports don't respond with a "open" acknowledgment. If a UDP port is open, it typically doesn't respond at all. If it's closed, it might send back an ICMP "port unreachable" message. So, a lack of response is interpreted as a potentially open port.
+
+-   **FIN, NULL, and Xmas Scans (`-sF`, `-sN`, `-sX`)**: These are stealth scans that send packets with unusual flag combinations (like just a FIN flag, or no flags, or FIN, PSH, and URG) to bypass certain types of firewalls that only filter SYN packets. Their behavior depends on the target operating system's compliance with the TCP RFC.
+
+Port scanning is the bridge between reconnaissance and exploitation. It takes the broad list of targets from your recon phase and gives you a specific, prioritized list of entry points. The open ports are your beachhead.
+
+Glossary for Topic 17:
+
+Port Scanning: The process of sending packets to a target host to discover which network ports are open, closed, or filtered.
+
+Port: A virtual point where network connections start and end. Ports are associated with specific processes or services.
+
+TCP Connect Scan: A port scan that completes the full TCP three-way handshake. It is reliable but easily detected.
+
+SYN Scan (Half-Open Scan): A stealthier port scan that only sends the initial SYN packet and tears down the connection upon receiving a SYN/ACK, without completing the handshake.
+
+UDP Scan: A port scan used to identify open User Datagram Protocol (UDP) ports. It is less reliable and slower than TCP scans.
+
+Service Enumeration: The process of determining which application and version is running on an open port.
+
+Firewall: A network security system that monitors and controls incoming and outgoing network traffic based on predetermined security rules. It can filter port scan attempts.
+
+Intrusion Detection System (IDS): A device or software application that monitors a network or systems for malicious activity or policy violations.
+
+Hands-On Assignment for Topic 17:
+
+Your objective is to understand the theory behind port scanning in preparation for using the tool itself. This is a planning and analysis assignment.
+
+1.  **Target Selection**: Choose a target you are authorized to scan. This could be your dedicated practice lab machine (like a Metasploitable VM), a router on your network, or a service like `scanme.nmap.org`. **CRITICAL: Only scan targets you own or have explicit written permission to test.**
+
+2.  **Scan Strategy Planning**: For your chosen target, plan three different scanning approaches and write down the goal of each.
+    - **Scan 1: The Quick Recon**. Your goal is to find the most common open ports as fast as possible. Which scan type would you use? Why?
+    - **Scan 2: The Stealthy Probe**. Your goal is to check for a few specific services (e.g., SSH on 22, HTTP on 80, HTTPS on 443) without making much noise. Which scan type would you use? Why is it stealthier?
+    - **Scan 3: The Comprehensive Audit**. Your goal is to find every single possible open port, including UDP services, regardless of time or noise. Which two scan types would you need to combine?
+
+3.  **Predict the Outcome**: Based on what you know about your target, predict what you might find.
+    - If it's a web server, which ports do you expect to be open?
+    - If it's your home router, which ports might be open for management?
+    - If it's a standard Linux server, what about port 22?
+
+4.  **Research Response Types**: Look up and document what the different port states mean in a scan result:
+    - **Open**: What does this mean from a protocol perspective? (The target sent a SYN/ACK).
+    - **Closed**: What does this mean? (The target sent a RST).
+    - **Filtered**: What does this mean? (The target didn't respond, likely due to a firewall).
+
+This assignment forces you to think tactically before you even run a tool. Understanding the *why* behind each scan type is what allows you to adapt to different target environments and evasion requirements. In the next topic, we will put this theory into practice with the world's most famous port scanner.
+
+Are you ready to proceed to Topic 18: Packet Crafting?

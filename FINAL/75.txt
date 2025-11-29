@@ -1,0 +1,61 @@
+Of course. Now let's get practical and see how we, as ethical hackers, can systematically find and prove the existence of broken access control.
+
+***
+
+Topic 75: Detecting and Exploiting Broken Access Control
+
+Finding broken access control is often less about complex technical exploits and more about a methodical, patient approach. It is about thinking like both a user and an attacker, constantly asking the question, "What happens if I try this?" The core technique is manipulation and observation.
+
+The first and most powerful technique is Manual Testing with Privilege Comparison. For this, you absolutely need at least two sets of user accounts. You need a low-privilege user, like a standard customer, and a high-privilege user, like an administrator. You then perform actions in both accounts and meticulously compare the requests and responses.
+
+Start by logging in as the high-privilege user, the admin. Use your intercepting proxy like Burp Suite or ZAP and turn on the traffic logging. Now, browse through the entire application as the admin. Click on every admin feature: user management, site configuration, logging, everything. Your proxy will record every single URL, every parameter, every POST request that the admin makes.
+
+Now, log out and log in as the low-privilege user. This is where the real testing begins. You have two main approaches.
+
+The first approach is Forced Browsing. You take the list of admin URLs you captured user_management.php, delete_user.php, /admin/config and you try to access them directly from your low-privilege user session. You simply type the URL into the address bar. If the page loads with full functionality, you have found a critical vertical privilege escalation flaw. The server failed to check if the current user is an admin before rendering the page.
+
+The second, more common approach is to use your proxy's history. You right-click on an admin request that you captured earlier, for example, a POST request to delete a user. You send this request to the repeater tool within your proxy. Now, while you are still logged in as the low-privilege user, you take this admin-level request from the repeater and you send it. You need to make sure your low-privilege user's session cookies are being used in the repeater tab. If the server accepts the request and deletes the user, you have a massive vulnerability. The server is only checking that you are logged in, not that you are authorized for that specific action.
+
+The next major technique is Parameter Tampering, which is key for finding Horizontal Privilege Escalation or IDOR. While logged in as your low-privilege user, you look for any parameter that references an object. The most common ones are user_id, account_id, order_id, invoice_id, and file_id. Whenever you see such a parameter, you change its value.
+
+For example, if you see a URL like /view_order?order_id=1001, you change it to /view_order?order_id=1000. If you can now see another user's order, that is IDOR. You must also test this in POST requests. Intercept a request that changes your email. It might have parameters like user_id=555&email=new@email.com. Change the user_id to 554 and forward the request. If the application changes another user's email, this is a critical flaw allowing you to modify any user's data.
+
+Another thing to look for is Functionality that is Hidden but not Disabled. Sometimes the user interface will hide admin buttons or links from a low-privilege user by using CSS like display:none. But the underlying HTML might still be in the page source. You can view the page source, find the hidden link, and click it. Or, the JavaScript might prevent you from clicking a button, but you can replay the underlying API call directly using your proxy.
+
+You should also test for Method-Based Access Control. Sometimes an application checks permissions for a GET request to a page but not for a POST request to the same URL. Or, it might allow a POST but not a PUT or DELETE. You can use your proxy to change the HTTP method of a request and see if the authorization check is bypassed.
+
+The exploitation of these flaws is straightforward. For vertical escalation, you gain admin rights. For horizontal escalation, you can view, modify, or delete the data of every other user in the system. The impact is often the complete compromise of user data and application integrity.
+
+Hands-On Assignment for Topic 75
+
+Using your bWAPP lab and two user accounts one low-privilege and one admin.
+
+1.  Capture Admin Requests: Log in as the administrator account in bWAPP. With your proxy running, navigate to the User Management section or any clearly admin-specific function. Perform a few actions. Then, in your proxy's history, identify a few key requests that are clearly for admin functions.
+
+2.  Replay as Low-Privilege User: Now, log out and log in as a standard user like bee with password bug. Go to your proxy's Repeater tool. Find one of the admin requests you captured. Right-click and send it to Repeater. In the Repeater, ensure your current low-privilege session cookies are present in the request headers. Now, send the request. Observe the response. Does it successfully perform the admin action? Or does it return an error? This tests vertical access control on a specific API endpoint.
+
+3.  Hunt for IDOR: Logged in as your low-privilege user, find a page that displays your own information, like your user profile. Note the parameter that identifies you, for example, ?id=2. Change the id value to 1 which is likely the admin. Can you see the admin's profile page? This is horizontal access control failure.
+
+4.  Check for Hidden Functionality: While logged in as the low-privilege user, view the HTML source of the page. Look for hidden form fields, hidden links, or commented-out HTML that references admin functions. Try to access them directly.
+
+Glossary for Topic 75
+
+Manual Testing with Privilege Comparison: The process of using two different user accounts to compare the requests and responses for the same functionality to identify authorization gaps.
+
+Forced Browsing: The attack of directly accessing a URL that is not linked from the user's current interface, often to access privileged functionality.
+
+Parameter Tampering: The attack of modifying parameters sent to the server, such as in a URL or form field, to change the object being referenced or acted upon. This is the primary technique for exploiting IDOR.
+
+IDOR Exploitation: The act of actually using an Insecure Direct Object Reference vulnerability to access or modify unauthorized data by manipulating object references.
+
+Repeater Tool: A feature in web proxies like Burp Suite and ZAP that allows you to capture an HTTP request, manually modify it, and send it repeatedly to the server while observing the responses. It is essential for testing access control.
+
+Horizontal Privilege Escalation: Successfully exploiting a flaw to access the data of another user at the same privilege level.
+
+Vertical Privilege Escalation: Successfully exploiting a flaw to perform an action reserved for a higher-privileged user, like an administrator.
+
+Method-Based Access Control: A security mechanism where authorization checks are based on the HTTP method used GET, POST, PUT, DELETE. A flaw exists if the check is inconsistent across methods.
+
+***
+
+Are you ready to learn how to fix these issues with Topic 76: Countermeasures (Broken Access Control)?

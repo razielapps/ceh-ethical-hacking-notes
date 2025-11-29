@@ -1,0 +1,73 @@
+Excellent. Let's narrow our focus from the general target to a specific, high-value component: the web server.
+
+Topic 5: Web Server Reconnaissance
+
+A company's public website is its digital front door. It's designed to be accessible to everyone, which makes it a prime target for attackers. Web server reconnaissance is the process of actively probing this front door to understand its construction, its weaknesses, and the hidden features the company may not even know are exposed.
+
+Think of a web server not as a single door, but as a large building with a main entrance, side doors, back entrances, and air vents. Your job is to map out every single one of these entry points. The ultimate goal is to answer several key questions: What software is the server running? What specific version is it? How is it configured? Are there any hidden files or directories that shouldn't be public? What other information is the server willingly giving away?
+
+This process is critical because web servers often host the web application itself, which can contain vulnerabilities like SQL Injection or Cross-Site Scripting. But even before we test the application, we need to test the server that delivers it. A misconfigured web server can be a goldmine, allowing an attacker to bypass the application entirely.
+
+The primary tool for this task is not a complex exploit framework, but a simple yet incredibly powerful command-line utility called `curl`. `curl` is your digital stethoscope. It allows you to interact with a web server at a fundamental level, sending HTTP requests and inspecting the raw responses, headers, and data that the server returns. While graphical browsers like Chrome or Firefox render the content for a user, `curl` shows you the raw plumbing of the web.
+
+Here are the key techniques for web server reconnaissance:
+
+1.  **Banner Grabbing**: The most basic form of reconnaissance. When a web server responds to a request, it often includes a header called `Server` that announces what software it's running. For example, it might say `Server: Apache/2.4.41 (Ubuntu)` or `Server: nginx/1.18.0`. This information is a gift to a hacker. It immediately tells you what software to focus your research on. You can perform banner grabbing with a simple `curl` command: `curl -I http://abc-fintech.com`. The `-I` flag tells `curl` to fetch only the HTTP headers. Look for the `Server` header in the output.
+
+2.  **Analyzing HTTP Headers**: The server headers contain more than just the server version. Look for other information leaks:
+    - `X-Powered-By`: This header can reveal the backend programming framework, like `X-Powered-By: PHP/7.4.3`.
+    - `X-AspNet-Version`: Reveals the version of ASP.NET running on a Microsoft IIS server.
+    - Cookies: Cookies can reveal the underlying technology, like `JSESSIONID` for Java applications or `ASP.NET_SessionId` for ASP.NET.
+
+3.  **Testing for HTTP Methods**: HTTP uses methods like GET (retrieve data), POST (send data), and others. Some methods, like PUT (upload a file) or DELETE (remove a file), can be dangerous if enabled on the web server. You can test for these using `curl`:
+    - `curl -X OPTIONS http://abc-fintech.com -I` - The OPTIONS method often lists the allowed methods.
+    - `curl -X PUT http://abc-fintech.com/test.txt -d "data"` - This attempts to upload a file. If it succeeds, the server is dangerously misconfigured.
+
+4.  **Robot.txt and Hidden Directories**: Most websites have a file called `robots.txt`. This file is intended to instruct web crawlers (like Google's) which parts of the site not to index. For a hacker, this file is a treasure map of hidden directories that the company doesn't want the public to see. Always check it: `curl http://abc-fintech.com/robots.txt`. You might find paths to administrative panels (`/admin/`), backup directories (`/backup/`), or configuration files.
+
+5.  **Directory and File Brute-Forcing**: Beyond `robots.txt`, there are thousands of common files and directories that might be present on a server. Tools like `gobuster` or `dirb` are used to automate the process of requesting these common paths to see which ones exist. For example, you might find `/phpmyadmin/` (a database administration tool) or `/server-status/` (an Apache status page that can leak information).
+
+A professional doesn't just run a tool and move on. They meticulously analyze the output. A version number for Apache 2.4.41 is not just a string of text; it's a specific software build with a known list of vulnerabilities. Finding it tells you to immediately search for exploits affecting Apache 2.4.41. This is how reconnaissance directly fuels exploitation.
+
+Glossary for Topic 5:
+
+Web Server Reconnaissance: The process of gathering information about a target's web server, including its software, version, configuration, and exposed files.
+
+curl: A command-line tool and library for transferring data with URLs. It is the Swiss Army knife for interacting with web servers from the terminal.
+
+Banner Grabbing: The technique of connecting to a network service and recording the version and other information it presents in its initial response banner.
+
+HTTP Headers: Components of the HTTP protocol that carry additional information between a client and a server, such as the type of browser, the server software, and cookies.
+
+HTTP Methods: The actions that can be performed on a web resource. Common methods are GET, POST, PUT, DELETE, and OPTIONS.
+
+robots.txt: A file used to instruct web robots which areas of a website should not be processed or scanned.
+
+Directory Brute-Forcing: The automated process of guessing and checking for the existence of files and directories on a web server.
+
+Hands-On Assignment for Topic 5:
+
+Your objective is to perform a detailed reconnaissance on the web server of a test target. You can use a site like `scanme.nmap.org` or a dedicated practice lab like one from Hack The Box.
+
+1.  **Banner Grabbing and Header Analysis**: Use `curl` to grab the server banner and analyze all headers.
+    - Command: `curl -I http://target.com`
+    - Document every header you receive: Server, X-Powered-By, Set-Cookie, etc. What do they tell you about the server's technology stack?
+
+2.  **Interact with the Server**: Use `curl` to fetch the main page. `curl http://target.com`. Look at the raw HTML source code. Search for comments (``) that developers might have left behind, which can contain passwords, paths, or internal IP addresses.
+
+3.  **Check for robots.txt**: Use `curl` to fetch the robots.txt file.
+    - Command: `curl http://target.com/robots.txt`
+    - Document every Disallow entry. These are directories you should investigate further.
+
+4.  **Test HTTP Methods**: Use `curl` to test for dangerous HTTP methods.
+    - Test OPTIONS: `curl -X OPTIONS http://target.com -I`
+    - Test PUT (this will likely fail, but you must check): `curl -X PUT http://target.com/test.txt -d "data"`
+
+5.  **Directory Brute-Forcing (Introduction)**: Install and run a basic directory brute-forcing tool. We will use `gobuster`.
+    - Install: `sudo apt install gobuster`
+    - Run a basic scan: `gobuster dir -u http://target.com -w /usr/share/wordlists/dirb/common.txt`
+    - This command tells gobuster to look for directories (`dir`) on the target URL using a common wordlist. Let it run and document any interesting directories it finds (e.g., `/admin`, `/images`, `/backup`).
+
+Compile all your findings from this web server recon into your master notes. You are now building a detailed profile of how this specific part of the target's infrastructure is built and configured.
+
+Are you ready to proceed to Topic 6: DNS Server Reconnaissance?

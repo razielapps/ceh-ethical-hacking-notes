@@ -1,0 +1,91 @@
+Of course. Let's take the flags we just learned and see how they work together in the most fundamental ritual of network communication.
+
+Topic 13: TCP Three(3) Way Handshake
+
+Every meaningful relationship, even a digital one, needs a proper introduction. Before two computers can exchange any data using TCP, they must establish a connection. This process of introduction and agreement is called the TCP Three-Way Handshake. It is the universal "hello" of the internet, ensuring that both sides are ready and willing to communicate and that they have a system in place to understand each other. For a hacker, understanding this handshake is like understanding a secret handshake; it allows you to see if a connection is healthy, why it might be failing, and how to craft packets to manipulate it.
+
+The handshake uses the SYN and ACK flags we just discussed to perform a three-step dance. Let's break it down step by step, using the phone call analogy but with more technical precision.
+
+Imagine two computers: Client (your machine) and Server (a web server).
+
+**Step 1: SYN - The Client's Request to Connect**
+
+The client initiates the connection by sending a single TCP packet to the server. This packet has a special characteristic: the SYN flag is set to 1, and the ACK flag is set to 0. This is a "synchronize" request.
+
+But this packet contains more than just a flag. It also contains a crucial piece of information: the client's Initial Sequence Number (ISN). A sequence number is a 32-bit random number that TCP uses to keep all the data packets in the correct order. Think of it as the client saying, "Hello Server, I'd like to start a conversation. I'm going to start numbering my data packets from the number 100000000." The client sends this SYN packet and waits.
+
+**Step 2: SYN-ACK - The Server's Acknowledgment and Agreement**
+
+The server receives the client's SYN packet. If the server is listening on the requested port and is willing to accept the connection, it must respond with a packet that has two flags set: both SYN and ACK.
+
+This packet does two things simultaneously:
+1.  It acknowledges the client's request. It does this by setting the ACK flag and putting the client's Initial Sequence Number plus one (100000000 + 1 = 100000001) in the Acknowledgment Number field. This means, "I received your request to start from sequence number 100000000, and I am expecting to see sequence number 100000001 next."
+2.  It sends its own synchronization request. The server generates its own random Initial Sequence Number, for example, 500000000, and sends it to the client in the Sequence Number field with the SYN flag set. This means, "And I will be starting my data packets from the number 500000000."
+
+So, the server's response is: "ACK, I got your request and I'm ready to talk. And here is my own SYN to synchronize from my end."
+
+**Step 3: ACK - The Client's Final Confirmation**
+
+The client receives the server's SYN-ACK packet. The connection is almost fully established. The client now just needs to acknowledge the server's synchronization request.
+
+The client sends a final packet to the server. This packet has the ACK flag set. In the Acknowledgment Number field, it places the server's Initial Sequence Number plus one (500000000 + 1 = 500000001). This means, "I received your sequence number 500000000, and I am expecting to see sequence number 500000001 from you next."
+
+At this point, the Three-Way Handshake is complete. Both sides have agreed on initial sequence numbers and have acknowledged each other's willingness to communicate. The connection is now in an "ESTABLISHED" state, and data transfer can begin. Every single web page you load, every file you download, and every email you send begins with this elegant, three-packet ritual.
+
+Why is this so important for an elite hacker?
+- **Port Scanning**: The most basic port scan (TCP Connect Scan) works by performing the three-way handshake. If the scanner receives a SYN-ACK, the port is open. If it receives a RST, the port is closed.
+- **Firewall and IDS Evasion**: Understanding the handshake allows you to craft stealthier scans that don't complete the handshake, leaving fewer logs.
+- **Troubleshooting**: If you cannot connect to a service, you can use Wireshark to see where the handshake fails. No SYN-ACK? The port is filtered or the service is down. No final ACK? A firewall might be blocking it.
+- **Denial-of-Service Attacks**: A SYN Flood attack exploits this handshake by sending a barrage of SYN packets but never completing the handshake with the final ACK, exhausting server resources.
+
+Glossary for Topic 13:
+
+TCP Three-Way Handshake: A three-step method used to establish a reliable TCP connection between a client and a server. The steps are SYN, SYN-ACK, ACK.
+
+Initial Sequence Number (ISN): A random 32-bit number chosen by each side of a TCP connection at the start of the handshake, used to track the order of packets.
+
+SYN Packet: The first packet in the handshake, sent by the client with the SYN flag set, to initiate a connection.
+
+SYN-ACK Packet: The second packet in the handshake, sent by the server with both SYN and ACK flags set, to acknowledge the client's request and initiate its own.
+
+ACK Packet: The third packet in the handshake, sent by the client with the ACK flag set, to acknowledge the server's request and finalize the connection.
+
+ESTABLISHED State: The TCP connection state that indicates the handshake is complete and data transfer can occur.
+
+TCP Connect Scan: A type of port scan that completes the full TCP three-way handshake to determine if a port is open.
+
+Hands-On Assignment for Topic 13:
+
+Your objective is to capture a real TCP Three-Way Handshake and analyze its components in detail.
+
+1.  **Clear Your Cache**: To ensure a clean capture, clear your DNS cache first with `sudo systemd-resolve --flush-caches` (on many Linux systems).
+
+2.  **Start Wireshark**: Open Wireshark and start a capture on your main interface. Set a capture filter to limit noise: `host example.com` (replace with a real website you will visit).
+
+3.  **Generate the Handshake**: Open a terminal. Use the `curl` command to fetch a simple webpage, which will force a clean handshake. `curl http://example.com`
+
+4.  **Stop the Capture**: Immediately stop the capture in Wireshark once the `curl` command finishes.
+
+5.  **Find the Handshake**:
+    - In the Wireshark filter bar, type `tcp && ip.addr == example.com` (replace with your chosen site).
+    - Look at the very beginning of the filtered conversation. You should clearly see the three-packet pattern.
+    - Packet 1: [SYN] from your IP to the server.
+    - Packet 2: [SYN, ACK] from the server to your IP.
+    - Packet 3: [ACK] from your IP to the server.
+
+6.  **Deep Dive Analysis**: Click on the first [SYN] packet.
+    - In the middle pane, expand the "Transmission Control Protocol" section.
+    - Find the "Sequence Number" field. It will be a relative number (e.g., 0) because Wireshark simplifies it. Note this is the client's ISN.
+    - The "Acknowledgment Number" should be 0 because this is the first packet; there is nothing to acknowledge yet.
+
+7.  **Analyze the SYN-ACK**: Click on the second packet ([SYN, ACK]).
+    - Look at the "Sequence Number". This is the server's ISN (relative).
+    - Look at the "Acknowledgment Number". It should be the client's ISN (relative 0) plus 1. So, it should be `1`. This proves the server is acknowledging the client's SYN.
+
+8.  **Analyze the Final ACK**: Click on the third packet ([ACK]).
+    - Look at the "Acknowledgment Number". It should be the server's ISN (relative 0) plus 1. So, it should be `1`. This proves the client is acknowledging the server's SYN.
+    - The "Sequence Number" for this packet will be the same as the first packet's sequence number plus 1 (relative 1), because the SYN flag in the first packet consumed one sequence number.
+
+By completing this, you have not just read about the handshake; you have seen it with your own eyes and verified its core mechanics. This foundational knowledge is non-negotiable for advanced network manipulation and exploitation.
+
+Are you ready to proceed to Topic 14: Introduction to Wireshark?

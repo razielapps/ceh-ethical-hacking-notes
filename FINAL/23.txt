@@ -1,0 +1,98 @@
+Of course. Now we will take the theoretical knowledge of defensive systems and translate it into practical techniques and tools for avoiding detection.
+
+Topic 23: Tools for Evasion
+
+A successful penetration test is not just about finding vulnerabilities; it's about demonstrating how an attacker could exploit them without being caught. Evasion is the art of modifying your attack traffic to bypass security controls like firewalls, Intrusion Detection Systems (IDS), and Intrusion Prevention Systems (IPS). It's a game of deception, where you disguise your malicious activity as normal, benign traffic.
+
+The core principle of evasion is to avoid matching the *signatures* that these defensive systems use to identify threats. A signature might be as simple as "a packet with only the SYN flag set to port 22" (a SYN scan) or as complex as a sequence of bytes in an HTTP request that matches a known SQL injection payload.
+
+Let's explore the primary evasion techniques and the tools that implement them.
+
+**1. Scan Timing and Stealth:**
+
+The most basic form of evasion is to simply slow down. A rapid burst of packets to many ports is a classic signature of a port scan.
+
+- **Nmap Timing Templates (`-T`)**: Nmap has built-in timing policies. `-T0` (paranoid) and `-T1` (sneaky) are very slow, with long delays between packets, making the scan blend into background noise. `-T5` (insane) is the opposite, sacrificing stealth for raw speed.
+- **`--scan-delay` and `--max-rate`**: For fine-grained control, you can specify the exact delay between probes (`--scan-delay 10s`) or the maximum number of packets per second (`--max-rate 10`). This allows you to throttle your scan to match the normal traffic patterns of the target network.
+
+**2. Packet Fragmentation:**
+
+This technique involves splitting a single packet into several smaller fragments. The idea is that the IDS might not have the capability to reassemble all the fragments before analyzing them, so it never sees the complete, malicious packet. The target system, however, will reassemble the fragments and process the packet normally.
+
+- **Nmap**: The `-f` option fragments the IP data of the packets. You can use `-ff` for even more fragmentation.
+- **Scapy**: You have manual control to create and send fragmented packets, giving you the ultimate flexibility to craft evasion payloads.
+
+**3. Source Port Manipulation:**
+
+Many naive firewall rules are based on destination ports (e.g., "allow traffic to port 80"). They might pay less attention to the source port. Furthermore, some rules are designed to allow traffic from certain "trusted" source ports, like port 53 (DNS) or port 20 (FTP-data).
+
+- **Nmap's `--source-port` option**: You can specify a source port for your scans. For example, `nmap --source-port 53 [target]` makes your scan traffic appear to be DNS replies, which might be allowed through a misconfigured firewall.
+
+**4. Decoy Scans:**
+
+This is a clever technique to hide your real IP address by flooding the target with scan traffic from many decoy source IPs. The target sees a port scan coming from dozens of machines simultaneously, making it very difficult to identify which IP is the real attacker.
+
+- **Nmap's `-D` option**: `nmap -D RND:10 [target]` will generate 10 random decoy IP addresses to cloak your scan. The target's logs will be filled with noise. (Note: Using real IPs of uninvolved parties is unethical and illegal; `RND` uses random non-routable addresses).
+
+**5. Protocol and Payload Manipulation:**
+
+This is where packet crafting becomes essential. You can change the characteristics of your packets so they don't match any known signature.
+- **Altering TCP Flags**: Using unusual flag combinations (e.g., FIN, PSH, URG) that are not used in normal communications can sometimes bypass simple firewalls.
+- **Modifying TCP Window Size**: Nmap has a specific TCP window size in its SYN packets. Changing this with a tool like Scapy can help evade IDS signatures that look for Nmap's default window size.
+- **Using Proxies and Anonymization Networks**: Routing your traffic through a chain of proxies or the Tor network, as we set up earlier, is a fundamental evasion technique that hides your source IP entirely.
+
+**6. Application-Layer Evasion:**
+
+This involves manipulating the data within the protocol (like HTTP) to avoid detection.
+- **Encoding Payloads**: Converting a SQL injection payload from `' OR 1=1--` into its URL-encoded form `%27%20OR%201%3D1--` can sometimes bypass simple string-matching IDS rules.
+- **Using HTTPS**: Encrypting your traffic with SSL/TLS (HTTPS) prevents most network-based IDS from inspecting the payload content, forcing them to rely on other indicators.
+
+The key to successful evasion is understanding the target's defenses and adapting your approach. A noisy, fast Nmap scan might be fine for an internal network test, but for an external, well-defended target, a slow, fragmented, decoy scan using non-standard source ports is the professional's choice.
+
+Glossary for Topic 23:
+
+Evasion: The technique of modifying attack traffic to avoid detection by security systems like firewalls, IDS, and IPS.
+
+Signature: A predefined pattern used by security systems to identify malicious activity. Evasion aims to avoid matching these patterns.
+
+Fragmentation: The process of breaking a single IP packet into multiple smaller packets (fragments) to evade detection systems that cannot reassemble them.
+
+Decoy Scan: A scan technique that uses spoofed source IP addresses to make it difficult for the target to identify the true source of the scan.
+
+Source Port Manipulation: Changing the source port of attack traffic to appear as if it is coming from a trusted service (like DNS on port 53).
+
+Timing Template: A pre-defined policy in Nmap that controls the speed and aggressiveness of a scan, which can be used for stealth.
+
+`--scan-delay`: An Nmap option to insert a fixed delay between probe packets to slow down a scan and avoid triggering rate-based alarms.
+
+Hands-On Assignment for Topic 23:
+
+Your objective is to practice evasion techniques by performing stealthy scans against your target and observing the difference in behavior and potential logs.
+
+1.  **The Stealthy Slow Scan**:
+    - Perform a SYN scan against your target's top 100 ports, but make it extremely slow to avoid detection.
+    - Command: `nmap -sS -T1 --max-rate 5 -p- [target_ip]`
+    - `-T1` sets the slow "sneaky" timing template.
+    - `--max-rate 5` ensures you send no more than 5 packets per second.
+    - Time how long this scan takes compared to a default `-T4` scan. Document the difference and reflect on the trade-off between speed and stealth.
+
+2.  **Fragmentation Scan**:
+    - Perform the same scan, but this time use IP fragmentation.
+    - Command: `nmap -sS -f -T1 [target_ip]`
+    - Use Wireshark to capture the traffic during this scan. Can you see the fragmented packets? Look for packets where the IP header has the "More fragments" flag set. Compare this to a standard non-fragmented scan.
+
+3.  **Source Port Spoofing**:
+    - Attempt a scan using a common trusted source port. DNS is a good candidate.
+    - Command: `nmap -sS --source-port 53 [target_ip]`
+    - Document whether this scan produces different results (e.g., finds ports that were previously filtered). This can indicate that a firewall rule is allowing traffic from source port 53.
+
+4.  **Decoy Scan (Theory and Limited Practice)**:
+    - Understand the command for a decoy scan: `nmap -sS -D 192.168.1.99,192.168.1.100,ME [target_ip]`. This would make the scan appear to come from two decoy IPs and your real IP (ME).
+    - **Important**: In your lab, you can only use decoy IPs that are part of your lab network or non-routable addresses. Using real, external IPs is harmful. For this assignment, write down the command you *would* use in a real engagement and explain how it would obscure your identity in the target's logs.
+
+5.  **Evasion Analysis**:
+    - If you have access to a system with logging (like a pfSense firewall or a Security Onion IDS), perform a default `-T4` SYN scan and then your stealthy `-T1 --max-rate 5` scan. Compare the logs. Does the stealthy scan generate fewer or different alerts?
+
+This assignment forces you to think tactically. You are no longer just running tools; you are configuring them for a specific operational purpose: to remain undetected. This is a critical skill for simulating a determined, sophisticated adversary.
+
+Are you ready to proceed to Topic 24: Introduction to Vulnerability Assessment?

@@ -1,0 +1,67 @@
+Of course. Let's now complete the cycle on Broken Access Control by understanding how to build robust defenses against it.
+
+***
+
+Topic 76: Countermeasures (Broken Access Control)
+
+Finding these flaws is critical, but knowing how to fix them is what makes you a true security professional. The core principle behind fixing broken access control is simple: never trust the client, and enforce authorization checks consistently on the server. Every single time.
+
+The number one rule is to Implement Mandatory Server-Side Authorization Checks. This means that for every single function, for every single page, for every single API endpoint that performs an action or displays data, the server code must explicitly check if the currently logged-in user is allowed to perform that specific action. This check must happen on the server. You cannot rely on hiding a button in the user interface or disabling a link with JavaScript. An attacker can easily bypass the interface.
+
+How do you implement this? The best practice is to use a central authorization framework or middleware. This is a piece of code that runs automatically before any request is processed. It looks at the user's session, determines their role and permissions, and checks them against a security policy for the requested resource. If the check fails, the middleware immediately blocks the request and returns a generic Access Denied error, without ever executing the main business logic. This ensures the check is never accidentally forgotten.
+
+For Vertical Access Control preventing a user from becoming an admin the check is about roles. The server must maintain a record of the user's role admin, user, moderator. Before loading an admin page, the code must verify: if currentUser.role != admin then return accessDenied.
+
+For Horizontal Access Control preventing User A from accessing User B's data the check is about ownership. The server must never use the user ID from the request parameters alone. Instead, it should use the user ID from the user's session. Let's say a request comes in for /view-profile?user_id=456. The server code should do this: It takes the current user's ID from their session token, let's say it's 123. It then uses this session user ID 123 to load the profile from the database. The query would be SELECT * FROM profiles WHERE user_id = 123. It completely ignores the user_id=456 from the request. This way, a user can only ever see their own profile. If you need to allow a user to view another user's public profile, that should be a separate, explicitly allowed function with its own authorization check.
+
+Another crucial defense is to Avoid Exposing Direct Object References in URLs. Instead of using sequential, predictable database keys like ?order_id=1001, consider using unpredictable, random references like Globally Unique Identifiers or UUIDs, for example ?order_ref=9b7c8f10-1a2b-4c3d-8e9f-0a1b2c3d4e5f. While this is not a replacement for server-side checks it is just security through obscurity it makes it much harder for an attacker to systematically scan for and guess the identifiers of other users' objects.
+
+The Principle of Least Privilege is also vital here. Ensure that the application's database user account which we discussed in SQL injection also follows this rule. A regular user's account should not have permissions to access database tables or columns that are unrelated to their function. This provides a second layer of defense.
+
+Finally, Log and Monitor All Access Control Failures. Every time a user tries to access a resource they are not authorized for, it should be logged. A single event might be a mistake. But a pattern of events from a single user account is a clear sign of an attack in progress. Proper logging allows for detection and response.
+
+For an ethical hacker, when you report a broken access control flaw, your report must clearly explain the lack of a server-side authorization check. You should recommend the implementation of a central access control mechanism and the practice of using the session-based user ID for all data access queries.
+
+Hands-On Assignment for Topic 76
+
+This is a code analysis and design assignment.
+
+1.  Analyze Secure Code Logic: Look back at the IDOR vulnerability you found in bWAPP. Think about how the code was likely written in an insecure way. It probably looked like this in pseudo-code: 
+    user_id = request.getParameter("user_id")
+    user_profile = database.query("SELECT * FROM profiles WHERE id = " + user_id)
+    return user_profile
+
+    Now, design the secure version. The secure code should look like this:
+    current_user_id = session.getCurrentUserId()
+    user_profile = database.query("SELECT * FROM profiles WHERE id = " + current_user_id)
+    return user_profile
+
+    See the fundamental difference? The server uses its own trusted source of truth the session instead of the client-provided parameter.
+
+2.  Role-Based Check Design: Design the code for a page like admin.php. The insecure code does nothing. The secure code must have a check at the very top:
+    if session.getCurrentUserRole() != "admin":
+        return "Access Denied"
+    else:
+        showAdminPage()
+
+3.  Review bWAPP Security Levels: In bWAPP, go back to the access control vulnerabilities you found. Change the security level from low to a higher setting. Test the same exploits again. The application likely implements the server-side checks at the higher levels. Observe how the application behavior changes it should now return an error or redirect you when you try to bypass access control.
+
+Glossary for Topic 76
+
+Server-Side Authorization Check: A mandatory permission verification that is performed by the server-side code before processing any request. It is the core defense against broken access control.
+
+Authorization Framework / Middleware: A centralized piece of software or code that handles all authorization decisions in a consistent way, ensuring no request is processed without being checked.
+
+Role-Based Access Control RBAC: A security model where permissions are assigned to roles, and users are assigned to roles. For example, the admin role has delete_user permission, and the user John is assigned the admin role.
+
+Ownership-Based Access Control: A security model where a user is granted access to an object based on them being the owner of that object. For example, a user can only edit their own blog posts.
+
+Direct Object Reference: The practice of exposing an internal key, like a database ID, in the URL or form parameter. It is a vulnerability IDOR if not protected by an authorization check.
+
+UUID Universally Unique Identifier: A 128-bit number used to identify information. UUIDs are random and unpredictable, making them harder to guess than sequential numbers. They can be used to obscure direct object references.
+
+Security through Obscurity: Relying on the secrecy of the design or implementation as the main method of security. It is considered a weak practice because if the secret is discovered, the security is broken. Using UUIDs is a form of this and must be combined with server-side checks.
+
+***
+
+Are you ready to shift gears entirely and move to a different domain with Topic 77: Introduction to IoT and OT Technology and Hacking Techniques? This covers the security of the smart devices and industrial systems that are all around us.

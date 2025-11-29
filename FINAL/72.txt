@@ -1,0 +1,66 @@
+Of course. Now that we understand the theory and manual techniques behind SQL Injection, let's look at the tools that make this process faster and more powerful.
+
+***
+
+Topic 72: Tools for SQL Injection
+
+Manually testing for SQL Injection is a valuable skill. It teaches you how the vulnerability works from the ground up. But in a real-world assessment, you might have hundreds of potential injection points to check. Doing that manually would take forever. This is where automated tools come in. They are the power tools in your workshop. The most important one, the absolute king of SQL Injection tools, is SQLmap.
+
+Think of SQLmap as a master locksmith robot. You show it a door a potential injection point and it goes to work. It doesn't just try one key it tries every key in a massive set, measures the lock's response, and based on that, it forges new keys on the spot until the door swings open. It automates the entire process of detection, exploitation, and even data exfiltration.
+
+So how do you use SQLmap? It is a command-line tool, which might seem intimidating, but its power is incredible. The most basic usage is to provide it with a single URL that has a vulnerable parameter.
+
+For example, if you found a page in your lab: http://vulnerable-app/products.php?id=1
+
+You suspect the id parameter is vulnerable. The basic command would be:
+sqlmap -u "http://vulnerable-app/products.php?id=1"
+
+When you run this, SQLmap will first test the id parameter to confirm if it is injectable. It does this by sending a series of payloads and analyzing the responses. It looks for differences in the page when a true condition is sent versus a false condition. This is how it performs blind SQL injection automatically.
+
+Once it confirms the vulnerability, the real magic begins. You can tell SQLmap to do many things.
+
+First, you can get information about the database itself. The command sqlmap -u "URL" --banner will retrieve the database banner, which tells you the type and version of the database like MySQL 5.7 or Microsoft SQL Server 2019. Knowing this is crucial because the syntax for injection can differ between databases.
+
+Then, you can list all the databases on the server with sqlmap -u "URL" --dbs. This is like asking the robot to list all the buildings in a complex.
+
+After you choose a database, you can list all the tables within it. The command would be sqlmap -u "URL" -D database_name --tables. Here, -D specifies the database. This is like asking for a list of all the rooms in a specific building.
+
+Then, you can choose a table and dump all its contents. The command is sqlmap -u "URL" -D database_name -T table_name --dump. The --dump flag tells SQLmap to extract and save all the data from that table. This is how you would steal a table full of usernames and passwords.
+
+SQLmap can also try to crack any password hashes it finds. If it dumps a users table with MD5 or SHA1 hashes, it can automatically run a dictionary attack to try to crack them.
+
+But SQLmap is not the only tool. While it is the specialist, other tools in your kit can also help find SQLi. The SQLi scanner built into OWASP ZAP or Burp Suite is good for an initial, broad scan. They will quickly test all the parameters they know about and flag potential vulnerabilities for you to investigate further with SQLmap or manual testing.
+
+It is vital to remember that these tools are not silent. They generate a huge amount of traffic and can easily trigger Intrusion Detection Systems. In a real penetration test, you must use them carefully, perhaps with throttling options to slow down the requests. Also, while they are brilliant at finding standard SQLi, they can sometimes miss very complex, business-logic related injections. The human brain is still the most important tool.
+
+For the CEH exam, you must be very familiar with SQLmap, its common switches, and what it can do.
+
+Hands-On Assignment for Topic 72
+
+This assignment requires your lab with a vulnerable app and SQLmap installed Kali Linux has it by default.
+
+1.  Confirmation and Banner Grabbing: Find a clearly vulnerable parameter in bWAPP. A good one is often in the SQL Injection (GET/Search) module. Use your browser and ZAP to capture the exact URL when you perform a search. It will look like http://your-bwapp-ip/sqli_1.php?title=test&action=search. Now, run SQLmap against this URL. Start with: sqlmap -u "http://your-bwapp-ip/sqli_1.php?title=test&action=search" --banner. Let it run. It should confirm the vulnerability and show you the database banner. What database is bWAPP using?
+
+2.  Database Enumeration: Now, list all the databases. Use the command: sqlmap -u "URL" --dbs. How many databases did it find? You should see one called bWAPP.
+
+3.  Table Extraction: Now, target the bWAPP database and list its tables. Use: sqlmap -u "URL" -D bWAPP --tables. Look at the list of tables. Can you see a table called users? This is your target.
+
+4.  Data Dumping: Finally, dump the contents of the users table. Use the command: sqlmap -u "URL" -D bWAPP -T users --dump. SQLmap will extract every row. It will also prompt you if you want to try to crack the password hashes. Say yes. You should now have a list of all usernames, passwords, and the cracked passwords for the bWAPP application.
+
+Glossary for Topic 72
+
+SQLmap: An open-source penetration testing tool that automates the process of detecting and exploiting SQL injection flaws. It is a specialist robot that takes over the entire process of database takeover.
+
+Banner Grabbing: The technique of retrieving information about a service, such as the database type and version. This is the first step in fingerprinting the system to tailor your attack.
+
+Enumeration: The process of extracting detailed information from a system. In SQLi, this means listing databases, tables, and columns.
+
+Data Exfiltration: The unauthorized transfer of data from a target's system to an attacker-controlled system. Using SQLmap to --dump a table is data exfiltration.
+
+Parameter: A variable in a URL or form that is sent to the web server. For example, in ?id=1, the id is a parameter with a value of 1. This is what SQLmap tests.
+
+Switch: A command-line option used to modify the behavior of a tool. In sqlmap -u "URL" --dbs, the -u and --dbs are switches that tell SQLmap the URL and to list databases.
+
+***
+
+Are you ready to move on to the defensive side with Topic 73: Countermeasures (SQL Injection)? It is crucial to know how to prevent these devastating attacks.

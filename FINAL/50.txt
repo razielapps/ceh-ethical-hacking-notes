@@ -1,0 +1,89 @@
+Of course. Now we will explore the powerful and pervasive attack that a Rogue Access Point enables: the Man-in-the-Middle.
+
+Topic 50: Man-in-the-Middle Attack
+
+A Man-in-the-Middle (MitM) attack is a fundamental cyber attack where an attacker secretly intercepts and potentially alters the communication between two parties who believe they are directly communicating with each other. In the context of our rogue access point, *you* are the "man in the middle." All network traffic from connected victims flows through your machine before it reaches the internet, and all responses from the internet flow back through you before reaching the victim. This gives you unprecedented visibility and control.
+
+Think of it as the postal service. Normally, Alice sends a letter directly to Bob. In a MitM attack, you secretly intercept the mail truck. You open Alice's letter to Bob, read it, you can even change it, then you seal it back up and send it on to Bob. You do the same with Bob's reply to Alice. Neither Alice nor Bob knows you are reading all their correspondence.
+
+**How it Works in Practice:**
+
+Once a victim is connected to your rogue AP (or you've used another technique like ARP spoofing on a local network), their device is configured to use your Kali machine as its default gateway. This means:
+- **All their traffic goes to you first.**
+- Your Kali machine is configured to **forward** that traffic to the real internet.
+- The response from the internet comes back to your Kali machine, which then forwards it back to the victim.
+
+You are the invisible intermediary in every single conversation.
+
+**What You Can Do as the MitM:**
+
+This position allows for several powerful attacks:
+
+1.  **Traffic Sniffing:** The most basic function. You can use a tool like Wireshark to capture all the traffic passing through your machine. You can see every website they visit, every unencrypted password they type, and every file they download.
+
+2.  **Session Hijacking:** If you capture a user's session cookie for a website (often sent over unencrypted HTTP or a weakly configured site), you can inject that cookie into your own browser and impersonate that user, gaining access to their account without needing a password.
+
+3.  **SSL Stripping / HTTPS Downgrade:** This is a critical attack. Most websites use HTTPS, which encrypts traffic between the browser and the server. SSL stripping tricks the victim's browser into using an unencrypted HTTP connection instead, allowing you to see everything in plain text.
+    - **How it works:** When the victim tries to go to `https://example.com`, your MitM tool intercepts the request and talks to the server over HTTPS on the victim's behalf. However, it only returns the content to the victim over HTTP. The victim sees the website, but their connection to *you* is unencrypted.
+
+4.  **Injecting Malicious Content:** You can modify web pages as they are delivered to the victim. For example, you could inject a keylogger into a login page or replace a legitimate software download link with a link to your malware.
+
+**Tools for Automating MitM Attacks:**
+
+While you can manually set up routing and use Wireshark, tools like **Ettercap** and **BetterCAP** automate the entire process, providing a user-friendly interface for ARP spoofing, sniffing, and launching attacks like SSL stripping.
+
+**The Ethical Hacker's Perspective:**
+
+Demonstrating a successful MitM attack is one of the most impactful findings in a penetration test. It shows a client that an attacker on their network (or luring users to a rogue AP) can:
+- Read all executive emails.
+- Steal login credentials for critical systems.
+- Harvest customer data from point-of-sale systems.
+- Distribute malware to every employee on the network.
+
+The corresponding mitigation is a strict mandate for **end-to-end encryption**. Using HTTPS everywhere, a VPN for all remote access, and ensuring applications use certificate pinning can render most MitM attacks useless, as the traffic remains encrypted even as it passes through the attacker's machine.
+
+Glossary for Topic 50:
+
+Man-in-the-Middle (MitM): A cyberattack where the attacker secretly relays and possibly alters the communication between two parties who believe they are directly communicating with each other.
+
+Sniffing: The process of monitoring and capturing all data packets passing through a given network.
+
+SSL Stripping: A MitM attack that forces a victim's browser to communicate with a website over unencrypted HTTP instead of encrypted HTTPS.
+
+Session Hijacking: The exploitation of a valid computer session—sometimes also called a session key—to gain unauthorized access to information or services in a computer system.
+
+ARP Spoofing: A technique where an attacker sends falsified ARP (Address Resolution Protocol) messages over a local area network to link their MAC address with the IP address of a legitimate computer or server on the network.
+
+Gateway: A network node that serves as an access point to another network, often called the "router."
+
+Ettercap: A comprehensive suite for man-in-the-middle attacks on a LAN, featuring sniffing of live connections, content filtering, and many other interesting tricks.
+
+VPN (Virtual Private Network): A service that creates a secure, encrypted tunnel for your traffic, protecting it from MitM attacks on local networks.
+
+Hands-On Assignment for Topic 50:
+
+Your objective is to plan and understand the components of a Man-in-the-Middle attack, using the rogue AP as the initial vector.
+
+1.  **Attack Scenario Narrative:**
+    - Write a short paragraph describing the flow of a MitM attack from start to finish, using the rogue AP as the starting point.
+    - Example: "First, I set up a rogue AP named 'Free_Cafe_WiFi'. A victim connects to it. My Kali machine, acting as the gateway, assigns them an IP via DHCP. All their web traffic now flows through my machine. I use Wireshark to sniff their unencrypted login to a news website. I also run an SSL stripping tool, which downgrades their connection to their bank's website to HTTP, allowing me to see their username and password in plain text."
+
+2.  **Traffic Sniffing Command:**
+    - What Wireshark display filter would you use to only show HTTP traffic (unencrypted web traffic) from a specific victim's IP address, `192.168.10.105`?
+    - Filter: `http and ip.addr == 192.168.10.105`
+
+3.  **Identifying Encrypted vs. Unencrypted Traffic:**
+    - In Wireshark, how could you quickly tell if a packet captured from a victim's connection to a website is using HTTPS?
+    - Answer: Look at the "Protocol" column. If it's HTTPS, it will be listed as "TLSv1.2" or "TLSv1.3". Also, the destination port will be 443.
+
+4.  **SSL Stripping Concept:**
+    - Why is SSL stripping a necessary technique for a MitM attacker when targeting modern websites?
+    - Answer: Because most reputable websites use HTTPS by default. SSL stripping is needed to downgrade this secure connection to an insecure HTTP connection, which the attacker can then read.
+
+5.  **Ultimate Mitigation Research:**
+    - What is the one technology a user can employ that would completely neutralize a MitM attack, even if they are connected to a rogue access point?
+    - Answer: A **VPN (Virtual Private Network)**. A VPN creates an encrypted tunnel from the user's device all the way to the VPN server. Even if the attacker is the gateway, all they will see is encrypted VPN traffic; they cannot decrypt or manipulate the data inside the tunnel.
+
+This assignment ensures you understand the power, methodology, and limitations of the Man-in-the-Middle attack. It highlights why encryption (HTTPS, VPNs) is the most critical defense for protecting data in transit.
+
+Are you ready to proceed to Topic 51: DNS Spoofing Attack?

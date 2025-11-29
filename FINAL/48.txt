@@ -1,0 +1,105 @@
+Of course. Now we take the handshake we captured and use it to crack the password, which is the key to the kingdom.
+
+Topic 48: Cracking WPA/WPA2 PSK Password
+
+Capturing the 4-way handshake is only half the battle. The handshake itself contains the cryptographic material needed to verify a password, but it does not contain the password in plain text. The process of cracking WPA/WPA2-Personal (PSK) is an offline password cracking attack. We take the captured handshake and, using a powerful computer, test millions of potential passwords until we find the one that matches.
+
+Here is a detailed breakdown of the process and the underlying theory:
+
+**The Theory: How the Handshake Works**
+
+When a client connects to a WPA/WPA2 network, they perform a 4-way handshake. This process does two critical things:
+1.  It confirms that both the client and the access point (AP) know the Pre-Shared Key (PSK)—the Wi-Fi password.
+2.  It derives a fresh, unique encryption key (the PTK) for that specific session.
+
+The magic for crackers lies in the first part. To prove it knows the password, the AP sends a random value (an ANonce) to the client. The client takes this ANonce, along with its own random value (SNonce), and combines them with the MAC addresses of both devices and the PSK. It runs this through a cryptographic function (PBKDF2) to create a value called the MIC (Message Integrity Code). It sends this MIC back to the AP. The AP performs the same calculation. If the MICs match, the password is correct.
+
+When we capture the handshake, we capture the ANonce, SNonce, both MAC addresses, and the MIC. We have everything *except* the PSK. Our cracking tool can now take a guess from a wordlist, perform the same PBKDF2 calculation, and see if the resulting MIC matches the one we captured. If it matches, we have found the password.
+
+**The Cracking Process**
+
+We will use the `capture-01.cap` file from the previous topic.
+
+1.  **Using Aircrack-ng (The Standard Tool):**
+    Aircrack-ng is designed specifically for this task. It takes the capture file and a wordlist and performs the MIC verification process.
+    - **Command:**
+      `aircrack-ng -w /usr/share/wordlists/rockyou.txt -b [TARGET_BSSID] capture-01.cap`
+      - `-w`: Specifies the path to the wordlist.
+      - `-b`: Specifies the BSSID of the target network so aircrack-ng knows which handshake to use from the capture file.
+    - Aircrack-ng will load the wordlist and start testing passwords. The speed is measured in passwords per second. If the password is in the wordlist, aircrack-ng will display it.
+
+2.  **Using Hashcat (The Powerhouse):**
+    Hashcat is faster, especially with a good GPU, but requires an extra step. We must first convert the handshake from the `.cap` format into a format Hashcat understands (`.hccapx`).
+    - **Step 1: Convert the capture file.**
+      You can use online converters or the `cap2hccapx` tool that comes with Hashcat.
+      `cap2hccapx capture-01.cap capture.hccapx`
+    - **Step 2: Run Hashcat.**
+      The hash mode for WPA/WPA2 is 22000.
+      `hashcat -m 22000 capture.hccapx /usr/share/wordlists/rockyou.txt`
+    - Hashcat will use the power of your GPU(s) to crack the password at incredible speeds.
+
+**The Role of the Wordlist**
+
+The success of this attack is 100% dependent on the quality of your wordlist and the strength of the password.
+- If the password is a simple word found in `rockyou.txt`, you will crack it in seconds or minutes.
+- If it is a complex passphrase not in any common list, you will need a massive, targeted wordlist or to resort to a brute-force attack, which can take centuries for a long password.
+
+**Why This Attack is So Effective**
+
+- **It's Offline:** Once you have the handshake, you can take it to a powerful computer and crack it at your leisure. You don't need to be near the target network anymore.
+- **It Targets Human Weakness:** It doesn't break the encryption (AES in WPA2 is still secure). It breaks the human tendency to choose weak, memorable passwords.
+
+For an ethical hacker, successfully cracking a client's Wi-Fi password is a powerful demonstration of a critical vulnerability. It shows that their entire network perimeter can be breached by an attacker sitting outside their building, purely due to a weak password.
+
+Glossary for Topic 48:
+
+WPA/WPA2-PSK (Pre-Shared Key): The personal mode of WPA/WPA2 security where a single password is used by all clients.
+
+4-Way Handshake: The process used to authenticate a client to a WPA/WPA2 network and generate a unique session key.
+
+MIC (Message Integrity Code): A cryptographic value used in the handshake to verify that both parties possess the correct password.
+
+Offline Cracking: A password attack where the attacker works against a captured cryptographic hash, without interacting with the live system.
+
+Wordlist: A file containing a list of potential passwords.
+
+Aircrack-ng: A tool in the aircrack-ng suite used specifically to crack WEP and WPA/WPA2 keys.
+
+Hashcat: A powerful password recovery tool that leverages CPUs and GPUs to crack hashes at high speeds.
+
+.hccapx: A file format used by Hashcat to store captured WPA/WPA2 handshakes.
+
+Hands-On Assignment for Topic 48:
+
+Your objective is to crack the WPA password from the handshake you captured in the previous topic.
+
+1.  **Verify the Handshake:**
+    - Before cracking, ensure your capture file contains a valid handshake. Use Aircrack-ng to check.
+    - Command: `aircrack-ng capture-01.cap`
+    - Aircrack-ng will analyze the file. If it finds a handshake, it will display the target BSSID and ESSID and ask you to select a network. If it says "No valid WPA handshakes found," you need to go back and capture another handshake.
+
+2.  **Crack with Aircrack-ng:**
+    - Once verified, launch the cracking attack using the `rockyou.txt` wordlist.
+    - Command: `aircrack-ng -w /usr/share/wordlists/rockyou.txt -b [TARGET_BSSID] capture-01.cap`
+    - Let it run. If the password is in the wordlist, Aircrack-ng will display it.
+    - Document the password it finds.
+
+3.  **Test the Password:**
+    - The ultimate verification is to use the cracked password to connect to the Wi-Fi network.
+    - On your Kali machine, disconnect your monitoring interface and bring your regular Wi-Fi interface back up.
+    - Command to stop monitor mode: `sudo airmon-ng stop wlan0mon`
+    - Command to restart the network manager: `sudo systemctl start NetworkManager`
+    - Use the GUI to find your target network and connect using the password you cracked.
+
+4.  **Analyze the Result:**
+    - Were you successful? If so, what does this tell you about the password policy of your lab network?
+    - If you were not successful (the password wasn't in rockyou.txt), what does that tell you?
+
+5.  **Cracking with Hashcat (Optional - if you have a powerful GPU):**
+    - Convert your `.cap` file to `.hccapx` as described in the topic.
+    - Run Hashcat with the command: `hashcat -m 22000 capture.hccapx /usr/share/wordlists/rockyou.txt`
+    - Compare the speed (H/s) reported by Hashcat to the speed reported by Aircrack-ng. Which is faster?
+
+This assignment completes the end-to-end process of a wireless network breach. You have gone from detecting a network to capturing a handshake to cracking the password and gaining access. This is a fundamental and powerful skill in wireless security testing.
+
+Are you ready to proceed to Topic 49: Setting Up a Rogue Access Point?

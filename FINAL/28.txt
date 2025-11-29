@@ -1,0 +1,109 @@
+Of course. Let's expand our understanding of the different strategies available for compromising credentials.
+
+Topic 28: Types of Password Attacks
+
+The simple wordlist attack you just performed is only one tool in a much larger arsenal. A professional password attacker chooses their method based on the target, the available information, and the constraints of time and computing power. Each attack type has its strengths and weaknesses, and knowing when to use each one is a critical skill.
+
+Here is a detailed breakdown of the primary types of password attacks:
+
+1.  **Dictionary Attack:**
+    This is the attack you just performed. It is the most basic and efficient method. It involves taking a list of potential passwords (a "dictionary" or wordlist) and trying each one. The success of this attack depends entirely on the quality and relevance of the wordlist.
+    - **Best For:** Cracking weak, common, or previously breached passwords very quickly.
+    - **Limitation:** Utterly useless against passwords that are not in the wordlist.
+
+2.  **Brute-Force Attack:**
+    This is the most comprehensive and computationally expensive method. It works by systematically trying every possible combination of characters for a given character set (e.g., a-z, A-Z, 0-9, symbols) and password length.
+    - **How it Works:** It starts with single characters ("a", "b", "c"...), then moves to two characters ("aa", "ab", "ac"...), and so on. The time required grows exponentially with each additional character.
+    - **Best For:** Cracking very short passwords (less than 7-8 characters) when all other methods have failed. It is guaranteed to work... eventually.
+    - **Limitation:** Completely impractical for long, complex passwords. A 10-character password with a full character set could take centuries to crack.
+
+3.  **Rule-Based Attack:**
+    This is a supercharged dictionary attack. It recognizes that humans are predictable. We often create passwords by applying simple transformations to a base word.
+    - **Common Rules:**
+        - Capitalize the first letter: `password` -> `Password`
+        - Add numbers at the end: `password` -> `password1`, `password123`
+        - Leet speak (character substitution): `password` -> `p@ssw0rd`
+        - Reverse the word: `password` -> `drowssap`
+    - **How it Works:** A tool like `hashcat` or `John the Ripper` takes a base wordlist and applies a set of pre-defined or custom rules to each word, generating thousands of variants from a single word.
+    - **Best For:** Cracking moderately complex passwords that are based on dictionary words. This is often the most effective attack in a real-world scenario.
+    - **Limitation:** Still relies on a base wordlist. A truly random password like `xQ3!z9L@*p` will not be cracked.
+
+4.  **Hybrid Attack:**
+    This attack merges a dictionary attack with a brute-force attack. It takes words from a wordlist and then adds brute-forced prefixes or suffixes.
+    - **How it Works:** For example, it might take the word "summer" and then try "summer01", "summer02", ... "summer99", and also "01summer", "02summer", etc.
+    - **Best For:** Cracking passwords where users have appended a year or a simple number sequence to a common word (e.g., "password2024", "winter99").
+
+5.  **Rainbow Table Attack:**
+    This is a time-memory trade-off attack. Brute-forcing hashes is slow because you have to compute the hash for every guess. A rainbow table is a massive pre-computed table of hash chains for all possible passwords within a certain character set and length.
+    - **How it Works:** Instead of computing hashes on the fly, you simply look up the target hash in the rainbow table. If it's there, you get the password instantly.
+    - **Best For:** Cracking unsalted hashes (like old Windows LM hashes or unsalted MD5).
+    - **Limitation:** Useless against **salted** hashes. A salt is a random value unique to each password that is added before hashing. This means the hash for "password" is different on every system, making pre-computed tables worthless. Rainbow tables are largely obsolete for modern systems.
+
+6.  **Password Spraying:**
+    This is a different kind of online attack. Instead of trying many passwords against one user (which would lock the account), you try one or two very common passwords against a *large list of users*.
+    - **How it Works:** You get a list of usernames (from enumeration). You then try a single common password like "Spring2024!" or "CompanyName123" against every single account.
+    - **Best For:** Breaching networks where account lockout policies are enabled. It flies under the radar by making a few login attempts per account, which looks like normal user error.
+    - **Limitation:** Requires a list of valid usernames. Only works if at least one user has a very common or predictable password.
+
+7.  **Credential Stuffing:**
+    This attack exploits the fact that people reuse passwords across different websites.
+    - **How it Works:** The attacker obtains a list of email addresses and passwords from a breach of one service (e.g., a social media site). They then automatically "stuff" these credentials into the login forms of other, more valuable services (e.g., online banking, corporate email).
+    - **Best For:** Gaining access to high-value accounts where the user has reused a password.
+    - **Limitation:** Only works if the target reuses passwords and the breached credentials are valid.
+
+A professional attacker will almost always start with a rule-based dictionary attack, as it provides the best balance of speed and effectiveness against human-chosen passwords.
+
+Glossary for Topic 28:
+
+Dictionary Attack: A password attack that tries every word in a pre-defined list of potential passwords.
+
+Brute-Force Attack: A password attack that tries every possible combination of characters.
+
+Rule-Based Attack: An advanced dictionary attack that applies transformation rules to words in a list to generate likely password variants.
+
+Hybrid Attack: A password attack that combines a wordlist with brute-forcing, typically by adding prefixes or suffixes.
+
+Rainbow Table: A pre-computed table for reversing cryptographic hash functions, used to crack unsalted password hashes quickly.
+
+Salt: A random string that is unique to each user and is combined with their password before hashing, rendering rainbow tables ineffective.
+
+Password Spraying: An online attack that tries a few common passwords against a large number of usernames to avoid account lockouts.
+
+Credential Stuffing: An attack that uses username/password pairs leaked from one service to gain unauthorized access to other services where users have reused the same credentials.
+
+Hands-On Assignment for Topic 28:
+
+Your objective is to understand the practical application of different attack types by planning and analyzing attack strategies.
+
+1.  **Rule-Based Attack Planning**:
+    - You have a wordlist containing the word "sunshine".
+    - List five different passwords that a rule-based attack might generate from this base word. Be creative and think like a human creating a password.
+    - Examples: `Sunshine`, `sunshine1`, `5un5h1n3`, `sunshine!`, `enihsnus`.
+
+2.  **Attack Strategy Selection**:
+    - For each scenario below, choose the most appropriate password attack type (Dictionary, Brute-Force, Rule-Based, Hybrid, Password Spraying, Credential Stuffing) and justify your choice in one sentence.
+        - **Scenario A:** You have a list of 10,000 username hashes from an old database that does not use salts.
+        - **Scenario B:** You have a list of 50 valid corporate email addresses and you know the company has an account lockout policy after 5 failed attempts.
+        - **Scenario C:** You have found a file containing hashed passwords, and a simple dictionary attack has failed.
+        - **Scenario D:** You have purchased a list of 100 million email and password combinations from a breached social media site and want to check if any of them work for a popular online banking website.
+
+3.  **Understanding Salts**:
+    - This is a conceptual exercise. Imagine two users on the same system both have the password "hello123".
+    - Without a salt, their password hashes would be *identical*.
+    - With a salt, the system generates a unique random salt for each user (e.g., `salt1` for UserA and `salt2` for UserB).
+    - The system then hashes `salt1 + hello123` and `salt2 + hello123`.
+    - The resulting hashes are completely different, even though the passwords are the same.
+    - Explain in your own words why this makes a rainbow table attack impossible.
+
+4.  **Introduction to Hashcat Modes**:
+    - `hashcat` is a powerful cracking tool that uses numbered "attack modes". Research and match the attack mode to its number:
+        - `0` : (Straight) Dictionary Attack
+        - `1` : (Combination) Attack
+        - `3` : (Brute-Force) Attack
+        - `6` : (Hybrid) Attack (Wordlist + Mask)
+        - `7` : (Hybrid) Attack (Mask + Wordlist)
+    - This knowledge is essential for using `hashcat` effectively in the next topics.
+
+This assignment ensures you don't just see password cracking as a single command, but as a strategic decision-making process. Choosing the right attack for the right situation is what leads to success.
+
+Are you ready to proceed to Topic 29: Tools for Password Hacking?

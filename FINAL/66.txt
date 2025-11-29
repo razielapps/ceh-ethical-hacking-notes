@@ -1,0 +1,109 @@
+Of course. Let's dive into the most important document in web application security.
+
+Topic 66: OWASP Top 10
+
+The OWASP Top 10 is a standard awareness document that represents a broad consensus about the most critical security risks to web applications. It is created by combining data from various security firms and surveys on the most common and impactful vulnerabilities. For developers, it's a guide on what to avoid. For ethical hackers, it's a checklist of what to test for. For managers, it's a way to understand the threat landscape.
+
+The list is periodically updated. We will focus on the **OWASP Top 10:2021**, the current version at the time of writing. The risks are ranked by exploitability, detectability, and impact.
+
+Here is the OWASP Top 10:2021 list with explanations:
+
+**A01:2021-Broken Access Control**
+This moves up from the #5 position. Access control enforces policy such that users cannot act outside of their intended permissions. Failures lead to unauthorized information disclosure, modification, or destruction of all data.
+*   **What it means:** Users can do things they're not supposed to, like viewing another user's account, accessing admin panels, or changing data they don't own.
+*   **Example:** Changing the URL from `https://example.com/user?id=456` to `https://example.com/user?id=457` to see another user's private profile.
+
+**A02:2021-Cryptographic Failures**
+Previously known as "Sensitive Data Exposure," this focuses on failures related to cryptography which often lead to sensitive data exposure or system compromise.
+*   **What it means:** The application fails to protect sensitive data properly, either in transit or at rest.
+*   **Example:** Transmitting passwords over unencrypted HTTP, storing credit card numbers without encryption, or using weak, outdated hashing algorithms like MD5 for passwords.
+
+**A03:2021-Injection**
+Injection flaws, such as SQL, NoSQL, OS, and LDAP injection, occur when untrusted data is sent to an interpreter as part of a command or query. The attacker's hostile data can trick the interpreter into executing unintended commands or accessing data without proper authorization.
+*   **What it means:** Sending malicious data to an application that tricks it into running unintended commands.
+*   **Example:** **SQL Injection:** Entering `' OR '1'='1` into a login form to bypass authentication.
+
+**A04:2021-Insecure Design**
+This is a new category for 2021, focusing on risks related to design flaws. It calls for more use of threat modeling, secure design patterns, and reference architectures.
+*   **What it means:** The application's fundamental design is flawed, making it insecure by default, and these flaws cannot be fixed by a perfect implementation.
+*   **Example:** A password recovery feature that asks for the user's favorite color. This is a weak security question by design, regardless of how well it's coded.
+
+**A05:2021-Security Misconfiguration**
+This is the most common issue. It can happen at any level of the application stack, including the network, web server, application server, database, and framework.
+*   **What it means:** The application, server, or service is configured in an insecure way.
+*   **Example:** Leaving default accounts and passwords active, having unnecessary features enabled, or revealing detailed error messages to users.
+
+**A06:2021-Vulnerable and Outdated Components**
+Using components (libraries, frameworks, other software modules) with known vulnerabilities can undermine application defenses and enable a range of impacts.
+*   **What it means:** The application uses software with known security holes that attackers can exploit.
+*   **Example:** Running a web application built on an old version of the WordPress core or the Struts framework that has a publicly available exploit.
+
+**A07:2021-Identification and Authentication Failures**
+Previously known as "Broken Authentication," this category encompasses flaws in the processes of proving user identity and managing sessions.
+*   **What it means:** Attackers can compromise passwords, keys, or session tokens, or exploit other implementation flaws to assume other users' identities.
+*   **Example:** Allowing weak passwords, not locking out accounts after brute-force attempts, or exposing session IDs in URLs.
+
+**A08:2021-Software and Data Integrity Failures**
+This new category focuses on making assumptions related to software updates, critical data, and CI/CD pipelines without verifying integrity.
+*   **What it means:** The application relies on plugins, libraries, or other code from an untrusted source without verifying its integrity.
+*   **Example:** An application that automatically updates itself from an untrusted repository, allowing an attacker to push malicious code to all users.
+
+**A09:2021-Security Logging and Monitoring Failures**
+This category is to help detect, escalate, and respond to active breaches. Without logging and monitoring, breaches cannot be detected.
+*   **What it means:** The application does not record security events properly, so attacks go unnoticed.
+*   **Example:** Not logging failed login attempts, making it impossible to detect a password brute-force attack.
+
+**A10:2021-Server-Side Request Forgery (SSRF)**
+This is a new category from the 2021 list. SSRF flaws occur whenever a web application is fetching a remote resource without validating the user-supplied URL.
+*   **What it means:** Tricking the server into making a request to an internal or external resource that it shouldn't have access to.
+*   **Example:** An application that lets users fetch a profile picture from a URL. An attacker submits `http://localhost:8080/admin`,
+
+Glossary for Topic 66:
+
+OWASP Top 10: A standard awareness document listing the ten most critical web application security risks.
+
+Broken Access Control: Vulnerabilities that allow users to perform actions outside their intended permissions.
+
+Injection: A class of attacks where untrusted data is interpreted as a command, such as SQL Injection.
+
+Cryptographic Failures: Flaws that lead to the exposure of sensitive data due to improper use of cryptography.
+
+Insecure Design: Security flaws that are inherent in the application's architecture and cannot be fixed by implementation alone.
+
+Security Misconfiguration: Insecure configurations of servers, applications, or frameworks.
+
+Vulnerable Components: The use of third-party libraries or software with known security vulnerabilities.
+
+Identification and Authentication Failures: Flaws in login, session management, and identity verification functions.
+
+SSRF (Server-Side Request Forgery): An attack that abuses a server to make requests to internal or external resources.
+
+Hands-On Assignment for Topic 66:
+
+Your objective is to understand and categorize the OWASP Top 10 risks.
+
+1.  **Risk Identification:**
+    - For each scenario below, identify the most relevant OWASP Top 10 2021 category (e.g., A01, A02).
+        - **Scenario A:** An attacker uses a publicly available exploit for a known vulnerability in the jQuery library used by a website. (A06:2021-Vulnerable and Outdated Components)
+        - **Scenario B:** A website transmits user session cookies over an unencrypted HTTP connection. (A02:2021-Cryptographic Failures)
+        - **Scenario C:** An attacker changes the 'userid' parameter in a GET request to access another user's shopping cart. (A01:2021-Broken Access Control)
+
+2.  **Impact Analysis:**
+    - Choose one category from the Top 10 (e.g., A03:Injection). Describe the potential business impact if this vulnerability were exploited in a banking application.
+    - Example for A03:Injection: "An SQL Injection vulnerability could allow an attacker to extract the entire customer database, including names, addresses, and account numbers, leading to massive financial fraud and reputational damage."
+
+3.  **Developer Guidance:**
+    - For the A03:Injection category, what is the primary coding practice a developer should use to prevent it?
+    - Answer: "Use parameterized queries or prepared statements. This ensures that user input is treated as data, not as part of the SQL command."
+
+4.  **New Category Research:**
+    - The 2021 list introduced "A04:2021-Insecure Design." Why is this a significant addition?
+    - Answer: "It shifts the focus 'left' in the development lifecycle, emphasizing that security must be built into the design phase. A perfectly implemented bad design is still insecure."
+
+5.  **Testing Priority:**
+    - If you had only 4 hours to test a web application, which two OWASP Top 10 categories would you prioritize and why?
+    - Example Answer: "I would prioritize A01:Broken Access Control and A03:Injection. Broken Access Control is now the #1 risk and is very common, while Injection flaws can often lead to a complete compromise of the application and its data."
+
+This assignment ensures you are familiar with the most critical web application threats. You can now map common vulnerabilities to the standardized OWASP Top 10 framework, which is essential for professional communication and reporting.
+
+Are you ready to proceed to Topic 67: Tools for Web Application Testing?

@@ -1,0 +1,96 @@
+Of course. We now move from manipulating people to the science of securing information: cryptography.
+
+Topic 61: Introduction to Cryptography
+
+Cryptography is the practice and study of techniques for secure communication in the presence of adversarial behavior. It is the foundation of modern information security. At its core, cryptography is about transforming information (plaintext) into an unreadable format (ciphertext) so that only authorized parties can reverse the process and read the original message.
+
+Think of it as a secure lockbox. You put a message inside (encryption), lock it with a key, and send it. Only someone with the correct key can unlock the box (decryption) and read the message. If an interceptor steals the box, they cannot read the message without the key.
+
+**Core Objectives of Cryptography (The CIA Triad for Data):**
+
+1.  **Confidentiality:** Ensuring that information is not disclosed to unauthorized individuals. This is the primary goal of encryption.
+2.  **Integrity:** Ensuring that data has not been altered in an unauthorized manner. Cryptographic hashes are used for this.
+3.  **Authentication:** Verifying the identity of a user, system, or the origin of a message. Digital signatures achieve this.
+4.  **Non-Repudiation:** Providing proof of the origin of data, preventing the sender from later denying they sent it. Digital signatures also provide this.
+
+**Fundamental Cryptographic Concepts:**
+
+- **Plaintext:** The original, readable data.
+- **Ciphertext:** The encrypted, unreadable data.
+- **Encryption Algorithm (Cipher):** The mathematical function used to convert plaintext to ciphertext.
+- **Decryption Algorithm:** The mathematical function used to convert ciphertext back to plaintext.
+- **Key:** A piece of information (a string of bits) that determines the functional output of the encryption or decryption algorithm. The security of modern cryptography rests on the secrecy of the key, not the secrecy of the algorithm.
+
+**Types of Cryptography:**
+
+1.  **Symmetric Cryptography (Private-Key Cryptography):**
+    - **How it works:** The same key is used for both encryption and decryption.
+    - **Analogy:** A single key that both locks and unlocks the box.
+    - **Examples:** AES (Advanced Encryption Standard), DES, 3DES.
+    - **Challenge:** Secure key distribution. How do you get the secret key to the other person without it being intercepted?
+
+2.  **Asymmetric Cryptography (Public-Key Cryptography):**
+    - **How it works:** Uses a pair of mathematically linked keys: a **Public Key** and a **Private Key**.
+        - The **Public Key** is shared openly and is used to *encrypt* data.
+        - The **Private Key** is kept secret and is used to *decrypt* data.
+    - **Analogy:** A lockbox with a special lock. Anyone can get a copy of the open lock (public key) to lock the box, but only one person has the unique key (private key) to open it.
+    - **Examples:** RSA, Elliptic Curve Cryptography (ECC).
+    - **Solves the Key Distribution Problem:** You can freely share your public key with anyone.
+
+3.  **Cryptographic Hash Functions:**
+    - **How it works:** A one-way mathematical function that takes an input (of any size) and produces a fixed-size string of characters, called a hash or digest. It is computationally infeasible to reverse the process or find two different inputs that produce the same hash.
+    - **Purpose:** Data integrity verification, password storage, digital signatures.
+    - **Examples:** SHA-256, MD5 (broken, do not use for security).
+
+For an ethical hacker, understanding cryptography is non-negotiable. You need to know how systems *should* be protecting data in order to find weaknesses, such as weak key generation, improper implementation, or the use of deprecated algorithms.
+
+Glossary for Topic 61:
+
+Cryptography: The art of writing or solving codes; the practice of secure communication.
+
+Encryption: The process of converting plaintext into ciphertext.
+
+Decryption: The process of converting ciphertext back into plaintext.
+
+Symmetric Cryptography: A cryptographic system that uses the same key for encryption and decryption.
+
+Asymmetric Cryptography: A cryptographic system that uses a pair of keys, a public key and a private key.
+
+Public Key: A cryptographic key that can be freely distributed and is used for encryption or signature verification.
+
+Private Key: A cryptographic key that is kept secret and is used for decryption or creating digital signatures.
+
+Hash Function: A one-way function that converts an input into a fixed-size string of bytes, designed to be irreversible.
+
+Cipher: An algorithm for performing encryption or decryption.
+
+Hands-On Assignment for Topic 61:
+
+Your objective is to understand the basic concepts of cryptography through practical examples and research.
+
+1.  **Symmetric vs. Asymmetric Identification:**
+    - For each scenario, state whether it describes Symmetric or Asymmetric cryptography.
+        - **Scenario A:** Alice and Bob both possess the same secret password, which they use to encrypt and decrypt messages to each other. (Symmetric)
+        - **Scenario B:** Alice uses a key she downloaded from Bob's website to encrypt a message that only Bob can read. (Asymmetric)
+
+2.  **Hash Function Property:**
+    - A cryptographic hash function must be "deterministic." What does this mean?
+    - Answer: "It means that the same input will always produce the exact same hash output."
+
+3.  **Real-World Application Matching:**
+    - Match the cryptographic technique to its common use case.
+        - **Symmetric Encryption (AES):** `Bulk encryption of data at rest, like full-disk encryption.`
+        - **Asymmetric Encryption (RSA):** `Establishing a secure TLS/SSL connection for HTTPS.`
+        - **Hash Function (SHA-256):** `Verifying the integrity of a downloaded file by comparing its hash to the one provided by the publisher.`
+
+4.  **Key Management Challenge:**
+    - Describe the primary challenge of symmetric cryptography that asymmetric cryptography solves.
+    - Answer: "The key distribution problem. With symmetric crypto, you need a secure way to get the shared secret key to the other party. With asymmetric crypto, you can freely share your public key."
+
+5.  **Weak Algorithm Research:**
+    - Research and name one cryptographic hash algorithm that is considered cryptographically broken and insecure. Explain why it should not be used.
+    - Answer: "MD5. It is vulnerable to hash collisions, where two different inputs can be found that produce the same hash output. This breaks the fundamental requirement of a secure hash function."
+
+This assignment provides the foundational language and concepts of cryptography. You can now distinguish between the main types of crypto systems and understand their basic purposes, which is essential for discussing more advanced security topics.
+
+Are you ready to proceed to Topic 62: Tools for Cryptography?
